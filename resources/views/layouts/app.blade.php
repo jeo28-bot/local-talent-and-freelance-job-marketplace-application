@@ -19,64 +19,98 @@
     
 
     <!-- Scripts -->
-    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-800">
     
     <div id="app" class="">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+        
+<nav class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            
+            <!-- Left Side (Logo / Nav links) -->
+            <div class="flex items-center">
+                <a href="{{ url('/') }}" class="text-xl font-bold text-gray-800">
+                 <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-50">
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
             </div>
-        </nav>
+
+            <!-- Right Side -->
+            <div class="hidden md:flex items-center space-x-4">
+                @guest
+                    @if (Route::has('login'))
+                        <a href="{{ route('login') }}"
+                           class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                            {{ __('Login') }}
+                        </a>
+                    @endif
+
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}"
+                           class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
+                            {{ __('Register') }}
+                        </a>
+                    @endif
+                @else
+                    <div class="relative">
+                        <button type="button"
+                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                                onclick="document.getElementById('userMenu').classList.toggle('hidden')">
+                            {{ Auth::user()->name }}
+                        </button>
+
+                        <div id="userMenu"
+                             class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg hidden">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    {{ __('Logout') }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endguest
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="flex items-center md:hidden">
+                <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')"
+                        class="text-gray-600 focus:outline-none">
+                    ☰
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden hidden px-4 pb-3 space-y-2">
+        @guest
+            @if (Route::has('login'))
+                <a href="{{ route('login') }}"
+                   class="block px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                   {{ __('Login') }}
+                </a>
+            @endif
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}"
+                   class="block px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
+                   {{ __('Register') }}
+                </a>
+            @endif
+        @else
+            <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit"
+                        class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    {{ __('Logout') }}
+                </button>
+            </form>
+        @endguest
+    </div>
+</nav>
+
 
         <main class="py-4">
             @yield('content')
