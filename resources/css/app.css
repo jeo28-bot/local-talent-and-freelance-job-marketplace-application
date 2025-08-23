@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -8,4 +9,38 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* login.blade.php css */
+.titles{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}.p_fonts{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+label[for="email"],
+label[for="password"],
+label[for="remember"],
+label[for="name"],
+label[for="password-confirm"],
+.forgot_pass,
+.sign_in {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+}
+.button_font{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+.p_font{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
 }
