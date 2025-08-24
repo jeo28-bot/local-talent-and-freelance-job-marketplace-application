@@ -61,6 +61,25 @@
                                 <input id="password-confirm" type="password" class="poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
+                        
+                        <div class="row mb-5">
+                            <label for="user_type" class="text-white max-sm:text-sm">{{ __('Register as') }}</label>
+
+                            <div class="mt-2">
+                                <select id="user_type" name="user_type" required 
+                                    class="poppins-regular-italic p-2 w-full text-white border-2 rounded-lg bg-gray-800">
+                                    <option value="">-- Select User Type --</option>
+                                    <option value="employee" {{ old('user_type') == 'employee' ? 'selected' : '' }}>Employee</option>
+                                    <option value="client" {{ old('user_type') == 'client' ? 'selected' : '' }}>Client</option>
+                                </select>
+
+                                @error('user_type')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
 
                         <div class="mt-5">
                             <div class="mb-10">

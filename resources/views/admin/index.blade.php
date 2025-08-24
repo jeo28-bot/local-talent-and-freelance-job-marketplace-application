@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                 <p style="color: white;"> HOME PAGE </p>
+                 <p style="color: white;">Admn Page</p>
             </div>
         </div>
     </div>
