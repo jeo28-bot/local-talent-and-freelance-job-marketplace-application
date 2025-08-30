@@ -31,6 +31,7 @@ label[for="password"],
 label[for="remember"],
 label[for="name"],
 label[for="password-confirm"],
+label[for="user_type"],
 .forgot_pass,
 .sign_in {
     font-family: 'Poppins', sans-serif;
@@ -43,4 +44,12 @@ label[for="password-confirm"],
 .p_font{
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
+}
+.hero_title{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+.sub_title{
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
 }

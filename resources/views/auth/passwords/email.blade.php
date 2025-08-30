@@ -6,7 +6,8 @@
         <div class="">
             <div class="card  p-4 flex items-center flex-col">
                 {{-- <h1 class="font-bold text-4xl mb-10">FREELANCO</h1> --}}
-                 <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 mb-4">
+                 <a href="{{url('/')}}"><img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 mb-4">
+                    </a>
                 <div class="titles font-bold text-2xl text-white mb-10 max-sm:text-xl">{{ __('Reset Password') }}</div>
 
                 <div class=" w-full">
@@ -43,7 +44,7 @@
 
                             <div class="flex items-center gap-2">
                                     <p class="p_fonts text-white max-[640px]:text-sm">Don't have an account yet? </p>
-                                    <a href="#" class="p_fonts text-blue-400 hover:text-blue-300 max-[640px]:text-sm">Sign up now.</a>
+                                    <a href="{{ route('register') }}" class="p_fonts text-blue-400 hover:text-blue-300 max-[640px]:text-sm">Sign up now.</a>
                             </div>
 
                         </div>

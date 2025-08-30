@@ -7,7 +7,8 @@
         <div class="">
             <div class="card  p-4 flex items-center flex-col">
                 {{-- <h1 class="font-bold text-4xl mb-10">FREELANCO</h1> --}}
-                <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 mb-4">
+                <a href="{{ url('/') }}"><img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 mb-4">
+                </a>
                 <h1 class="titles font-bold text-2xl text-white mb-10 max-sm:text-xl">{{ __('Sign in to your acount') }}</h1>
 
                 <div class="card-body w-full">
@@ -18,11 +19,11 @@
                             <label for="email" class="max-sm:text-sm text-white ">{{ __('Email Address') }}</label>
 
                             <div class="mt-2">
-                                <input id="email" type="email" class="max-sm:text-sm poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                <input id="email" type="email" class="mb-2 max-sm:text-sm poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                    <span class="invalid-feedback text-red-400 p_font font-light" role="alert">
+                                        {{ $message }}
                                     </span>
                                 @enderror
                             </div>
@@ -32,11 +33,11 @@
                             <label for="password" class="max-sm:text-sm col-md-4 col-form-label text-md-end text-white">{{ __('Password') }}</label>
 
                             <div class="mt-2">
-                                <input id="password" type="password" class="max-sm:text-sm p-2  w-full form-control @error('password') is-invalid @enderror border-2 rounded-lg text-white" name="password" required autocomplete="current-password">
+                                <input id="password" type="password" class="mb-2 max-sm:text-sm p-2  w-full form-control @error('password') is-invalid @enderror border-2 rounded-lg text-white" name="password" required autocomplete="current-password">
 
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
+                                    <span class="invalid-feedback text-red-400 p_font font-light" role="alert">
+                                        {{ $message }}
                                     </span>
                                 @enderror
                             </div>
