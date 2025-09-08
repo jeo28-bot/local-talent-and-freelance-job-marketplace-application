@@ -30,10 +30,10 @@
                             <label for="email" class="text-white max-sm:text-sm"> {{ __('Email Address') }}</label>
 
                             <div class="mt-2">
-                                <input id="email" type="email" class="poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                <input id="email" type="email" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
 
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
+                                    <span class="invalid-feedback text-red-400 p_font font-light mt-5" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror

@@ -1,5 +1,4 @@
-@import 'tailwindcss';
-
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,16 +6,18 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 }
 
-/* login.blade.php css */
-.titles{
-    font-family: 'Poppins', sans-serif;
+/* general css */
+.titles {
+    font-family: "Poppins", sans-serif;
     font-weight: 600;
-}.p_fonts{
-    font-family: 'Poppins', sans-serif;
+}
+.p_fonts {
+    font-family: "Poppins", sans-serif;
     font-weight: 400;
 }
 
@@ -26,30 +27,90 @@ input[type="text"],
 input[type="number"],
 input[type="tel"],
 input[type="url"],
+textarea,
 label[for="email"],
 label[for="password"],
 label[for="remember"],
 label[for="name"],
 label[for="password-confirm"],
 label[for="user_type"],
+label[for="message"],
 .forgot_pass,
 .sign_in {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     font-weight: 400;
 }
-.button_font{
-    font-family: 'Poppins', sans-serif;
+.button_font {
+    font-family: "Poppins", sans-serif;
     font-weight: 600;
 }
-.p_font{
-    font-family: 'Poppins', sans-serif;
+.p_font {
+    font-family: "Poppins", sans-serif;
     font-weight: 400;
 }
-.hero_title{
-    font-family: 'Poppins', sans-serif;
+.hero_title {
+    font-family: "Poppins", sans-serif;
     font-weight: 700;
 }
-.sub_title{
-    font-family: 'Poppins', sans-serif;
+.sub_title {
+    font-family: "Poppins", sans-serif;
     font-weight: 500;
+}
+.a_font {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+}
+
+/* general nav pages css */
+.selected_nav {
+    color: #0ca0ff !important;
+    border-bottom: #0ca0ff 2px solid;
+}
+.pages_nav {
+}
+.pages_nav:hover {
+    color: rgb(199, 199, 199);
+}
+
+/* employee page css */
+.hamburger_pop_menu {
+    background: #00000078;
+}
+.home_hero_font {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+}
+.home_p_font {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    color: #78818d;
+}
+.sub_title_font {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+}
+.job_posting_title {
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}
+.job_posting_company {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    color: #78818d;
+}
+.posted_time_before_a_day {
+    color: rgb(0, 133, 242);
+}
+.posted_time_after_a_day {
+    color: rgb(255, 120, 120);
+}
+.job_posting_button {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+}
+.quick_apply_modal {
+    background: #0000009a;
+}
+.report_modal {
+    background: #0000009a;
 }

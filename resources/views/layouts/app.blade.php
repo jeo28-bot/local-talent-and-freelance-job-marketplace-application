@@ -22,7 +22,7 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-800">
+<body class="@yield('body-class', 'bg-gray-800') ">
     
     <div id="app" class="">
         
@@ -117,6 +117,7 @@
             @yield('content')
         </main>
     </div>
+    
 
    <script src="{{ asset('js/script.js') }}"></script>
 </body>

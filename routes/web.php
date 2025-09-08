@@ -24,13 +24,27 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
 
 Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
-
+    Route::get('/employee/postings', [EmployeeController::class, 'postings'])->name('employee.postings');
+    Route::get('/employee/transactions', [EmployeeController::class, 'transactions'])->name('employee.transactions');
+    Route::get('/employee/applying', [EmployeeController::class, 'applying'])->name('employee.applying');
+    Route::get('/employee/saved', [EmployeeController::class, 'saved'])->name('employee.saved');
+    Route::get('/employee/messages', [EmployeeController::class, 'messages'])->name('employee.messages');
+    Route::get('/employee/notifications', [EmployeeController::class, 'notifications'])->name('employee.notifications');
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client.index');
 
 });
+
+Route::get('/nav', function () {
+    return view('components.nav');
+});
+
+Route::get('/footer', function () {
+    return view('components.footer');
+});
+
 
 
 
