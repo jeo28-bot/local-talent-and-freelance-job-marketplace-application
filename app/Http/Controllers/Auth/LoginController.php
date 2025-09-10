@@ -38,7 +38,7 @@ class LoginController extends Controller
             case 'client':
                 return '/client';
             default:
-                return '/home';
+                return '/';
         }
     }
 

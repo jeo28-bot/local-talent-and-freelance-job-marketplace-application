@@ -33,4 +33,8 @@ class EmployeeController extends Controller
     {
         return view('employee.notifications');
     }
+    public function profile()
+    {
+        return view('employee.profile');
+    }
 }

@@ -14,7 +14,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
 Route::middleware(['auth', 'user_type:admin'])->group(function () {
@@ -30,6 +30,7 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee/saved', [EmployeeController::class, 'saved'])->name('employee.saved');
     Route::get('/employee/messages', [EmployeeController::class, 'messages'])->name('employee.messages');
     Route::get('/employee/notifications', [EmployeeController::class, 'notifications'])->name('employee.notifications');
+    Route::get('/employee/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {

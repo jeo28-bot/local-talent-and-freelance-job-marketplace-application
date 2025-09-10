@@ -1,4 +1,4 @@
-console.log('Hello, Laravel!');
+
 
 document.querySelectorAll("#faq-container details").forEach((detail) => {
     detail.addEventListener("toggle", function () {
@@ -63,4 +63,6 @@ close_report_modal.addEventListener('click', ()=>{
   console.log('report job clicked');
   report_modal.classList.add('hidden')
 })
+
+
 

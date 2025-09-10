@@ -33,7 +33,7 @@
           
         </a>
 
-        <a href="#" class="pages_nav max-lg:hidden">
+        <a href="{{route('employee.profile')}}" class="pages_nav max-lg:hidden">
           <img src="{{asset('assets/samplePerson.png')}}" alt="profile image" class="w-10 rounded-full border-2 border-white">
         </a>
 
@@ -61,9 +61,20 @@
               <a href="{{ route('employee.index') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Home</a>
               <a href="{{ route('employee.postings') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Job Posting</a>
               <a href="{{ route('employee.transactions') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Transactions</a>
-              <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
+              <a href="{{ route('employee.profile') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
               <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Settings</a>
-              <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Logout <br> <span class="text-sm text-gray-500">helloworld@gmail.com</span></a>
+              {{-- logout --}}
+              <a href="#" 
+                class="pages_nav border-b-1 px-5 py-3 border-gray-500"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Log-out <br> 
+                <span class="text-sm text-gray-500">{{ Auth::user()->email }}</span>
+              </a>
+
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                  @csrf
+              </form>
+
               <a href="#" class=" border-b-1 px-5 py-3 border-gray-500 text-gray-500">©Freelanco 2025</a>
             </div>
        </div>
