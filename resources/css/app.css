@@ -117,3 +117,7 @@ label[for="message"],
 .modal_bg {
     background: #0000009a;
 }
+.button_font {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+}

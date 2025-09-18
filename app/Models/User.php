@@ -22,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'user_type',
+        'phoneNum',   // ✅
+        'address',    // ✅
     ];
 
     /**
@@ -46,4 +48,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+   public function savedJobs()
+{
+    return $this->belongsToMany(JobPost::class, 'saved_jobs', 'user_id', 'job_post_id')->withTimestamps();
+}
+
+
+
 }

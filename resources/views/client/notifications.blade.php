@@ -3,13 +3,13 @@
 @section('body-class', 'bg-[#F0F0F0] ')
 
 @section('content')
-    @include('components.nav_employee')
+    @include('components.nav_client')
 
 
      <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
         <div class="xl:w-6xl mx-auto px-5 max-sm:px-3 mb-10">
             <h1 class="sub_title sm:text-xl">Notifications</h1>
-            <p class="home_p_font mb-5 text-sm">All your chats with clients and companies are organized here.</p>
+            <p class="home_p_font mb-5 text-sm">All your important notifications are organized here.</p>
 
           
 
@@ -29,7 +29,7 @@
      </section>
 
            
-@include('components.footer_employee')
+@include('components.footer_client')
     
     
 @endsection

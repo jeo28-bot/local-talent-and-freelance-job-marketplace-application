@@ -3,7 +3,7 @@
 @section('body-class', 'bg-[#F0F0F0]')
 
 @section('content')
-    @include('components.nav')
+    @include('components.nav_employee')
   
     <!-- main content -->
     <section class="w-full flex flex-col items-center  px-20 max-sm:px-10 pt-10">
@@ -96,10 +96,9 @@
           <h3 class="home_p_font">(20+)</h3>
         </div>
 
-
       </div>
 
     </section>
 
-    @include('components.footer')
+    @include('components.footer_employee')
 @endsection

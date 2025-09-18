@@ -6,6 +6,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\JobPostController;
+use App\Http\Controllers\JobApplicationController;
 
 
 Route::get('/', function () {
@@ -26,15 +28,29 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
     Route::get('/employee/postings', [EmployeeController::class, 'postings'])->name('employee.postings');
     Route::get('/employee/transactions', [EmployeeController::class, 'transactions'])->name('employee.transactions');
-    Route::get('/employee/applying', [EmployeeController::class, 'applying'])->name('employee.applying');
+    Route::get('/employee/jobs', [EmployeeController::class, 'jobs'])->name('employee.jobs');
     Route::get('/employee/saved', [EmployeeController::class, 'saved'])->name('employee.saved');
     Route::get('/employee/messages', [EmployeeController::class, 'messages'])->name('employee.messages');
     Route::get('/employee/notifications', [EmployeeController::class, 'notifications'])->name('employee.notifications');
     Route::get('/employee/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
+    Route::get('/employee/jobs/{slug}', [EmployeeController::class, 'showJob'])->name('employee.jobs.show');
+    
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client.index');
+    Route::get('/client/postings', [ClientController::class, 'postings'])->name('client.postings');
+    Route::get('/client/applicants', [ClientController::class, 'applicants'])->name('client.applicants');
+    Route::get('/client/transactions', [ClientController::class, 'transactions'])->name('client.transactions');
+    Route::get('/client/messages', [ClientController::class, 'messages'])->name('client.messages');
+    Route::get('/client/notifications', [ClientController::class, 'notifications'])->name('client.notifications');
+    Route::get('/client/profile', [ClientController::class, 'profile'])->name('client.profile');
+    
+     // List all jobs page
+    Route::get('/client/jobs', [ClientController::class, 'jobs'])->name('client.jobs');
+
+    // Single job detail page
+     Route::get('/client/jobs/{slug}', [ClientController::class, 'showJob'])->name('client.jobs.show');
 
 });
 
@@ -46,25 +62,42 @@ Route::get('/footer', function () {
     return view('components.footer');
 });
 
+Route::post('/job-posts', [JobPostController::class, 'store'])->name('job_posts.store');
+
+Route::get('/client/postings', function () {
+    return view('client.postings');
+})->name('client.postings');
+
+Route::get('/client/postings', [JobPostController::class, 'postings'])->name('client.postings');
+
+Route::put('/job-posts/{job}', [JobPostController::class, 'update'])->name('job_posts.update');
+
+Route::delete('/job-posts/{id}', [JobPostController::class, 'destroy'])->name('job_posts.destroy');
 
 
+Route::put('/job-posts/{job}/update-status', [JobPostController::class, 'updateStatus'])->name('job_posts.update_status');
 
-// test routes
-// use Illuminate\Support\Facades\Auth;
-// use Illuminate\Support\Facades\Route;
+// save jobs routes
+Route::post('/employee/jobs/{id}/save', [EmployeeController::class, 'saveJob'])->name('employee.jobs.save');
+Route::get('/employee/saved', [EmployeeController::class, 'saved'])->name('employee.saved');
+Route::get('/jobs/{id}', [JobPostController::class, 'show'])->name('jobs.show');
 
-// // main
-// Route::get('/', function () {
-//     return view('auth.login');
-// });
 
-// Auth::routes(['verify' => true]); // 👈 enable email verification
+// job application routes
+Route::post('/jobs/{id}/apply', [JobApplicationController::class, 'store'])->name('jobs.apply');
+Route::middleware(['auth'])->group(function () {
+    // List of applicants
+    Route::get('/client/applicants', [JobApplicationController::class, 'indexForClient'])
+        ->name('client.applicants');
 
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
-//     ->name('home')
-//     ->middleware('verified'); // optional: require verified email
+    // Update status (Accept / Reject)
+    Route::post('/applications/{id}/status', [JobApplicationController::class, 'updateStatus'])
+        ->name('applications.updateStatus');
+});
+Route::delete('/applications/{id}', [JobApplicationController::class, 'destroy'])->name('applications.destroy');
+Route::post('/jobs/{job}/apply', [JobApplicationController::class, 'store'])
+    ->name('applications.store')
+    ->middleware('auth');
 
-// Route::get('/verify', function () {
-//     return view('auth.verify');
-// });
+
 

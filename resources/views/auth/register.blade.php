@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container flex justify-center px-4 py-8 mx-auto">
+<div class="container flex justify-center px-4 pb-20 mx-auto">
     <div class="w-full max-w-sm sm:max-w-full lg:max-w-lg">
         <div class="">
             <div class="card p-4 flex items-center flex-col">
                 <a href="{{ url('/') }}"><img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 mb-4"></a>
                 <div class="titles font-bold text-2xl text-white mb-5 max-sm:text-xl">{{ __('Create an account') }}</div>
 
-                <div class="card-body w-full">
+                <div class="card-body w-full max-lg:w-lg max-sm:w-full">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
-                        <div class="row mb-5">
-                            <label for="name" class="text-white max-sm:text-sm">{{ __('Name') }}</label>
+                        <div class="row mb-3 max-sm:mb-2">
+                            <label for="name" class="text-white max-sm:text-sm">{{ __('Name') }} <span class="text-red-400">*</span></label>
 
                             <div class="mt-2">
                                 <input id="name" type="text" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
@@ -26,8 +26,8 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
-                            <label for="email" class="text-white max-sm:text-sm"> {{ __('Email Address') }}</label>
+                        <div class="row mb-3 max-sm:mb-2">
+                            <label for="email" class="text-white max-sm:text-sm"> {{ __('Email Address') }}<span class="text-red-400"> *</span></label>
 
                             <div class="mt-2">
                                 <input id="email" type="email" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
@@ -40,8 +40,23 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
-                            <label for="password" class="text-white max-sm:text-sm">{{ __('Password') }}</label>
+                        <div class="row mb-3 max-sm:mb-2">
+                            <label for="phoneNum" class="text-white max-sm:text-sm p_font"> {{ __('Phone Number') }}<span class="text-red-400"> *</span></label>
+
+                            <div class="mt-2">
+                                <input id="phoneNum" type="phoneNum" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('phoneNum') is-invalid @enderror" name="phoneNum" value="{{ old('phoneNum') }}" required autocomplete="phoneNum">
+
+                                @error('phoneNum')
+                                    <span class="invalid-feedback text-red-400 p_font font-light mt-5" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                        
+
+                        <div class="row mb-3 max-sm:mb-2">
+                            <label for="password" class="text-white max-sm:text-sm">{{ __('Password') }}<span class="text-red-400"> *</span></label>
 
                             <div class="mt-2">
                                 <input id="password" type="password" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
@@ -54,16 +69,30 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
-                            <label for="password-confirm" class="text-white max-sm:text-sm">{{ __('Confirm Password') }}</label>
+                        <div class="row mb-5 max-sm:mb-2">
+                            <label for="password-confirm" class="text-white max-sm:text-sm">{{ __('Confirm Password') }}<span class="text-red-400"> *</span></label>
 
                             <div class="mt-2">
                                 <input id="password-confirm" type="password" class="poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
+
+                        <div class="row mb-3 max-sm:mb-2">
+                            <label for="address" class="text-white max-sm:text-sm p_font"> {{ __('Complete Address') }}<span class="text-red-400"> *</span></label>
+
+                            <div class="mt-2">
+                                <input id="address" type="address" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="address">
+
+                                @error('address')
+                                    <span class="invalid-feedback text-red-400 p_font font-light mt-5" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
                         
                         <div class="row mb-8">
-                            <label for="user_type" class="text-white max-sm:text-sm">{{ __('Register as') }}</label>
+                            <label for="user_type" class="text-white max-sm:text-sm">{{ __('Register as') }}<span class="text-red-400"> *</span></label>
 
                             <div class="mt-2">
                                 <select id="user_type" name="user_type" required 
