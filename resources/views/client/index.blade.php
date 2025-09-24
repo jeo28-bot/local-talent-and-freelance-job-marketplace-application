@@ -34,7 +34,7 @@
                 </div>
                 <h2 class="sub_title_font text-xl text-center">View My Jobs</h2>
                 <p class="home_p_font text-center">Manage and track all your posted job listings</p>
-                <button class="mt-4 w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 button_font cursor-pointer">View All Jobs</button>
+                <a href="{{ route('client.postings') }}" class="{{ request()->routeIs('client.postings') ? 'selected_nav' : '' }} mt-4 w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 button_font cursor-pointer text-center">View All Jobs</a>
             </div>
 
             
@@ -47,7 +47,7 @@
                 </div>
                 <h2 class="sub_title_font text-xl text-center">View Applicants</h2>
                 <p class="home_p_font text-center">Review and manage applicants across all your jobs</p>
-                <button class="mt-4 w-full bg-red-400 text-white px-4 py-2 rounded-lg hover:bg-red-500 button_font cursor-pointer">View Applicants</button>
+                <a href="{{ route('client.applicants') }}" class="{{ request()->routeIs('client.applicants') ? 'selected_nav' : '' }} mt-4 w-full bg-red-400 text-white px-4 py-2 rounded-lg hover:bg-red-500 button_font cursor-pointer text-center">View Applicants</a>
             </div>
 
         </div>

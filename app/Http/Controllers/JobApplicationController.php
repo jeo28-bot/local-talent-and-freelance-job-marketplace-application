@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\JobApplication;
+use Illuminate\Support\Facades\Auth;
+
 
 class JobApplicationController extends Controller
 {
@@ -73,7 +75,19 @@ class JobApplicationController extends Controller
         return redirect()->back()->with('success', 'Application deleted successfully.');
     }
 
+    public function cancel($id)
+    {
+        $application = JobApplication::where('id', $id)
+            ->where('user_id', Auth::id()) // security: only cancel own application
+            ->firstOrFail();
 
+        $application->update([
+            'status' => 'cancelled'
+        ]);
 
+        return redirect()->back()->with('success', 'Application cancelled successfully.');
+    }
+    
+    
 
 }

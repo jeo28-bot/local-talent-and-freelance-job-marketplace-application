@@ -13,39 +13,40 @@
       the next step in your career journey.</h3>
       
       {{-- home input desktop view --}}
-      <div class="home_inputs_container flex mt-10 max-lg:mt-5 max-sm:flex-col max-sm:gap-4 border-2 border-gray-300 rounded-2xl shadow-lga items-center pr-3 max-sm:pr-0 max-[1155px]:hidden mb-20">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-5">
-          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-        </svg>
-        <input type="text" placeholder="Job title, keywords, or company" class="rounded-xl home_input px-6 py-6 max-sm:py-3 max-sm:px-3 max-sm:w-full pl-15 focus:outline-blue-500 w-[400px]">
-        <span class="w-[1px] h-[40px] bg-gray-500 opacity-50"></span>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-105">
-          <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-        </svg>
-        <input type="text" placeholder="Municipality, baranggay, zone" class="rounded-xl home_input px-6 py-6 max-sm:py-3 max-sm:px-3 max-sm:w-full mr-3 pl-15 focus:outline-blue-500  w-[400px]">
-        <button class="cursor-pointer button_font bg-[#1E2939] text-blue-400 px-5 py-4 max-sm:py-3 max-sm:px-5 max-sm:w-full rounded-xl hover:opacity-90">Search Jobs</button>
-      </div>
+      <form action="{{ route('employee.postings') }}" method="GET" class="home_inputs_container flex mt-10 max-lg:mt-5 max-sm:flex-col max-sm:gap-4 border-2 border-gray-300 rounded-2xl shadow-lga items-center pr-3 max-sm:pr-0 max-[1155px]:hidden mb-20">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-5">
+            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+          </svg>
+          <input type="text" name="q" placeholder="Job title, keywords, or company" class="rounded-xl home_input px-6 py-6 max-sm:py-3 max-sm:px-3 max-sm:w-full pl-15 focus:outline-blue-500 w-[400px]">
+          <span class="w-[1px] h-[40px] bg-gray-500 opacity-50"></span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-105">
+            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+          </svg>
+          <input type="text" name="location" placeholder="Municipality, baranggay, zone" class="rounded-xl home_input px-6 py-6 max-sm:py-3 max-sm:px-3 max-sm:w-full mr-3 pl-15 focus:outline-blue-500  w-[400px]">
+          <button class="cursor-pointer button_font bg-[#1E2939] text-blue-400 px-5 py-4 max-sm:py-3 max-sm:px-5 max-sm:w-full rounded-xl hover:opacity-90">Search Jobs</button>
+      </form>
 
       {{-- home input responsive --}}
-      <div class="w-2xl max-[715px]:w-full home_inputs_container flex flex-col mt-10 max-lg:mt-5 max-sm:gap-4 items-center min-[1155px]:hidden mb-20 gap-5">
+      <form action="{{ route('employee.postings') }}" method="GET" class="w-2xl max-[715px]:w-full home_inputs_container flex flex-col mt-10 max-lg:mt-5 max-sm:gap-4 items-center min-[1155px]:hidden mb-20 gap-5">
+          <div class="input_control w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-5 mt-5 max-sm:ml-3 max-sm:mt-4">
+              <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+            </svg>
+            <input type="text" name="q" placeholder="Job title, keywords, or company" class="w-full border-2 border-gray-500 rounded-xl home_input py-4 max-sm:pl-10 max-sm:py-3 max-lg:py-4  pl-15 focus:outline-blue-500 ">
+          </div>
+          
+          <div class="input_control w-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-5 mt-5 max-sm:ml-3 max-sm:mt-3.5">
+              <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+            </svg>
+            <input type="text" name="location" placeholder="Municipality, baranggay, zone" class="w-full border-2 border-gray-500 rounded-xl home_input py-4 max-sm:py-3 max-sm:pl-10 max-lg:py-4  pl-15 focus:outline-blue-500  ">
+          </div>
 
-        <div class="input_control w-full">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-5 mt-5 max-sm:ml-3 max-sm:mt-4">
-          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-        </svg>
-        <input type="text" placeholder="Job title, keywords, or company" class="w-full border-2 border-gray-500 rounded-xl home_input py-4 max-sm:pl-10 max-sm:py-3 max-lg:py-4  pl-15 focus:outline-blue-500 ">
-        </div>
-        
-        <div class="input_control w-full">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute ml-5 mt-5 max-sm:ml-3 max-sm:mt-3.5">
-          <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-        </svg>
-        <input type="text" placeholder="Municipality, baranggay, zone" class="w-full border-2 border-gray-500 rounded-xl home_input py-4 max-sm:py-3 max-sm:pl-10 max-lg:py-4  pl-15 focus:outline-blue-500  ">
-        </div>
+          <button class="w-full cursor-pointer button_font bg-[#1E2939] text-blue-400 px-5 py-4 max-sm:py-3 max-sm:px-5 rounded-xl hover:opacity-90">Search Jobs</button>
+        </form>
 
-        <button class="w-full cursor-pointer button_font bg-[#1E2939] text-blue-400 px-5 py-4 max-sm:py-3 max-sm:px-5 rounded-xl hover:opacity-90">Search Jobs</button>
-      </div>
 
+      {{-- browse category section --}}
       <h3 class="home_p_font text-black! text-center text-3xl max-lg:text-xl mb-3">Browse Categories</h3>
       <p class="home_p_font mb-5 text-center">Most popular categories of portal, sorted by popularity</p>
 

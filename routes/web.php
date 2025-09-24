@@ -8,6 +8,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobApplicationController;
+use App\Http\Controllers\ProfileController;
 
 
 Route::get('/', function () {
@@ -29,12 +30,13 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee/postings', [EmployeeController::class, 'postings'])->name('employee.postings');
     Route::get('/employee/transactions', [EmployeeController::class, 'transactions'])->name('employee.transactions');
     Route::get('/employee/jobs', [EmployeeController::class, 'jobs'])->name('employee.jobs');
+    Route::get('/employee/applied', [EmployeeController::class, 'applied'])->name('employee.applied');
     Route::get('/employee/saved', [EmployeeController::class, 'saved'])->name('employee.saved');
     Route::get('/employee/messages', [EmployeeController::class, 'messages'])->name('employee.messages');
     Route::get('/employee/notifications', [EmployeeController::class, 'notifications'])->name('employee.notifications');
     Route::get('/employee/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::get('/employee/jobs/{slug}', [EmployeeController::class, 'showJob'])->name('employee.jobs.show');
-    
+    Route::get('/employee/public_profile', [EmployeeController::class, 'public_profile'])->name('employee.public_profile');
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
@@ -98,6 +100,12 @@ Route::delete('/applications/{id}', [JobApplicationController::class, 'destroy']
 Route::post('/jobs/{job}/apply', [JobApplicationController::class, 'store'])
     ->name('applications.store')
     ->middleware('auth');
+Route::patch('/applications/{id}/cancel', [JobApplicationController::class, 'cancel'])
+    ->name('applications.cancel');
+Route::delete('/job-applications/{id}', [JobApplicationController::class, 'destroy'])->name('job-applications.destroy');
 
 
-
+// profile updates routes
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+Route::post('/profile/skills', [App\Http\Controllers\ProfileController::class, 'updateSkills'])->name('profile.updateSkills');
+Route::post('/profile/picture', [App\Http\Controllers\ProfileController::class, 'updatePicture'])->name('profile.updatePicture');

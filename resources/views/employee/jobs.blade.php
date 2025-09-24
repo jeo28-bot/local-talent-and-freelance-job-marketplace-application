@@ -100,10 +100,19 @@
 
                              </h4>
                         </div>
-                        {{-- apply button --}}
-                        <a id="quick_apply_button" class="lg:w-2xl sm:w-lg cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center">
-                        Quick Apply
-                        </a>
+                       {{-- apply button --}}
+                        @if($job->status === 'open')
+                            <a id="quick_apply_button" 
+                            class="lg:w-2xl sm:w-lg cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center">
+                            Quick Apply
+                            </a>
+                        @else
+                            <button disabled 
+                            class="lg:w-2xl sm:w-lg job_posting_button bg-gray-400 text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg opacity-60 cursor-not-allowed max-sm:text-sm max-sm:w-full text-center">
+                            Quick Apply
+                            </button>
+                        @endif
+
                     </div>
                     
                 </div>

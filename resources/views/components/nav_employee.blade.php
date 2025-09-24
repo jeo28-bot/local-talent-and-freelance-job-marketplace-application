@@ -15,6 +15,7 @@
             Home
         </a>
         <a href="{{ route('employee.postings') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.postings') ? 'selected_nav' : '' }}">Job Posting</a>
+        <a href="{{ route('employee.applied') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.applied') ? 'selected_nav' : '' }}">Job Applied</a>
         <a href="{{ route('employee.transactions') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.transactions') ? 'selected_nav' : '' }}">Transactions</a>
        </div>
       </div>
@@ -38,7 +39,7 @@
         </a>
 
         <a href="{{route('employee.profile')}}" class="pages_nav max-lg:hidden">
-          <img src="{{asset('assets/samplePerson.png')}}" alt="profile image" class="w-10 rounded-full border-2 border-white">
+          <img src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : asset('assets/defaultUserPic.png') }}"  alt="profile image" class="w-10 h-10 rounded-full border-2 border-gray-400 ">
         </a>
 
         <span class="cursor-pointer lg:hidden pages_nav hamburger_menu">

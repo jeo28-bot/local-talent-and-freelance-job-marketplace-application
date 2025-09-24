@@ -1,5 +1,8 @@
 console.log("client JS loaded");
 
+
+
+
 // HOME** post a job modal js
 let body = document.querySelector("body");
 let post_a_job_btn = document.getElementById("post_a_job");

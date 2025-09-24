@@ -6,6 +6,7 @@ use App\Models\JobPost;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\SavedJob;
+use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
@@ -13,10 +14,41 @@ class EmployeeController extends Controller
   public function index() {
         return view('employee.index');
     }
-   public function postings()
+   public function postings(Request $request)
     {
-        $posts = JobPost::paginate(3); 
+        $query = JobPost::with('client'); // eager load client for searching by name
+
+        // 🔎 Search filter (across multiple fields)
+        if ($request->filled('q')) {
+            $q = $request->q;
+
+            $query->where(function ($subQuery) use ($q) {
+                $subQuery->where('job_title', 'like', "%$q%")
+                    ->orWhere('job_type', 'like', "%$q%")
+                    ->orWhere('job_pay', 'like', "%$q%")
+                    ->orWhere('salary_release', 'like', "%$q%")
+                    ->orWhere('short_description', 'like', "%$q%")
+                    ->orWhere('skills_required', 'like', "%$q%")
+                    ->orWhere('status', 'like', "%$q%")
+                    ->orWhereHas('client', function ($clientQuery) use ($q) {
+                        $clientQuery->where('name', 'like', "%$q%");
+                    });
+            });
+        }
+
+        // 📍 Location filter (optional)
+        if ($request->filled('location')) {
+            $query->where('job_location', 'like', "%{$request->location}%");
+        }
+
+        // 📑 Pagination (3 per page just like your code)
+        $posts = $query->paginate(3);
+
         return view('employee.postings', compact('posts'));
+    }
+    public function public_profile()
+    {
+        return view('employee.public_profile');
     }
   public function transactions()
     {
@@ -26,6 +58,17 @@ class EmployeeController extends Controller
     {
         return view('employee.jobs');
     }
+    public function applied()
+    {
+        $applications = JobApplication::with(['job', 'user'])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->paginate(10); // ✅ only 10 per page
+
+        return view('employee.applied', compact('applications'));
+    }
+
+
   public function messages()
     {
         return view('employee.messages');
@@ -40,9 +83,17 @@ class EmployeeController extends Controller
     }
     public function showJob($slug)
     {
-        $job = JobPost::whereRaw("REPLACE(LOWER(job_title), ' ', '-') = ?", [$slug])->firstOrFail();
+        $job = JobPost::all()->first(function ($job) use ($slug) {
+            return Str::slug($job->job_title) === $slug;
+        });
+
+        if (!$job) {
+            abort(404);
+        }
+
         return view('employee.jobs', compact('job'));
     }
+
     // save function
       public function saved()
       {
@@ -78,6 +129,14 @@ class EmployeeController extends Controller
                     ->pluck('job'); // only return the JobPost models
 
         return view('employee.saved', compact('posts'));
+    }
+    public function appliedJobs()
+    {
+        $applications = JobApplication::where('user_id', auth()->id())
+            ->with('job') // eager load jobs
+            ->paginate(10); // only 10 per page
+
+        return view('employee.applied', compact('applications'));
     }
 
    

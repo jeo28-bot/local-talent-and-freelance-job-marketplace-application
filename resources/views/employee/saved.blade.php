@@ -24,6 +24,7 @@
                     <p class="text-gray-500 mt-1 home_p_font">Jobs you save will appear here.</p>
                 </div>
             @else
+
                 @foreach ($savedJobs as $job)
                     <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-5">
                             <div class="div_control mb-2 flex flex-row items-center justify-between">
@@ -127,6 +128,8 @@
 
                         </div>
                     </div>
+                
+                </div>
                 @endforeach
 
                 {{-- Pagination --}}

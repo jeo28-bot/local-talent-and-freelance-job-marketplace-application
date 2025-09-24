@@ -8,18 +8,36 @@
         
     <section class="w-full flex min-h-[80vh] flex-col items-center  px-20 max-lg:px-10 max-sm:px-5 max-sm:pt-5 pt-10">
         <div class="xl:w-6xl max-xl:w-full mx-auto px-5 max-sm:px-2 mb-10">
-            <div class="flex items-center justify-between max-sm:flex-col max-xl:items-start max-xl:mb-4 mb-5">
+            <div class="flex items-center justify-between max-xl:flex-col max-xl:items-start max-xl:mb-4 mb-5">
                 <div>
                     <h1 class="sub_title sm:text-xl">Job Posting</h1>
                     <p class="home_p_font mb-2 text-sm">Easily post your job openings and reach top candidates.</p>
                 </div>
 
-                <div class="max-sm:w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute mt-2 ml-2">
+                <div class="max-xl:w-full ml-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute mt-2 max-sm:mt-1.5 ml-2">
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" class="bg-white pl-10 py-2 max-sm:py-2.5 pr-20 rounded-lg shadow-sm max-sm:w-full p_font max-sm:text-sm" placeholder="Search job title, location, type, skills...">
-                    <button class="p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 absolute -ml-18 mt-1.5">Search</button>
+                    {{-- search inputs --}}
+                    <form action="{{ route('employee.postings') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font pr-2 max-sm:text-sm flex items-center">
+                            {{-- input 1 job title, skills, company --}}
+                            <input type="text" name="q" value="{{ request('q') }}" class=" max-xl:w-full pl-10 py-2  pr-5 rounded-lg p_font max-sm:text-sm" placeholder="Search job title, skills, company">
+                            
+                            <span class="w-[1px] h-[30px] bg-gray-500 opacity-50"></span>
+                        
+                         
+                        <div class="max-xl:w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 xl:hidden absolute mt-2 max-sm:mt-1.5 ml-2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                {{-- input 2 more on loction --}}
+                                <input type="text" name="location" value="{{ request('location') }}" class="max-xl:pl-10 max-xl:w-full pl-3 py-2  rounded-lg p_font max-sm:text-sm" placeholder="Remote, address, zone, block">
+                        </div>
+                    
+                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2">Search</button>
+                    </form>
+
                 </div>
             </div>
             
@@ -49,7 +67,7 @@
                         {{--  job posted cards --}}
                     <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-5">
                             <div class="div_control mb-2 flex flex-row items-center justify-between">
-                                <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}" 
+                                <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}"
                                 class="job_posting_title text-2xl max-sm:text-xl capitalize hover:opacity-70 hover:underline">
                                 {{ $post->job_title }}
                                 </a>
@@ -143,9 +161,12 @@
                                 {{-- button actions --}}
                                 <div class="flex gap-3 max-sm:flex-col max-sm:w-full max-lg:gap-2 ml-auto">
                                     <!-- edit details button -->
-                                    <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}" id="edit_job_button" class="edit_job_button job_posting_button cursor-pointer job_posting_button bg-[#1E2939] text-white px-5 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center max-lg:text-sm max-lg:px-4 max-lg:py-3">
-                                        Apply Now
-                                    </a>                      
+                                    <a href="{{ $post->status === 'open' ? route('employee.jobs.show', Str::slug($post->job_title)) : '#' }}"
+                                    class="job_posting_button px-5 py-3 rounded-lg text-white text-center 
+                                    {{ $post->status === 'open' ? 'bg-[#1E2939] hover:opacity-90 cursor-pointer' : 'bg-gray-400 opacity-60 cursor-not-allowed' }}">
+                                    Apply Now
+                                    </a>
+            
                                 </div>
 
                             </div>
@@ -157,30 +178,30 @@
 
                 
                 {{-- Custom Pagination --}}
-            @if ($posts->total() > 3)
-                <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
-                    <h3 class="home_p_font text-sm max-sm:text-xs">
-                        Showing {{ $posts->firstItem() ?? 0 }} to {{ $posts->lastItem() ?? 0 }} of {{ $posts->total() ?? 0 }} results
-                    </h3>
+                @if ($posts->total() > 3)
+                    <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
+                        <h3 class="home_p_font text-sm max-sm:text-xs">
+                            Showing {{ $posts->firstItem() ?? 0 }} to {{ $posts->lastItem() ?? 0 }} of {{ $posts->total() ?? 0 }} results
+                        </h3>
 
-                    <div class="flex ml-auto gap-2 max-sm:ml-0">
-                        {{-- Previous button --}}
-                        @if ($posts->onFirstPage())
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-3 rounded-lg text-sm max-sm:text-xs">Previous</button>
-                        @else
-                            <a href="{{ $posts->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-3 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Previous</a>
-                        @endif
+                        <div class="flex ml-auto gap-2 max-sm:ml-0">
+                            {{-- Previous button --}}
+                            @if ($posts->onFirstPage())
+                                <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-3 rounded-lg text-sm max-sm:text-xs">Previous</button>
+                            @else
+                                <a href="{{ $posts->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-3 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Previous</a>
+                            @endif
 
-                        {{-- Next button --}}
-                        @if ($posts->hasMorePages())
-                            <a href="{{ $posts->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
-                        @else
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
-                        @endif
+                            {{-- Next button --}}
+                            @if ($posts->hasMorePages())
+                                <a href="{{ $posts->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
+                            @else
+                                <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
+                            @endif
+                        </div>
                     </div>
-                </div>
-            @endif
-            
+                @endif
+                
 
 
 
