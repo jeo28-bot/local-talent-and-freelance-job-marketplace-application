@@ -10,7 +10,12 @@
         <div class="sm:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between">
             <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ Auth::user()->name }}</a>
-            <img src="{{asset('assets/samplePerson.png')}}" alt="profile pic" class="w-30 max-sm:w-20 rounded-full border-2 border-gray-400 my-3">
+
+             <img 
+                    src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : asset('assets/defaultUserPic.png') }}" 
+                    alt="profile pic" 
+                    class="profile_pic_clicked w-30 h-30 max-sm:w-20 max-sm:h-20 rounded-full border-3 bg-[#1e2939] border-gray-400 my-3 shadow-sm cursor-pointer">
+                    
             </div>
 
             {{-- mail, phone, address section --}}
@@ -64,114 +69,101 @@
             </div>
 
 
-        {{-- credentials section --}}
-        <div class="flex items-center justify-between ">
-          <h1 class="sub_title sm:text-2xl flex items-center gap-2 mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" />
-                <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
-                </svg>
-            Credentials</h1>
+        {{-- credentials Files, Images section --}}
+             <div class="mb-5">
+                {{-- file uploads --}}
+                <h1 class="sub_title_font text-1sm">File Uploads</h1>
+                    <div class="p-4 bg-gray-300 rounded-lg shadow-sm mb-4 flex flex-col gap-3">
+                        @forelse(auth()->user()->uploads->where('type','file') as $file)
+                        <div class="p_font flex items-center bg-white px-4 py-2 rounded-xl gap-2 shadow-sm cursor-pointer hover:bg-gray-200">
+                            {{-- File icon --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-8 max-sm:size-8 flex">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
 
-            <a id="edit_credentials" href="#" class="hover:opacity-60 hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
-            <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
-            </svg>
-            </a>
-        </div>
-            {{-- no credentials set yet --}}
-             <div class="flex flex-row flex-wrap gap-2 mb-10 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
-                <p class="home_p_font text-gray-600 italic">No credentials set yet. Click the edit icon to add your credentials.</p>
+                            {{-- File name (click to download) --}}
+                            <a href="{{ asset('storage/' . $file->path) }}" target="_blank"
+                            class="file_name hover:underline text-sm w-120 overflow-hidden text-nowrap">
+                                {{ $file->original_name }}
+                            </a>
+
+                            {{-- Ellipsis icon for delete menu --}}
+                            <button class="open-delete-modal cursor-pointer hidden" 
+                                    data-url="{{ route('uploads.destroy', $file->id) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                    class="size-8 max-sm:size-6 flex ml-auto hover:bg-red-400 rounded-full">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                </svg>
+                            </button>
+
+                        </div>
+                         @empty
+                            <div class="flex flex-row flex-wrap gap-2 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
+                                <p class="home_p_font text-gray-600 italic text-center">No file uploads yet. Click the edit icon to add your files.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                {{-- images uploads --}}
+                <h1 class="sub_title_font text-1sm">Image Uploads</h1>
+                    <div class="p-4 bg-gray-300 rounded-lg shadow-s mb-4">
+
+                        @php
+                            $images = auth()->user()->uploads->where('type', 'image');
+                        @endphp
+
+                        @if ($images->count() > 0)
+                            {{-- big preview (default to first image) --}}
+                            <div class="flex justify-end-safe">
+                            <img id="bigPreview"
+                                src="{{ Storage::url($images->first()->path) }}"
+                                alt="Preview"
+                                class="w-full rounded-lg shadow-lg cursor-pointer mb-2">
+                                {{-- image delete button --}}
+                                <button id="deleteImageBtn" type="button" class="absolute mt-2 mr- hidden">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-8 text-white max-sm:size-6 flex ml-auto hover:bg-red-400 rounded-full cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                </button>
+
+                            </div>
+
+                            {{-- thumbnails --}}
+                            <div class="flex justify-center items-center gap-4 overflow-auto p-3 bg-gray-200 shadow-sm rounded-lg">
+                                @foreach ($images as $img)
+                                    <img src="{{ Storage::url($img->path) }}"
+                                        alt="Thumbnail"
+                                        data-id="{{ $img->id }}"
+                                        class="w-32 rounded-lg shadow-lg cursor-pointer hover:scale-105 transition thumbnail">
+                                @endforeach
+                            </div>
+                            @else
+                                <div class="flex flex-row flex-wrap gap-2 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
+                                    <p class="home_p_font text-gray-600 italic text-center">No image uploads yet. Click the edit icon to add your files.</p>
+                                </div>
+                            @endif
+
+                    </div>
+
+
              </div>
-        
-
-            {{-- logout button --}}
-                <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm hidden">Log-out</button>
 
         </div>
         
      </section>
 
-     {{-- logout modal warning --}} 
-     <div id="logout_warning_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center hidden">
-        <div class=" px-5 py-3 bg-white rounded-xl">
-            <h2 class="text-xl sub_title_font font-semibold mb-2">Are you sure?</h2>
-            <p class="home_p_font text-gray-600 mb-5">You will be logged out of your account.</p>
+  
 
-            <div class="flex gap-2">
-                <button id="cancel_logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Cancel</button>
-
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
-                </form>
-            </div>
-        </div>
-     </div>
-
-
-     {{-- edit skill modal section --}}
-            <div class="modal_bg w-full min-h-screen fixed top-0 z-40 flex items-center justify-center hidden" id="edit_skill_modal">
-                <div class="bg-white rounded-xl p-5 w-96 max-sm:w-80">
-                    <h2 class="sub_title_font text-xl mb-3">Edit Skills</h2>
-                    <form action="#" method="POST" id="skill_form">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="skills" class="home_p_font mb-1 block">Add your skills (separate with commas)</label>
-                            <input type="text" name="skills" id="skills" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Freelance Photography, Nail Technician">
-                            {{-- added skills section --}}
-                            <div class="py-2 w-full flex flex-col gap-2 max-h-40 overflow-y-auto">
-                                <p id="added_skills" class="a_font text-sm px-4 py-2 bg-gray-300 rounded-lg w-full flex justify-between items-center">Freelance Photography
-                                 <svg id="delete_skill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 hover:text-red-400 cursor-pointer">
-                                <path fill-rule="evenodd" d="M2.515 10.674a1.875 1.875 0 0 0 0 2.652L8.89 19.7c.352.351.829.549 1.326.549H19.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-9.284c-.497 0-.974.198-1.326.55l-6.375 6.374ZM12.53 9.22a.75.75 0 1 0-1.06 1.06L13.19 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L15.31 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                                </p>
-
-                                <p id="added_skills" class="a_font text-sm px-4 py-2 bg-gray-300 rounded-lg w-full flex justify-between items-center">Nail Technician
-                                 <svg id="delete_skill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 hover:text-red-400 cursor-pointer">
-                                <path fill-rule="evenodd" d="M2.515 10.674a1.875 1.875 0 0 0 0 2.652L8.89 19.7c.352.351.829.549 1.326.549H19.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-9.284c-.497 0-.974.198-1.326.55l-6.375 6.374ZM12.53 9.22a.75.75 0 1 0-1.06 1.06L13.19 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L15.31 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                                </p>
-
-                                <p id="added_skills" class="a_font text-sm px-4 py-2 bg-gray-300 rounded-lg w-full flex justify-between items-center">Hairdresser
-                                 <svg id="delete_skill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 hover:text-red-400 cursor-pointer">
-                                <path fill-rule="evenodd" d="M2.515 10.674a1.875 1.875 0 0 0 0 2.652L8.89 19.7c.352.351.829.549 1.326.549H19.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-9.284c-.497 0-.974.198-1.326.55l-6.375 6.374ZM12.53 9.22a.75.75 0 1 0-1.06 1.06L13.19 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L15.31 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                                </p>
-
-                                <p id="added_skills" class="a_font text-sm px-4 py-2 bg-gray-300 rounded-lg w-full flex justify-between items-center">Hairdresser
-                                 <svg id="delete_skill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 hover:text-red-400 cursor-pointer">
-                                <path fill-rule="evenodd" d="M2.515 10.674a1.875 1.875 0 0 0 0 2.652L8.89 19.7c.352.351.829.549 1.326.549H19.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-9.284c-.497 0-.974.198-1.326.55l-6.375 6.374ZM12.53 9.22a.75.75 0 1 0-1.06 1.06L13.19 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L15.31 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                                </p>
-
-                                <p id="added_skills" class="a_font text-sm px-4 py-2 bg-gray-300 rounded-lg w-full flex justify-between items-center">Hairdresser
-                                 <svg id="delete_skill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 hover:text-red-400 cursor-pointer">
-                                <path fill-rule="evenodd" d="M2.515 10.674a1.875 1.875 0 0 0 0 2.652L8.89 19.7c.352.351.829.549 1.326.549H19.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-9.284c-.497 0-.974.198-1.326.55l-6.375 6.374ZM12.53 9.22a.75.75 0 1 0-1.06 1.06L13.19 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L15.31 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                                </p>
-
-                                <p id="added_skills" class="a_font text-sm px-4 py-2 bg-gray-300 rounded-lg w-full flex justify-between items-center">Hairdresser
-                                 <svg id="delete_skill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 hover:text-red-400 cursor-pointer">
-                                <path fill-rule="evenodd" d="M2.515 10.674a1.875 1.875 0 0 0 0 2.652L8.89 19.7c.352.351.829.549 1.326.549H19.5a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-9.284c-.497 0-.974.198-1.326.55l-6.375 6.374ZM12.53 9.22a.75.75 0 1 0-1.06 1.06L13.19 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06l1.72-1.72 1.72 1.72a.75.75 0 1 0 1.06-1.06L15.31 12l1.72-1.72a.75.75 0 1 0-1.06-1.06l-1.72 1.72-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                                </p>
-
-                                
-                                
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-end gap-2">
-                            <button type="button" id="cancel_skill_edit" class="bg-gray-300 cursor-pointer sub_title_font text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 max-sm:text-sm">Cancel</button>
-                            <button type="submit" class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Save</button>
-                        </div>
-                    </form>
-                </div>
-
-            </div>
+    
            
 @include('components.footer_employee')
-    
-<script src="{{ asset('js/employee.js') }}"></script>
+<script src="{{ asset('js/employee/public_profile.js') }}"></script>
+
 @endsection

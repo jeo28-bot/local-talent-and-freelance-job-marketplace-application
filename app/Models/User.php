@@ -50,9 +50,15 @@ class User extends Authenticatable
     }
 
    public function savedJobs()
-{
-    return $this->belongsToMany(JobPost::class, 'saved_jobs', 'user_id', 'job_post_id')->withTimestamps();
-}
+    {
+        return $this->belongsToMany(JobPost::class, 'saved_jobs', 'user_id', 'job_post_id')->withTimestamps();
+    }
+    
+    public function uploads()
+    {
+        return $this->hasMany(Upload::class);
+    }
+
 
 
 

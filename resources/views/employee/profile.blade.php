@@ -6,11 +6,11 @@
     @include('components.nav_employee')
 
 
-     <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
-        <div class="sm:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
-            <div class="flex items-center justify-between">
+     <section class="w-full min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
+        <div class="sm:w-xl lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
+            <div class="flex items-center justify-between flex-wrap">
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('employee.public_profile') }}" class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ Auth::user()->name }}</a>
+                    <a href="{{ route('employee.public_profile') }}" class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">{{ Auth::user()->name }}</a>
                     
                     {{-- edit user details button --}}
                     <a class="edit_details_button cursor-pointer hover:opacity-50">
@@ -98,37 +98,230 @@
                 </svg>
                 </a>
             </div>
-            {{-- no credentials set yet --}}
-             <div class="flex flex-row flex-wrap gap-2 mb-10 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
-                <p class="home_p_font text-gray-600 italic">No credentials set yet. Click the edit icon to add your credentials.</p>
+             
+             {{-- credentials Files, Images section --}}
+             <div class="mb-5">
+                {{-- file uploads --}}
+                <h1 class="sub_title_font text-1sm">File Uploads</h1>
+                    <div class="p-4 bg-gray-300 rounded-lg shadow-sm mb-4 flex flex-col gap-3">
+                        @forelse(auth()->user()->uploads->where('type','file') as $file)
+                        <div class="p_font flex items-center bg-white px-4 py-2 rounded-xl gap-2 shadow-sm cursor-pointer hover:bg-gray-200">
+                            {{-- File icon --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" class="size-8 max-sm:size-8 flex">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+
+                            {{-- File name (click to download) --}}
+                            <a href="{{ asset('storage/' . $file->path) }}" target="_blank"
+                            class="file_name hover:underline text-sm w-120 overflow-hidden text-nowrap">
+                                {{ $file->original_name }}
+                            </a>
+
+                            {{-- Ellipsis icon for delete menu --}}
+                            <button class="open-delete-modal cursor-pointer" 
+                                    data-url="{{ route('uploads.destroy', $file->id) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                    class="size-8 max-sm:size-6 flex ml-auto hover:bg-red-400 rounded-full">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                </svg>
+                            </button>
+
+                        </div>
+                         @empty
+                            <div class="flex flex-row flex-wrap gap-2 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
+                                <p class="home_p_font text-gray-600 italic text-center">No file uploads yet. Click the edit icon to add your files.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                {{-- images uploads --}}
+                <h1 class="sub_title_font text-1sm">Image Uploads</h1>
+                    <div class="p-4 bg-gray-300 rounded-lg shadow-s mb-4">
+
+                        @php
+                            $images = auth()->user()->uploads->where('type', 'image');
+                        @endphp
+
+                        @if ($images->count() > 0)
+                            {{-- big preview (default to first image) --}}
+                            <div class="flex justify-end-safe">
+                            <img id="bigPreview"
+                                src="{{ Storage::url($images->first()->path) }}"
+                                alt="Preview"
+                                class="w-full rounded-lg shadow-lg cursor-pointer mb-2">
+                                {{-- image delete button --}}
+                                <button id="deleteImageBtn" type="button" class="absolute mt-2 mr-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                        class="size-8 text-white max-sm:size-6 flex ml-auto hover:bg-red-400 rounded-full cursor-pointer">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                </button>
+
+                            </div>
+
+                            {{-- thumbnails --}}
+                            <div class="flex justify-center items-center gap-4 overflow-auto p-3 bg-gray-200 shadow-sm rounded-lg">
+                                @foreach ($images as $img)
+                                    <img src="{{ Storage::url($img->path) }}"
+                                        alt="Thumbnail"
+                                        data-id="{{ $img->id }}"
+                                        class="w-32 rounded-lg shadow-lg cursor-pointer hover:scale-105 transition thumbnail">
+                                @endforeach
+                            </div>
+                            @else
+                                <div class="flex flex-row flex-wrap gap-2 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
+                                    <p class="home_p_font text-gray-600 italic text-center">No image uploads yet. Click the edit icon to add your files.</p>
+                                </div>
+                            @endif
+
+                    </div>
+
+
              </div>
         
 
             {{-- logout button --}}
-            
                 <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
 
         </div>
         
      </section>
 
-     {{-- modal section --}}
-     {{-- logout modal warning --}} 
-     <div id="logout_warning_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center hidden">
-        <div class=" px-5 py-3 bg-white rounded-xl">
-            <h2 class="text-xl sub_title_font font-semibold mb-2">Are you sure?</h2>
-            <p class="home_p_font text-gray-600 mb-5">You will be logged out of your account.</p>
+            {{-- modal section --}}
 
-            <div class="flex gap-2">
-                <button id="cancel_logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Cancel</button>
+            {{-- delete image upload modal --}}
+            <div id="delete_image_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
+                <div class="px-5 py-3 bg-white rounded-xl -mt-20">
+                    <h2 class="text-xl sub_title_font font-semibold mb-2">Delete this image?</h2>
+                    <p class="home_p_font text-gray-600 mb-5">
+                        This action cannot be undone. <br>
+                        Are you sure you want to delete this image?
+                    </p>
 
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
-                </form>
+                    <div class="flex gap-2">
+                        <button id="cancel_delete_image" type="button"
+                            class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                            Cancel
+                        </button>
+
+                        <form id="confirm_delete_image_form" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" id="confirm_delete_image"
+                                class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-     </div>
+
+            {{-- delete file upload modal --}}
+            <div id="delete_file_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
+                <div class="px-5 py-3 bg-white rounded-xl -mt-20">
+                    <h2 class="text-xl sub_title_font font-semibold mb-2">Delete this file?</h2>
+                    <p class="home_p_font text-gray-600 mb-5">
+                        This action cannot be undone. <br>
+                        Are you sure you want to delete this file?
+                    </p>
+
+                    <div class="flex gap-2">
+                        <button id="cancel_delete_file" type="button"
+                            class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                            Cancel
+                        </button>
+
+                        <form id="confirm_delete_file_form" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" id="confirm_delete_file"
+                                class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ceredential uploads modal --}}
+            <div id="ceredential_uploads_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
+                <div class="w-lg px-5 py-3 bg-gray-200 rounded-xl -mt-10">
+                    <div class="flex items-center justify-between mb-2">
+                        <h1 class="p_font">Upload your credentials</h1>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_credential_upload" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-5 bg-gray-300!">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg shadow-sm">
+                        <form action="{{ route('profile.uploadFiles') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <h3 class="p_font mb-2">File Uploads</h3>
+                                <input 
+                                    id="fileInput"
+                                    name="files[]" 
+                                    type="file" 
+                                    multiple 
+                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                                        file:rounded-lg file:border-0
+                                        file:text-sm bg-gray-300 rounded-lg shadow-lg
+                                        file:bg-black file:text-white p_font
+                                        hover:file:bg-gray-500"
+                                />
+
+                                <!-- Uploaded files list -->
+                                <ul id="fileList" class="mt-4 space-y-2 mb-2"></ul>
+
+                            <h3 class="p_font mb-2">Image Uploads</h3>
+                                <div class="w-full max-w-md mx-auto">
+                                <input 
+                                    id="imageInput"
+                                    type="file" 
+                                    name="images[]" 
+                                    multiple 
+                                    accept="image/*"
+                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                                        file:rounded-lg file:border-0
+                                        file:text-sm bg-gray-300 rounded-lg shadow-lg
+                                        file:bg-black file:text-white p_font
+                                        hover:file:bg-gray-500"
+                                />
+
+                                <!-- Preview container -->
+                                <div id="imagePreview" class="mt-4 flex flex-wrap gap-3"></div>
+                                </div>
+                            
+                           
+                                <button type="submit"  id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex ml-auto ">Save</button>
+                        </form>
+
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            
+            {{-- logout modal warning --}} 
+            <div id="logout_warning_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center hidden">
+                <div class=" px-5 py-3 bg-white rounded-xl">
+                    <h2 class="text-xl sub_title_font font-semibold mb-2">Are you sure?</h2>
+                    <p class="home_p_font text-gray-600 mb-5">You will be logged out of your account.</p>
+
+                    <div class="flex gap-2">
+                        <button id="cancel_logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Cancel</button>
+
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                        <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
             {{-- edit user details modal --}}
             <div class="edit_user_details_modal modal_bg w-full min-h-screen fixed top-0 z-40 flex items-center justify-center px-5 hidden" id="edit_skill_modal">

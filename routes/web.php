@@ -109,3 +109,7 @@ Route::delete('/job-applications/{id}', [JobApplicationController::class, 'destr
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 Route::post('/profile/skills', [App\Http\Controllers\ProfileController::class, 'updateSkills'])->name('profile.updateSkills');
 Route::post('/profile/picture', [App\Http\Controllers\ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
+Route::post('/profile/upload-files', [ProfileController::class, 'uploadFiles'])->name('profile.uploadFiles');
+Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload'])
+    ->name('uploads.destroy');
+Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload'])->name('uploads.destroy');

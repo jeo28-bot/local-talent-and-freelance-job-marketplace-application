@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Upload;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
@@ -57,5 +58,61 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('success', 'Profile picture updated!');
     }
+
+    public function uploadFiles(Request $request)
+    {
+        $user = Auth::user();
+
+        // Validate files
+        $request->validate([
+            'files.*' => 'nullable|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // Handle general files
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('uploads/files', 'public');
+                $user->uploads()->create([
+                    'type' => 'file',
+                    'path' => $path,
+                    'original_name' => $file->getClientOriginalName(),
+                ]);
+            }
+        }
+
+        // Handle images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('uploads/images', 'public');
+                $user->uploads()->create([
+                    'type' => 'image',
+                    'path' => $path,
+                    'original_name' => $image->getClientOriginalName(),
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Files uploaded successfully!');
+    }
+    public function destroyUpload($id)
+    {
+        $upload = Upload::findOrFail($id);
+
+        // Make sure it’s the user’s file
+        if ($upload->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Delete file from storage
+        \Storage::delete($upload->path);
+
+        // Delete record from DB
+        $upload->delete();
+
+        return back()->with('success', 'File deleted successfully.');
+    }
+
+
 
 }
