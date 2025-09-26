@@ -37,6 +37,13 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::get('/employee/jobs/{slug}', [EmployeeController::class, 'showJob'])->name('employee.jobs.show');
     Route::get('/employee/public_profile', [EmployeeController::class, 'public_profile'])->name('employee.public_profile');
+
+    // web.php
+Route::get('/employee/public_profile/{name}', [EmployeeController::class, 'publicProfile'])
+    ->name('employee.public_profile');
+
+
+
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
@@ -47,6 +54,7 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client/messages', [ClientController::class, 'messages'])->name('client.messages');
     Route::get('/client/notifications', [ClientController::class, 'notifications'])->name('client.notifications');
     Route::get('/client/profile', [ClientController::class, 'profile'])->name('client.profile');
+    Route::get('/client/public_profile', [ClientController::class, 'public_profile'])->name('client.public_profile');
     
      // List all jobs page
     Route::get('/client/jobs', [ClientController::class, 'jobs'])->name('client.jobs');
@@ -113,3 +121,6 @@ Route::post('/profile/upload-files', [ProfileController::class, 'uploadFiles'])-
 Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload'])
     ->name('uploads.destroy');
 Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload'])->name('uploads.destroy');
+Route::post('/profile/about/update', [ProfileController::class, 'updateAbout'])
+    ->name('profile.updateAbout')
+    ->middleware('auth');

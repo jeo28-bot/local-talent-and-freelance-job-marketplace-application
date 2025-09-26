@@ -138,7 +138,23 @@ class EmployeeController extends Controller
 
         return view('employee.applied', compact('applications'));
     }
+    // EmployeeController
+    public function publicProfile($name)
+    {
+        $decodedName = urldecode($name);
+        $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
+
+        return view('employee.public_profile', compact('user'));
+    }
+
+
+
+
+
+
+
 
    
+
 
 }

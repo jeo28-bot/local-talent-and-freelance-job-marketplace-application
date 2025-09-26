@@ -14,7 +14,7 @@
                     {{-- for company profile --}}
                     <img src="{{asset('assets/sampleCompany.png')}}" alt="" class="border-2 rounded-xl border-gray-300 w-20 -mt-20 mb-5 max-sm:w-15 max-sm:-mt-16">
                     {{-- div for job title and save icon --}}
-                    <div class="div_control mb-2 flex flex-row items-center justify-between">
+                    <div class="div_control flex flex-row items-center justify-between">
                         <h1 class="job_posting_title text-2xl max-sm:text-xl">{{$job->job_title}}</h1>
                         @php
                             $isSaved = auth()->check() && auth()->user()->savedJobs->contains($job->id);
@@ -35,11 +35,18 @@
                             </button>
                         </form>
                     </div>
+                         <a href="{{ route('employee.public_profile', $job->client->name) }}"
+                            class="job_posting_company text-xl mb-2 max-sm:text-sm capitalize cursor-pointer hover:underline hover:text-blue-700! text-blue-500!">
+                            {{ $job->client->name }}
+                        </a>
+                        <br><br>
                     {{-- parent divv for location, job category --}}
                     <div class="flex  justify-between mb-5 max-sm:flex-col max-sm:gap-3 max-sm:mb-3">
                         {{-- div control for location and job cat --}}
                         <div class="flex flex-col gap-1">
                             {{-- for location --}}
+                           
+
                             <div class="flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-[#78818D] max-sm:size-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />

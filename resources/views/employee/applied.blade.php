@@ -36,7 +36,7 @@
                                     {{ $loop->iteration + ($applications->currentPage() - 1) * $applications->perPage() }}
                                 </td>
                                 <td class="px-4 py-2 p_font max-lg:text-sm">
-                                    <a href="#" class="hover:underline text-blue-700 hover:text-blue-400">
+                                    <a href="{{ route('employee.public_profile', $application->user->name) }}" class="hover:underline text-blue-700 hover:text-blue-400">
                                         {{ $application->user ? $application->user->name : 'N/A' }}
                                     </a>
                                 </td>

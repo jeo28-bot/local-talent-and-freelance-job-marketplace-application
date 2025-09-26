@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Upload;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -66,7 +67,7 @@ class ProfileController extends Controller
         // Validate files
         $request->validate([
             'files.*' => 'nullable|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-            'images.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         // Handle general files
@@ -113,6 +114,27 @@ class ProfileController extends Controller
         return back()->with('success', 'File deleted successfully.');
     }
 
+    public function updateAbout(Request $request)
+    {
+        $request->validate([
+            'about_details' => 'nullable|string|max:1000',
+        ]);
 
+        $user = Auth::user();
+        $user->about_details = $request->input('about_details');
+        $user->save();
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'about' => $user->about_details]);
+        }
+
+        return back()->with('success', 'About details updated!');
+    }
+    public function showPublicProfile($name)
+    {
+        // find the user by name
+        $user = User::where('name', $name)->firstOrFail();
+
+        return view('employee.public_profile', compact('user'));
+    }
 }

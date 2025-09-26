@@ -30,7 +30,7 @@
         </a>
 
         <a href="{{route('client.profile')}}" class="pages_nav max-lg:hidden">
-          <img src="{{asset('assets/samplePerson.png')}}" alt="profile image" class="w-10 rounded-full border-2 border-white">
+          <img src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : asset('assets/defaultUserPic.png') }}" alt="profile image" class="w-10 h-10 rounded-full border-2 border-gray-400">
         </a>
 
         <span class="cursor-pointer lg:hidden pages_nav hamburger_menu">

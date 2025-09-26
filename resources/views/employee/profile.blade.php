@@ -10,7 +10,13 @@
         <div class="sm:w-xl lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between flex-wrap">
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('employee.public_profile') }}" class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">{{ Auth::user()->name }}</a>
+                   <a href="{{ route('employee.public_profile', ['name' => Auth::user()->name]) }}"
+                    class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">
+                    {{ Auth::user()->name }}
+                    </a>
+
+
+
                     
                     {{-- edit user details button --}}
                     <a class="edit_details_button cursor-pointer hover:opacity-50">
@@ -27,10 +33,6 @@
                     class="profile_pic_clicked w-30 h-30 max-sm:w-20 max-sm:h-20 rounded-full border-3 bg-[#1e2939] border-gray-400 my-3 shadow-sm cursor-pointer">
              
             </div>
-
-            
-           
-
 
             {{-- mail, phone, address section --}}
             <p class="home_p_font mb-1 text-sm flex items-center gap-2">
@@ -50,9 +52,41 @@
                 </svg>
             {{ Auth::user()->address }}</p>
 
+            {{-- about section --}}
+            <div class="flex items-center justify-between mb-2">
+                <h1 class="sub_title sm:text-2xl flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                    </svg>
+
+                About</h1>
+
+                <button id="edit_about_button" href="#" class="hover:opacity-60 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-4">
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                    </svg>
+                </button>
+            </div>
+              {{-- about texts --}}
+                @if (!empty(auth()->user()->about_details))
+                    <div id="skills_added_table" class="flex flex-row flex-wrap gap-2 mb-10 bg-white px-5 py-3 rounded-lg shadow-sm">
+                        <p class="about_details_p p_font max-sm:text-sm">
+                            {!! nl2br(e(auth()->user()->about_details)) !!}
+                        </p>
+                    </div>
+                @else
+                    <div class="flex flex-row flex-wrap gap-2 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm mb-5">
+                        <p class="home_p_font text-gray-600 italic text-center">
+                             No about details added yet. Click the edit icon to add about details.
+                        </p>
+                    </div>
+                @endif
+
+
+
             {{-- skills section --}}
             <div class="flex items-center justify-between mb-2">
-            <h1 class="sub_title sm:text-2xl flex items-center gap-2">
+                <h1 class="sub_title sm:text-2xl flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
                     </svg>
@@ -70,7 +104,7 @@
                 @if(Auth::user()->skills)
                     <div class="flex gap-2 flex-wrap mt-3">
                         @foreach(explode(',', Auth::user()->skills) as $skill)
-                            <span class="p_font px-3 py-2 bg-gray-300 rounded-lg text-sm capitalize hover:bg-gray-200">
+                            <span class="p_font px-3 py-2 bg-white rounded-lg shadow-sm text-sm capitalize hover:bg-gray-200">
                                 {{ trim($skill) }}
                             </span>
                         @endforeach
@@ -102,7 +136,7 @@
              {{-- credentials Files, Images section --}}
              <div class="mb-5">
                 {{-- file uploads --}}
-                <h1 class="sub_title_font text-1sm">File Uploads</h1>
+                <h1 class="sub_title_font text-1sm max-sm:text-sm">File Uploads</h1>
                     <div class="p-4 bg-gray-300 rounded-lg shadow-sm mb-4 flex flex-col gap-3">
                         @forelse(auth()->user()->uploads->where('type','file') as $file)
                         <div class="p_font flex items-center bg-white px-4 py-2 rounded-xl gap-2 shadow-sm cursor-pointer hover:bg-gray-200">
@@ -139,7 +173,7 @@
                     </div>
 
                 {{-- images uploads --}}
-                <h1 class="sub_title_font text-1sm">Image Uploads</h1>
+                <h1 class="sub_title_font text-1sm max-sm:text-sm">Image Uploads</h1>
                     <div class="p-4 bg-gray-300 rounded-lg shadow-s mb-4">
 
                         @php
@@ -157,7 +191,7 @@
                                 <button id="deleteImageBtn" type="button" class="absolute mt-2 mr-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                        class="size-8 text-white max-sm:size-6 flex ml-auto hover:bg-red-400 rounded-full cursor-pointer">
+                                        class="size-8 text-white max-sm:size-6 flex ml-auto hover:bg-red-400 bg-[#0000005e] rounded-full cursor-pointer">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                     </svg>
@@ -165,15 +199,36 @@
 
                             </div>
 
+                            <!-- Fullscreen image modal -->
+                            <div id="imageModal" 
+                                class="fixed inset-0 bg-[#000000b0] flex items-center justify-center hidden z-50 py-20 px-5">
+                                <img id="modalImage" src="" 
+                                    class="max-w-full max-h-full rounded-lg shadow-lg">
+                                <button id="closeImageModal" 
+                                    class="absolute top-4 right-4 text-white text-3xl font-bold cursor-pointer hover:text-gray-400">
+                                    &times;
+                                </button>
+                            </div>
+
+
                             {{-- thumbnails --}}
-                            <div class="flex justify-center items-center gap-4 overflow-auto p-3 bg-gray-200 shadow-sm rounded-lg">
+                            <div class="flex gap-4 overflow-x-auto p-3 bg-gray-200 shadow-sm rounded-lg">
                                 @foreach ($images as $img)
-                                    <img src="{{ Storage::url($img->path) }}"
-                                        alt="Thumbnail"
-                                        data-id="{{ $img->id }}"
-                                        class="w-32 rounded-lg shadow-lg cursor-pointer hover:scale-105 transition thumbnail">
+                                    <div class="flex flex-col items-center">
+                                        <img src="{{ Storage::url($img->path) }}"
+                                            alt="{{ $img->original_name ?? 'Thumbnail' }}"
+                                            data-id="{{ $img->id }}"
+                                            class="w-32 h-32 flex-shrink-0 rounded-lg shadow-lg cursor-pointer hover:scale-105 transition thumbnail">
+
+                                        {{-- Show image name --}}
+                                        <p class="text-xs text-gray-600 mt-1 w-32 text-center truncate p_font">
+                                            {{ $img->original_name ?? 'Untitled' }}
+                                        </p>
+                                    </div>
                                 @endforeach
                             </div>
+
+
                             @else
                                 <div class="flex flex-row flex-wrap gap-2 bg-gray-300 px-10 py-5 rounded-lg max-sm:px-5 max-sm:text-sm">
                                     <p class="home_p_font text-gray-600 italic text-center">No image uploads yet. Click the edit icon to add your files.</p>
@@ -433,6 +488,37 @@
                             </form>
                     </div>
                 </div>  
+            </div>
+
+            {{-- edit about modal --}}
+            <div class="edit_user_about_modal modal_bg w-full min-h-screen fixed top-0 z-40 flex items-center justify-center px-5 hidden" id="edit_user_about_modal">
+                <div class="bg-gray-200 rounded-xl p-3 w-lg max-sm:w-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <h1 class="p_font">Edit user about details</h1>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_user_about_modal" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-5 bg-gray-300!">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+
+                   <form action="{{ route('profile.updateAbout') }}" method="POST" class="px-3 py-2 bg-white rounded-lg shadow-sm">
+                        @csrf
+
+                        <div class="input_control">
+                            <label for="about_details" class="p_font mb-2">About Details:</label>
+                            <textarea
+                                name="about_details"
+                                id="about_details"
+                                placeholder="Write something about yourself here..."
+                                class="p-2 shadow-sm w-full rounded-lg border-2 border-gray-400 mb-2 h-32">{{ old('about_details', auth()->user()->about_details) }}</textarea>
+                        </div>
+
+                        <div class="flex">
+                            <input type="submit" value="Save" class="save_user_about cursor-pointer bg-[#1E2939] text-white px-4 py-2 rounded-lg ml-auto p_font">
+                        </div>
+                    </form>
+
+
+                </div>
             </div>
            
 @include('components.footer_employee')

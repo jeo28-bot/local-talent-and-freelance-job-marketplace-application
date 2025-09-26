@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log('profile JS connected')
+console.log('hello from client profile.js')
+
     // edit details JS
     let edit_details_button = document.querySelector('.edit_details_button')
     let close_edit_user_details = document.querySelector('#close_edit_user_details')
@@ -13,18 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
         edit_user_details_modal.classList.add('hidden');
     })
 
-    // edit skills JS
-    let edit_skills_button = document.querySelector('#edit_skills_button')
-    let cancel_skill_edit = document.querySelector('#cancel_skill_edit')
-    let edit_skills_modal = document.querySelector('.edit_skills_modal')
 
-    edit_skills_button.addEventListener('click', ()=>{
-        edit_skills_modal.classList.remove('hidden')
-    })
-    cancel_skill_edit.addEventListener('click', ()=>{
-    edit_skills_modal.classList.add('hidden') 
-    })
-
+    // profile pic clicked JS
     let profile_pic_clicked = document.querySelector('.profile_pic_clicked')
     let profile_pic_modal = document.querySelector('.profile_pic_modal')
     let close_profile_pic_modal = document.querySelector('#close_profile_pic_modal')
@@ -37,6 +28,18 @@ document.addEventListener("DOMContentLoaded", () => {
         profile_pic_modal.classList.add('hidden')
     })
 
+    // about JS
+        let edit_about_button = document.querySelector('#edit_about_button')
+        let edit_user_about_modal = document.querySelector('.edit_user_about_modal')
+        let close_user_about_modal = document.querySelector('#close_user_about_modal')
+
+        edit_about_button.addEventListener('click',()=>{
+            edit_user_about_modal.classList.remove('hidden')
+        })
+        close_user_about_modal.addEventListener('click',()=>{
+            edit_user_about_modal.classList.add('hidden')
+        })
+    
     // file upload JS
     const fileInput = document.getElementById('fileInput');
     const fileList = document.getElementById('fileList');
@@ -242,19 +245,4 @@ document.addEventListener("DOMContentLoaded", () => {
                 imageModal.classList.add('hidden');
             }
         });
-
-        // about JS
-        let edit_about_button = document.querySelector('#edit_about_button')
-        let edit_user_about_modal = document.querySelector('.edit_user_about_modal')
-        let close_user_about_modal = document.querySelector('#close_user_about_modal')
-
-        edit_about_button.addEventListener('click',()=>{
-            edit_user_about_modal.classList.remove('hidden')
-        })
-        close_user_about_modal.addEventListener('click',()=>{
-            edit_user_about_modal.classList.add('hidden')
-        })
-
-
-    
-});
+})

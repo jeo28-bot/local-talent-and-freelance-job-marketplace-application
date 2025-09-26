@@ -36,6 +36,10 @@ class ClientController extends Controller
     {
         return view('client.applicants');
     }
+    public function public_profile()
+    {
+        return view('client.public_profile');
+    }
     
     public function showJob($slug)
     {
