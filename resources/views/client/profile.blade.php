@@ -10,7 +10,7 @@
         <div class="sm:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between flex-wrap">
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('client.public_profile') }}" class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">{{ Auth::user()->name }}</a>
+                    <a href="{{ route('client.public_profile', ['name' => Auth::user()->name]) }}" class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">{{ Auth::user()->name }}</a>
                     
                     {{-- edit user details button --}}
                     <a class="edit_details_button cursor-pointer hover:opacity-50">

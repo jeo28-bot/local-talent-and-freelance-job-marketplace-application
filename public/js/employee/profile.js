@@ -1,5 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log('profile JS connected')
+
+     // about JS
+        let edit_about_button = document.querySelector('#edit_about_button')
+        let edit_user_about_modal = document.querySelector('.edit_user_about_modal')
+        let close_user_about_modal = document.querySelector('#close_user_about_modal')
+
+        edit_about_button.addEventListener('click',()=>{
+            edit_user_about_modal.classList.remove('hidden')
+        })
+        close_user_about_modal.addEventListener('click',()=>{
+            edit_user_about_modal.classList.add('hidden')
+        })
+
+        
     // edit details JS
     let edit_details_button = document.querySelector('.edit_details_button')
     let close_edit_user_details = document.querySelector('#close_edit_user_details')
@@ -243,18 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // about JS
-        let edit_about_button = document.querySelector('#edit_about_button')
-        let edit_user_about_modal = document.querySelector('.edit_user_about_modal')
-        let close_user_about_modal = document.querySelector('#close_user_about_modal')
-
-        edit_about_button.addEventListener('click',()=>{
-            edit_user_about_modal.classList.remove('hidden')
-        })
-        close_user_about_modal.addEventListener('click',()=>{
-            edit_user_about_modal.classList.add('hidden')
-        })
-
+       
 
     
 });

@@ -32,18 +32,17 @@ class JobApplicationController extends Controller
     }
 
     public function indexForClient()
-    {
-        $clientId = auth()->id();
+{
+    $clientId = auth()->id();
 
-        $applications = \App\Models\JobApplication::with('job')
-            ->whereHas('job', function ($q) use ($clientId) {
-                $q->where('client_id', $clientId); // 🔥 FIXED
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+    $applications = JobApplication::with('job')
+    ->whereHas('job', fn($q) => $q->where('client_id', auth()->id()))
+    ->orderBy('created_at', 'desc')
+    ->paginate(10);
 
-        return view('client.applicants', compact('applications'));
-    }
+    return view('client.applicants', compact('applications'));
+}
+
     public function job()
     {
         return $this->belongsTo(\App\Models\JobPost::class, 'job_id');

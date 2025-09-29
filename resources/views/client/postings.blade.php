@@ -4,11 +4,11 @@
 
 @section('content')
     @include('components.nav_client')
-
+    
 
     <!-- main content -->
     <section class="w-full flex min-h-[80vh] flex-col items-center  px-20 max-lg:px-10 max-sm:px-5 max-sm:pt-5 pt-10">
-        <div class="xl:w-6xl max-xl:w-full mx-auto px-5 max-sm:px-2 mb-10">
+        <div class="xl:w-6xl max-xl:w-full mx-auto px-5 max-sm:px-1 mb-10">
             <div class="flex items-center justify-between max-sm:flex-col max-xl:items-start max-xl:mb-4 mb-5">
                 <div>
                     <h1 class="sub_title sm:text-xl">Job Posting</h1>
@@ -46,7 +46,7 @@
             {{-- job posted --}}
             @foreach($posts as $post)
             {{--  job posted cards --}}
-           <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-5">
+           <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-4">
                 <div class="div_control mb-2 flex flex-row items-center justify-between">
                     <a href="{{ route('client.jobs.show', Str::slug($post->job_title)) }}" 
                     class="job_posting_title text-2xl max-sm:text-xl capitalize hover:opacity-70 hover:underline">
@@ -67,7 +67,7 @@
 
                         </h4>
                 </div>
-                <h2 class="job_posting_company text-xl mb-2 max-sm:text-sm capitalize">{{ $post->client->name }}</h2>
+                <a href="{{ route('client.public_profile', $post->client->name) }}" class="job_posting_company text-xl mb-2 max-sm:text-sm capitalize cursor-pointer hover:underline hover:text-blue-700! text-blue-500!">{{ $post->client->name }}</a>
 
                 <div class="flex items-start  justify-between mb-4 max-sm:flex-col max-sm:gap-3 max-sm:mb-3">
                     <div class="flex flex-col gap-1">
@@ -182,12 +182,114 @@
         </div> 
     </section>
 
+    {{-- post job icon fixed --}}
+    <div class="fixed bottom-10 right-10 max-sm:bottom-5 max-sm:right-5 ">
+        <button id="post_a_job" class="job-post-btn bg-[#1e2939] p-2 rounded-xl cursor-pointer shadow-gray-400 shadow-sm hover:opacity-70 relative">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10 text-blue-400 max-sm:size-7">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+        </button>
+
+        <div id="tooltip-default" class="absolute bottom-full w-[100px] text-center mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50 p_font max-sm:text-xs max-sm:px-1 max-sm:w-[75px]">
+            Post a Job
+        </div>
+    </div>
 
 
 
+
+ 
+    
 
 
     {{-- modals section--}}
+
+    {{-- post a job modal --}}
+    <div class="modal_bg post_job_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 px-10 hidden">
+      {{-- menu control --}}
+        <div class="lg:w-3xl max-h-[80vh] overflow-y-auto mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal sub title and close button --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Enter complete job details to post</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_post_job" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-5 bg-gray-300!">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+            
+             <form action="{{ route('job_posts.store') }}" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm ">
+              @csrf
+                {{-- form fields --}}
+                <div class="input_control flex max-sm:flex-col gap-3 mb-3">
+                    <div class="input_group flex flex-col w-full">
+                        <label for="job_title" class="mb-1 home_p_font text-black! max-sm:text-sm">Job Title <span class="text-red-500">*</span></label>
+                        <input type="text" id="job_title" name="job_title" placeholder="Enter specific job title" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                    </div>
+                    <div class="input_group flex flex-col w-full">
+                        <label for="job_location" class="mb-1 home_p_font text-black! max-sm:text-sm">Location <span class="home_p_font">(address)</span> <span class="text-red-500">*</span></label>
+                        <input type="text" id="job_location" name="job_location" placeholder="Enter complete job location" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                    </div>
+                </div>
+
+                <div class="input_control flex max-sm:flex-col gap-3 mb-3">
+                    <div class="input_group flex flex-col w-full">
+                        <label for="job_type" class="mb-1 home_p_font text-black! max-sm:text-sm">Job Type <span class="text-red-500">*</span></label>  
+                        <select name="job_type" id="job_type" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" raequired>
+                            <option value="" disabled selected>Select job type</option>
+                            <option value="part-time">part-time</option>
+                            <option value="contractual">contractual</option>
+                            <option value="temporary">temporary</option>
+                            <option value="internship">internship</option>
+                            <option value="full-time">full-time</option>
+                        </select>
+
+                        
+                    </div>
+                    <div class="input_group flex flex-col w-full">
+                        <label for="job_pay" class="mb-1 home_p_font text-black! max-sm:text-sm">Pay <span class="text-red-500">*</span></label>
+                        <input type="number" id="job_pay" name="job_pay" placeholder="₱0.00" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                    </div>
+                </div>
+
+                <div class="input_control flex flex-col gap-3 mb-3 ">
+                    <div class="input_group flex flex-col w-full">
+                        <label for="salary_release" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary Release <span class="text-red-500">*</span></label>
+                        <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" raequired>
+                            <option value="" disabled selected>Select salary release</option>
+                            <option value="weekly">weekly</option>
+                            <option value="bi-weekly">bi-weekly</option>
+                            <option value="monthly">monthly</option>
+                            <option value="per-project">per-project</option>
+                        </select>
+
+                        
+                    </div>
+                    <div class="input_group flex flex-col w-full">
+                        <label for="skills_required" class="mb-1 home_p_font text-black! max-sm:text-sm">Skills Raequired <span class="text-red-500">*</span> <br><span class="home_p_font text-xs">Separate skills using comma (,)</span></label>
+                        <input type="text" id="skills_required" name="skills_required" placeholder="e.g. VA, HR, Data Entry" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                    </div>
+                </div>
+
+                <div class="input_control flex flex-col gap-3 mb-3 ">
+                    <div class="input_group flex flex-col w-full">
+                        <label for="short_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Short Job Description <span class="text-red-500">*</span></label>
+                        <textarea id="short_description" name="short_description" rows="2" placeholder="Provide a short job summary that will appear on the job card." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired></textarea>
+                    </div>
+                </div>
+
+                <div class="input_control flex flex-col gap-3 mb-3 ">
+                    <div class="input_group flex flex-col w-full">
+                        <label for="full_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Job Description <span class="text-red-500">*</span></label>
+                        <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired></textarea>
+                    </div>
+                </div>
+                
+                
+                <div class="flex">
+                <input type="submit" value="Post Job" class=" cursor-pointer bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto max-sm:w-full button_font">
+                </div>
+             </form>
+       </div>
+    </div>
 
     {{-- edit job modal --}}
     <div class="modal_bg edit_job_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 px-10 hidden">
@@ -340,6 +442,5 @@
 
     @include('components.footer_client')
 
-    
     <script src="{{ asset('js/client.js') }}"></script>
 @endsection

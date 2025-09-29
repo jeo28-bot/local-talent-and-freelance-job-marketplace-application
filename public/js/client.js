@@ -200,7 +200,19 @@ statusButtons.forEach(btn => {
     });
 });
 
+        // tooltip
+        const button = document.getElementById('post_a_job');
+        const tooltip = document.getElementById('tooltip-default');
 
+        button.addEventListener('mouseenter', () => {
+            tooltip.classList.remove('opacity-0', 'pointer-events-none');
+            tooltip.classList.add('opacity-100');
+        });
+
+        button.addEventListener('mouseleave', () => {
+            tooltip.classList.add('opacity-0', 'pointer-events-none');
+            tooltip.classList.remove('opacity-100');
+        });
 
 
 

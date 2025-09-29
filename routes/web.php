@@ -39,9 +39,9 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee/public_profile', [EmployeeController::class, 'public_profile'])->name('employee.public_profile');
 
     // web.php
-Route::get('/employee/public_profile/{name}', [EmployeeController::class, 'publicProfile'])
-    ->name('employee.public_profile');
-
+    Route::get('/employee/public_profile/{name}', [EmployeeController::class, 'publicProfile'])
+        ->name('employee.public_profile');
+    
 
 
 });
@@ -49,7 +49,8 @@ Route::get('/employee/public_profile/{name}', [EmployeeController::class, 'publi
 Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client.index');
     Route::get('/client/postings', [ClientController::class, 'postings'])->name('client.postings');
-    Route::get('/client/applicants', [ClientController::class, 'applicants'])->name('client.applicants');
+    Route::get('/client/applicants', [ClientController::class, 'applicants'])
+     ->name('client.applicants');
     Route::get('/client/transactions', [ClientController::class, 'transactions'])->name('client.transactions');
     Route::get('/client/messages', [ClientController::class, 'messages'])->name('client.messages');
     Route::get('/client/notifications', [ClientController::class, 'notifications'])->name('client.notifications');
@@ -62,6 +63,7 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     // Single job detail page
      Route::get('/client/jobs/{slug}', [ClientController::class, 'showJob'])->name('client.jobs.show');
 
+     Route::get('/client/public_profile/{name}', [ClientController::class, 'publicProfile'])->name('client.public_profile');
 });
 
 Route::get('/nav', function () {

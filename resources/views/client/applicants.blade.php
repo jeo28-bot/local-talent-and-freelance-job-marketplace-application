@@ -8,14 +8,14 @@
 
     <!-- main content -->
     <section class="w-full flex min-h-[80vh] flex-col items-center  px-20 max-lg:px-10 max-sm:px-5 pt-10 max-lg:pt-5">
-        <div class="xl:w-6xl  mx-auto px-5 max-sm:px-2 mb-10 w-full max-lg:px-0 ">
+        <div class="xl:w-6xl  mx-auto px-5 max-sm:px-2 mb-10 w-full max-lg:px-0">
             <h1 class="sub_title sm:text-xl">Applicants</h1>
             <p class="home_p_font mb-5 text-sm">Manage and review freelancers who applied to your job postings.</p>
 
             
             {{-- no applicants yet --}}
             @if ($applications->isEmpty())
-            <div class="w-full h-[300px] flex flex-col justify-center items-center border-2 border-dashed border-gray-400 rounded-lg mt-10 ">
+            <div class="w-full h-[300px] flex flex-col justify-center items-center border-2 border-dashed border-gray-400 rounded-lg mt-1">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-15 mb-2 text-gray-400">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                 </svg>
@@ -24,24 +24,28 @@
             @else
 
             {{-- table div --}}
-            <div id="table_div" class="overflow-x-auto shadow-lg rounded-lg ">
+            <div id="applicants_table" id="table_div" class="overflow-x-auto shadow-lg rounded-lg  mb-5">
             <table class="w-full min-w-[700px] shadow-lg rounded-lg overflow-hidden">
                 <thead class="bg-gray-200 ">
                     <tr class="bg-gray-300">
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">User Name</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Full Name</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Job Title</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Application Date</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Status</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Actions</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">View & Drop</th>
+                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">User Name</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Full Name</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Application Date</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Actions</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">View & Drop</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($applications as $application)
-                    <tr class="border-b-2 border-gray-300 py-2 hover:bg-gray-200 ">
+                    <tr  class="applicant_row border-b-2 border-gray-300 py-2 hover:bg-gray-200 ">
+                        <td class="px-4 py-2 p_font max-lg:text-sm home_p_font">
+                            {{ $loop->iteration + ($applications->currentPage() - 1) * $applications->perPage() }}
+                        </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
-                            <a href="#" class="underline text-blue-700 hover:text-blue-400">
+                            <a href="{{ route('client.public_profile', $application->user->name) }}" class="underline text-blue-700 hover:text-blue-400">
                                 {{ $application->user ? $application->user->name : $application->full_name }}
                             </a>
 
@@ -124,16 +128,48 @@
 
                     </tr>
                     @endforeach
-                    <!-- More rows as needed -->
+                    
                 </tbody>
             </table>
             </div>
             @endif
 
+     
+                {{-- Custom Pagination --}}
+            @if ($applications->total() > 10)
+                <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
+                    <h3 class="home_p_font text-sm max-sm:text-xs">
+                        Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
+                    </h3>
+
+                    <div class="flex ml-auto gap-2 max-sm:ml-0">
+                        {{-- Previous button --}}
+                        @if ($applications->onFirstPage())
+                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</button>
+                        @else
+                            <a href="{{ $applications->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</a>
+                        @endif
+
+                        {{-- Next button --}}
+                        @if ($applications->hasMorePages())
+                            <a href="{{ $applications->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
+                        @else
+                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            
+            
+
+            
             
 
         </div>
     </section>
+
+    
 
     {{-- modal section --}}
     {{-- view applicant details modal --}}

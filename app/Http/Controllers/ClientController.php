@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\JobPost; 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use App\Models\JobApplication;
+
 
 class ClientController extends Controller
 {
@@ -52,6 +55,15 @@ class ClientController extends Controller
 
         return view('client.jobs', compact('job'));
     }
+    // EmployeeController
+    public function publicProfile($name)
+    {
+        $decodedName = urldecode($name);
+        $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
+
+        return view('client.public_profile', compact('user'));
+    }
+
     
 }
 
