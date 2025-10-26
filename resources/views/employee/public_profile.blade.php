@@ -36,6 +36,85 @@
                 </svg>
             {{ $user->address }}</p>
 
+            {{-- follow, block, send message --}}
+            <div class="p_font flex gap-2 items-center mb-4">
+                <button class="px-2 py-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400
+                        @if(Auth::check() && Auth::user()->name === $user->name)
+                            opacity-50 cursor-not-allowed pointer-events-none
+                        @endif"
+                        @if(Auth::check() && Auth::user()->name === $user->name)
+                            disabled
+                            title="You can't block or report yourself 😅"
+                        @endif            
+                >
+                + Follow
+                </button>
+                @if(Auth::check() && Auth::user()->name !== $user->name)
+                    <a href="{{ route('employee.chat', ['name' => $user->name]) }}"
+                    class="px-2 py-2 bg-blue-300 rounded-lg cursor-pointer hover:bg-blue-400 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 
+                                1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133
+                                a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379
+                                c1.584-.233 2.707-1.626 2.707-3.228V6.741
+                                c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3
+                                c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/>
+                        </svg>
+                        Message
+                    </a>
+                @else
+                    <button disabled
+                        class="px-2 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 
+                                1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133
+                                a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379
+                                c1.584-.233 2.707-1.626 2.707-3.228V6.741
+                                c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3
+                                c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/>
+                        </svg>
+                        Message
+                    </button>
+                @endif
+                <button
+                        id="block_report_show"
+                        class="p-1 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 ml-auto
+                        @if(Auth::check() && Auth::user()->name === $user->name)
+                            opacity-50 cursor-not-allowed pointer-events-none
+                        @endif"
+                        @if(Auth::check() && Auth::user()->name === $user->name)
+                            disabled
+                            title="You can't block or report yourself 😅"
+                        @endif
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                </button>
+
+            </div>
+                {{-- block and report dropdown --}}
+                <div class="flex flex-col p-2 gap-2 p_font absolute -mt-3 ml-130 max-lg:right-15 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="block_report_dropdown">
+                    <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Block
+                    </button>
+                    <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                        </svg>
+                        Report
+                    </button>
+                </div>
+
         {{-- about section --}}
             <div class="flex items-center justify-between mb-2">
                 <h1 class="sub_title sm:text-2xl flex items-center gap-2">

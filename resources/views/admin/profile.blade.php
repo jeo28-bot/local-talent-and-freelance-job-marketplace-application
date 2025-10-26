@@ -1,16 +1,20 @@
 @extends('layouts.app')
 
-@section('body-class', 'bg-[#F0F0F0] ')
+@section('body-class', 'bg-[#F0F0F0]')
 
 @section('content')
-    @include('components.nav_employee')
+     @include('components.nav_admin')
 
 
-     <section class="w-full min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
-        <div class="sm:w-xl lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
+    <!-- main content -->
+    <section class="w-full  z-0">
+        <div class="pt-35 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
+            {{-- Contents --}}
+
+            <div class="sm:w-xl lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between flex-wrap">
                 <div class="flex items-center gap-2">
-                   <a href="{{ route('employee.public_profile', ['name' => Auth::user()->name]) }}"
+                   <a href="{{ route('admin.public_profile', ['name' => Auth::user()->name]) }}"
                     class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">
                     {{ Auth::user()->name }}
                     </a>
@@ -245,10 +249,15 @@
                 <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
 
         </div>
-        
-     </section>
+            
 
-            {{-- modal section --}}
+
+        </div>
+        
+    
+    </section>
+
+    {{-- modal section --}}
 
             {{-- delete image upload modal --}}
             <div id="delete_image_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
@@ -504,7 +513,7 @@
                         @csrf
 
                         <div class="input_control">
-                            <label for="about_details" class="p_font mb-2">About Details:</label>
+                            <label for="about_details" class="p _font mb-2">About Details:</label>
                             <textarea
                                 name="about_details"
                                 id="about_details"
@@ -523,8 +532,12 @@
 
             {{-- end of modal section --}}
            
-@include('components.footer_employee')
-<script src="{{ asset('js/employee.js') }}"></script>    
-<script src="{{ asset('js/employee/profile.js') }}"></script>
 
+
+
+    
+    <script src="{{ asset('js/employee.js') }}"></script>   
+    <script src="{{ asset('js/employee/profile.js') }}"></script>
+    <script src="{{ asset('js/admin/nav_admin.js') }}"></script>
 @endsection
+ 

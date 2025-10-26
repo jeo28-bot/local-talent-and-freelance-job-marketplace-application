@@ -135,7 +135,7 @@
             @endif
 
      
-                {{-- Custom Pagination --}}
+            {{-- Custom Pagination --}}
             @if ($applications->total() > 10)
                 <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
                     <h3 class="home_p_font text-sm max-sm:text-xs">

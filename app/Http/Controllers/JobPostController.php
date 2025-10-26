@@ -39,18 +39,32 @@ class JobPostController extends Controller
         return redirect()->route('client.postings')->with('success', 'Job post created successfully!');
     }
    
-    public function postings()
+    public function postings(Request $request)
     {
-        // Fetch jobs from logged-in client with pagination (3 per page)
-        $posts = JobPost::with('client')
-            ->where('client_id', Auth::id())
-            ->latest()
-            ->paginate(3);
+        $query = JobPost::with('client')->where('client_id', Auth::id());
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($subQuery) use ($q) {
+                $subQuery->where('job_title', 'like', "%$q%")
+                    ->orWhere('job_type', 'like', "%$q%")
+                    ->orWhere('job_pay', 'like', "%$q%")
+                    ->orWhere('salary_release', 'like', "%$q%")
+                    ->orWhere('short_description', 'like', "%$q%")
+                    ->orWhere('skills_required', 'like', "%$q%")
+                    ->orWhere('status', 'like', "%$q%");
+            });
+        }
+
+        if ($request->filled('location')) {
+            $query->where('job_location', 'like', "%{$request->location}%");
+        }
+
+        $posts = $query->latest()->paginate(3);
 
         return view('client.postings', compact('posts'));
-
-        
     }
+
 
     public function update(Request $request, JobPost $job)
     {

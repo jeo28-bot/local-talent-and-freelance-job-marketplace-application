@@ -121,3 +121,8 @@ label[for="message"],
     font-family: "Poppins", sans-serif;
     font-weight: 500;
 }
+/* admin CSS */
+.admin_selected_nav {
+    color: #1299f1;
+    background: #364153;
+}

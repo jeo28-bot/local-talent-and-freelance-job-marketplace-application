@@ -1,4 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {   
+        const block_report_dropdown = document.getElementById('block_report_dropdown');
+        const block_report_show = document.getElementById('block_report_show');
+
+        const currentURL = window.location.href.toLowerCase().replace(/\/$/, '');
+        const ownProfileURL = "{{ route('client.public_profile', ['name' => Auth::user()->name]) }}".toLowerCase().replace(/\/$/, '');
+
+        // Check if the current page includes the logged-in user's profile URL
+        const isOwnProfile = currentURL.includes(ownProfileURL);
+
+        if (isOwnProfile) {
+            // Disable the button visually and functionally
+            block_report_show.disabled = true;
+            block_report_show.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            block_report_show.title = "You can't block or report yourself 😅";
+
+            // Ensure dropdown is hidden and stays hidden
+            block_report_dropdown.classList.add('hidden');
+            return;
+        }
+
+        // Normal toggle for others
+        block_report_show.addEventListener('click', () => {
+            block_report_dropdown.classList.toggle('hidden');
+        });
+
+
      // big preview main image when clicked JS
         const bigPreview2 = document.getElementById('bigPreview');
         const imageModal = document.getElementById('imageModal');
@@ -54,5 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
             delelte_modal.classList.add('hidden');
         });
     
+
+       
        
 });

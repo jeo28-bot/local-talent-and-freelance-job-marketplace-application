@@ -6,7 +6,7 @@
      <!-- navigation bar -->
     <nav class="w-full  bg-[#1E2939] text-white flex items-center px-8 max-lg:py-4 max-lg:px-4 max-sm:px-2">
       <div class="flex items-center">
-       <img src="{{asset('assets/logoNoBg.png')}}" alt="logo image" class="w-65 max-xl:w-50 max-sm:w-40">
+        <a href="{{ route('client.index') }}"><img src="{{asset('assets/logoNoBg.png')}}" alt="logo image" class="w-65 max-xl:w-50 max-sm:w-40"></a>
 
        <div class=" flex ml-10 gap-5 max-lg:hidden">
         <a href="{{ route('client.index') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('client.index') ? 'selected_nav' : '' }}">Home</a>
@@ -21,6 +21,9 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
             <path fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0 1 12 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 0 1-3.476.383.39.39 0 0 0-.297.17l-2.755 4.133a.75.75 0 0 1-1.248 0l-2.755-4.133a.39.39 0 0 0-.297-.17 48.9 48.9 0 0 1-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97ZM6.75 8.25a.75.75 0 0 1 .75-.75h9a.75.75 0 0 1 0 1.5h-9a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H7.5Z" clip-rule="evenodd" />
           </svg>
+          {{-- new chat indecator --}}
+          <div id="newChatIndicator" class="p-1 bg-red-500 absolute rounded-full -mt-6 hidden">
+          </div>
         </a>
         <a id="notifIcon" href="{{ route('client.notifications') }}" class="pages_nav">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
@@ -54,11 +57,12 @@
             </span>
 
             <div class="flex flex-col h-full text-white pt-20 a_font">
-              <a href="{{ route('employee.index') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Home</a>
-              <a href="{{ route('employee.postings') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Job Posting</a>
-              <a href="{{ route('employee.transactions') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Transactions</a>
-              <a href="{{ route('employee.profile') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
-              <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Settings</a>
+              <a href="{{ route('client.index') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Home</a>
+              <a href="{{ route('client.postings') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Job Posting</a>
+              <a href="{{ route('client.applicants') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Applicants</a>
+              <a href="{{ route('client.transactions') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Transactions</a>
+              <a href="{{ route('client.profile') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
+              {{-- <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Settings</a> --}}
               {{-- logout --}}
               <a href="#" 
                 class="pages_nav border-b-1 px-5 py-3 border-gray-500"
@@ -75,4 +79,45 @@
             </div>
        </div>
     </div>
+
+
+
+    
+  {{-- red dot indicator JS --}}
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const newChatIndicator = document.getElementById('newChatIndicator');
+
+      // Helper: detect if user is currently on a chat page
+      const isOnChatPage = window.location.pathname.includes('/client/chat/');
+
+      async function checkNewMessages() {
+          try {
+              const response = await fetch("{{ route('client.messages.fetch') }}");
+              const data = await response.json();
+
+              // Show red dot if there's a new message NOT from you
+              const hasNewMessage = data.some(chat => 
+                  chat.latest_message && !chat.latest_message.startsWith('You:')
+              );
+
+              // 👇 Only show the indicator if:
+              // 1. There is a new message, AND
+              // 2. You're NOT currently viewing a chat page
+              if (hasNewMessage && !isOnChatPage) {
+                  newChatIndicator.classList.remove('hidden');
+              } else {
+                  newChatIndicator.classList.add('hidden');
+              }
+
+          } catch (err) {
+              console.error('Error checking new messages:', err);
+          }
+      }
+
+      // Run on load + every 3 seconds
+      checkNewMessages();
+      setInterval(checkNewMessages, 3000);
+  });
+  </script>
 

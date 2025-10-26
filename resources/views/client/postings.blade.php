@@ -15,13 +15,35 @@
                     <p class="home_p_font mb-2 text-sm">Easily post your job openings and reach top candidates.</p>
                 </div>
 
-                <div class="max-sm:w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute mt-2 ml-2">
+                {{-- search input div --}}
+                <div class="max-xl:w-full ml-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute mt-2 max-sm:mt-2 ml-2 max-sm:size-5 max-sm:ml-1.5">
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" class="bg-white pl-10 py-2 pr-20 rounded-lg shadow-sm max-sm:w-full p_font max-sm:text-sm" placeholder="Search job title, location, type, skills...">
-                    <button class="p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 absolute -ml-18 mt-1.5">Search</button>
+                    {{-- search inputs --}}
+                    <form action="{{ route('client.postings') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font pr-2 max-sm:text-sm flex items-center">
+                            {{-- input 1 job title, skills, company --}}
+                            <input type="text" name="q" value="{{ request('q') }}" class=" max-xl:w-full pl-10 max-sm:pl-7 py-2  pr-5 rounded-lg p_font max-sm:text-sm" placeholder="Search job title, skills, company">
+                            
+                            <span class="w-[1px] h-[30px] bg-gray-500 opacity-50"></span>
+                        
+                         
+                        <div class="max-xl:w-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 xl:hidden absolute mt-2 max-sm:mt-2 ml-2 max-sm:ml-1 max-sm:size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                                </svg>
+                                {{-- input 2 more on loction --}}
+                                <input type="text" name="location" value="{{ request('location') }}" class="max-xl:pl-10 max-xl:w-full pl-3 py-2 max-sm:pl-7 rounded-lg p_font max-sm:text-sm" placeholder="Remote, address, zone, block">
+                        </div>
+                    
+                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2">Search</button>
+                    </form>
+
                 </div>
+
+                
+
             </div>
 
             {{-- no job posted yet message --}}
@@ -104,7 +126,7 @@
                     <div class="div_control max-sm:w-full max-sm:mb-3 ">
                         <div class="div_control flex gap-2 mb-4 max-sm:gap-1 flex-wrap ">
                             @foreach(explode(',', $post->skills_required) as $skill)
-                                <h3 class="px-3 py-1 bg-gray-200 rounded-lg job_posting_company hover:bg-gray-300 hover:text-gray-300 max-sm:text-sm max-sm:px-2 capitalize">
+                                <h3 class="px-3 py-1 bg-gray-200 rounded-lg job_posting_company hover:bg-gray-300 hover:text-gray-300 max-sm:text-xs max-sm:px-2 capitalize">
                                     {{ trim($skill) }}
                                 </h3>
                             @endforeach
@@ -148,6 +170,8 @@
                 
            </div>
            @endforeach
+
+           
 
            @endif
 

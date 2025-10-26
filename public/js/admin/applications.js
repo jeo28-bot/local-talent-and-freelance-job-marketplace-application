@@ -1,5 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const viewButtons = document.querySelectorAll(".view_applicant_button");
+const viewButtons = document.querySelectorAll(".view_applicant_button");
   const modal = document.getElementById("view_applicant");
   const closeBtns = document.querySelectorAll(".close_view_applicant");
 
@@ -69,13 +68,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelBtn = document.getElementById("cancel_delete_applicant");
     const confirmBtn = document.getElementById("delete_applicant");
 
-    let formToSubmit = null; // store form reference
+    let formToSubmit = null;
 
     // Open modal
     document.querySelectorAll(".open-delete-modal").forEach(btn => {
         btn.addEventListener("click", (e) => {
+            e.preventDefault(); // ⛔ stop form from auto-submitting
             formToSubmit = e.target.closest("form"); // get the form of clicked delete button
-            delete_job_warning.classList.remove("hidden");
+            delete_job_warning.classList.remove("hidden"); // show modal
         });
     });
 
@@ -88,10 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Confirm delete
     confirmBtn.addEventListener("click", () => {
         if (formToSubmit) {
-            formToSubmit.submit();
+            formToSubmit.submit(); // ✅ now manually submit after confirmation
         }
     });
 
- 
-    
-});

@@ -7,7 +7,7 @@
 
 
      <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
-        <div class="sm:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
+        <div class="lg:w-2xl sm:w-xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between flex-wrap">
                 <div class="flex items-center gap-2">
                     <a href="{{ route('client.public_profile', ['name' => Auth::user()->name]) }}" class="sub_title sm:text-4xl text-2xl hover:underline cursor-pointer">{{ Auth::user()->name }}</a>

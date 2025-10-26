@@ -1,5 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log('profile JS connected')
+    
+    // delete user JS
+        const deleteUserBtn = document.getElementById("delete_user");
+        const deleteWarningModal = document.getElementById("delete_job_warning");
+        const cancelDeleteBtn = document.getElementById("cancel_delete_applicant");
+
+        // Show modal when "Delete" clicked
+        deleteUserBtn?.addEventListener("click", () => {
+            deleteWarningModal.classList.remove("hidden");
+        });
+
+        // Hide modal when "Cancel" clicked
+        cancelDeleteBtn?.addEventListener("click", () => {
+            deleteWarningModal.classList.add("hidden");
+        });
+
+        // Optional: Hide when clicking outside modal
+        deleteWarningModal?.addEventListener("click", (e) => {
+            if (e.target === deleteWarningModal) {
+                deleteWarningModal.classList.add("hidden");
+            }
+        });
 
      // about JS
         let edit_about_button = document.querySelector('#edit_about_button')
@@ -224,9 +246,18 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteBtn.addEventListener('click', () => {
             if (!currentId) return;
             delelte_modal.classList.remove('hidden');
-            // set form action dynamically
-            delete_deleteForm.action = `/profile/uploads/${currentId}`;
+
+            const currentUrl = window.location.pathname;
+
+            // check if this page belongs to admin editing
+            if (currentUrl.includes('/admin/edit_profile/')) {
+                const name = currentUrl.split('/admin/edit_profile/')[1]; // get the {name} from URL
+                delete_deleteForm.action = `/admin/uploads/${name}/${currentId}`;
+            } else {
+                delete_deleteForm.action = `/profile/uploads/${currentId}`;
+            }
         });
+
 
         // cancel delelte_modal
         delelte_cancelBtn.addEventListener('click', () => {
@@ -257,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-       
-
+        
+        
     
 });

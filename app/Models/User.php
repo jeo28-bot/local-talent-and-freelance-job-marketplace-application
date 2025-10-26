@@ -23,9 +23,10 @@ class User extends Authenticatable
         'email',
         'password',
         'user_type',
+        'status',
         'phoneNum',   
         'address',
-        'about_details',    
+        'about_details',  
     ];
 
     /**
@@ -68,6 +69,16 @@ class User extends Authenticatable
                 $user->slug = Str::slug($user->name);
             }
         });
+    }
+
+    public function messagesSent()
+    {
+        return $this->hasMany(\App\Models\Message::class, 'sender_id');
+    }
+
+    public function messagesReceived()
+    {
+        return $this->hasMany(\App\Models\Message::class, 'receiver_id');
     }
 
 

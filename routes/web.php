@@ -9,6 +9,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChatController;
 
 
 Route::get('/', function () {
@@ -22,6 +23,36 @@ Auth::routes();
 
 Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::get('/admin/jobs', [AdminController::class, 'jobs'])->name('admin.jobs');
+    Route::get('/admin/applications', [AdminController::class, 'applications'])->name('admin.applications');
+    Route::get('/admin/jobs/{title}', [AdminController::class, 'showJob'])
+    ->name('admin.jobs.show');
+    Route::get('/admin/job_post', [AdminController::class, 'job_post'])->name('admin.job_post');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::get('/admin/profile', [AdminController::class, 'profile'])->name('admin.profile');
+    Route::get('/admin/users/export', [AdminController::class, 'export'])->name('admin.users.export');
+    Route::get('/admin/public_profile/{name}', [AdminController::class, 'public_profile'])
+    ->name('admin.public_profile');
+    Route::get('/admin/edit_profile/{name}', [AdminController::class, 'edit_profile'])
+    ->name('admin.edit_profile');
+    Route::put('/admin/update_profile/{name}', [AdminController::class, 'update_profile'])
+    ->name('admin.update_profile');
+    Route::post('/admin/update_profile_picture/{name}', [AdminController::class, 'update_profile_picture'])
+    ->name('admin.update_profile_picture');
+    Route::post('/admin/update_about/{name}', [AdminController::class, 'update_about'])
+    ->name('admin.update_about');
+    Route::post('/admin/update_skills/{name}', [AdminController::class, 'update_skills'])
+    ->name('admin.update_skills');
+    Route::post('/admin/upload-files/{name}', [AdminController::class, 'upload_files'])
+    ->name('admin.upload_files');
+    Route::delete('/admin/uploads/{name}/{id}', [AdminController::class, 'destroy_upload'])
+    ->name('admin.uploads.destroy');
+    Route::delete('/admin/uploads/{name}/{id}', [AdminController::class, 'destroy_upload'])
+    ->name('admin.uploads.destroy');
+    Route::delete('/admin/delete/{name}', [AdminController::class, 'delete_user'])->name('admin.delete_user');
+    Route::get('/admin/job_post/export', [AdminController::class, 'exportJobPosts'])->name('admin.job_post.export');
+    Route::delete('/admin/job_post/{id}', [AdminController::class, 'destroyJobPost'])->name('admin.job_post.destroy');
+    Route::get('/admin/applications/export', [AdminController::class, 'exportApplications'])->name('admin.applications.export');
 
 });
 
@@ -41,14 +72,21 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     // web.php
     Route::get('/employee/public_profile/{name}', [EmployeeController::class, 'publicProfile'])
         ->name('employee.public_profile');
-    
+    Route::get('/employee/chat/{name}', [ChatController::class, 'show'])->name('employee.chat');
+    Route::post('/employee/chat/{name}/send', [ChatController::class, 'sendMessage'])->name('employee.chat.send');
+    Route::get('/employee/chats', [ChatController::class, 'index'])->name('employee.chats');
+    Route::get('/employee/chat/{name}/messages', [ChatController::class, 'getMessages'])->name('employee.chat.messages');
+    Route::get('/employee/chat/{name}/messages', [ChatController::class, 'fetchMessages'])->name('employee.chat.messages');
+    Route::delete('/employee/chat/{name}/delete', [ChatController::class, 'deleteChat'])->name('employee.chat.delete');
 
+    Route::get('/employee/messages', [ChatController::class, 'employeeMessages'])->name('employee.messages');
+    Route::get('/employee/messages/fetch', [ChatController::class, 'fetchEmployeeMessages'])->name('employee.messages.fetch');
 
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client', [ClientController::class, 'index'])->name('client.index');
-    Route::get('/client/postings', [ClientController::class, 'postings'])->name('client.postings');
+    Route::get('/client/postings', [JobPostController::class, 'postings'])->name('client.postings');
     Route::get('/client/applicants', [ClientController::class, 'applicants'])
      ->name('client.applicants');
     Route::get('/client/transactions', [ClientController::class, 'transactions'])->name('client.transactions');
@@ -64,6 +102,17 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
      Route::get('/client/jobs/{slug}', [ClientController::class, 'showJob'])->name('client.jobs.show');
 
      Route::get('/client/public_profile/{name}', [ClientController::class, 'publicProfile'])->name('client.public_profile');
+     Route::get('/client/chat/{name}', [ChatController::class, 'show'])->name('client.chat');
+     Route::post('/client/chat/{name}/send', [ChatController::class, 'sendMessage'])->name('client.chat.send');
+    Route::get('/client/chats', [ChatController::class, 'index'])->name('client.chats');
+    Route::get('/client/chat/{name}/messages', [ChatController::class, 'getMessages'])->name('client.chat.messages');
+    Route::get('/client/chat/{name}/messages', [ChatController::class, 'fetchMessages'])->name('client.chat.messages');
+    Route::delete('/client/chat/{name}/delete', [ChatController::class, 'deleteChat'])->name('client.chat.delete');
+    Route::get('/client/messages', [ChatController::class, 'recentMessages'])->name('client.messages');
+    Route::get('client/messages/fetch', [ChatController::class, 'fetchRecentChats'])->name('client.messages.fetch');
+    Route::get('/client/messages', [ChatController::class, 'clientMessages'])->name('client.messages');
+    Route::get('/client/messages/fetch', [ChatController::class, 'fetchRecentChats'])->name('client.messages.fetch');
+
 });
 
 Route::get('/nav', function () {
@@ -120,9 +169,8 @@ Route::post('/profile/update', [ProfileController::class, 'update'])->name('prof
 Route::post('/profile/skills', [App\Http\Controllers\ProfileController::class, 'updateSkills'])->name('profile.updateSkills');
 Route::post('/profile/picture', [App\Http\Controllers\ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
 Route::post('/profile/upload-files', [ProfileController::class, 'uploadFiles'])->name('profile.uploadFiles');
-Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload'])
-    ->name('uploads.destroy');
 Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload'])->name('uploads.destroy');
+
 Route::post('/profile/about/update', [ProfileController::class, 'updateAbout'])
     ->name('profile.updateAbout')
     ->middleware('auth');
