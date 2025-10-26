@@ -111,7 +111,7 @@
                             <td class="px-4 py-2 p_font max-lg:text-sm">
                                  {{ $application->created_at->format('M d, Y') }}
                             </td>
-                            <td class="px-4 py-2 p_font max-lg:text-sm capitalize">
+                            <td class="px-4 py-2 p_font max-lg:text-git sm capitalize">
                                 <span class="p-2 rounded-lg border-1 
                                     @if($application->status === 'pending') text-orange-600  bg-orange-200  border-orange-500
                                     @elseif($application->status === 'accepted') text-green-600 bg-green-200  border-green-500
