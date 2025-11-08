@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\transaction;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Models\Upload;
 use App\Models\JobPost;
 use App\Models\JobApplication;
+use Illuminate\Support\Facades\Response;
+use App\Models\Message;
 
 
 class AdminController extends Controller
@@ -19,42 +22,90 @@ class AdminController extends Controller
         return view('admin.index');
     }
     public function applications(Request $request)
-{
-    $query = JobApplication::with(['user', 'job'])->orderBy('created_at', 'desc');
+    {
+        $query = JobApplication::with(['user', 'job'])->orderBy('created_at', 'desc');
 
-    if ($request->filled('search')) {
-        $search = $request->input('search');
+        if ($request->filled('search')) {
+            $search = $request->input('search');
 
-        $query->where(function ($q) use ($search) {
-            // Search within JobApplication table
-            $q->where('full_name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%")
-              ->orWhere('phone_num', 'like', "%{$search}%")
-              ->orWhere('status', 'like', "%{$search}%");
-        })
-        // Search related user (the one who posted the job)
-        ->orWhereHas('user', function ($q) use ($search) {
-            $q->where('name', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
-        })
-        // Search related job
-        ->orWhereHas('job', function ($q) use ($search) {
-            $q->where('job_title', 'like', "%{$search}%");
-        });
+            $query->where(function ($q) use ($search) {
+                // Search within JobApplication table
+                $q->where('full_name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('phone_num', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%");
+            })
+            // Search related user (the one who posted the job)
+            ->orWhereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            })
+            // Search related job
+            ->orWhereHas('job', function ($q) use ($search) {
+                $q->where('job_title', 'like', "%{$search}%");
+            });
+        }
+
+        $applications = $query->paginate(10);
+
+        return view('admin.applications', compact('applications'));
     }
-
-    $applications = $query->paginate(10);
-
-    return view('admin.applications', compact('applications'));
-}
-
-
-
-
      public function jobs() {
 
         return view('admin.jobs');
     }
+    public function transactions(Request $request)
+    {
+        $query = \App\Models\Transaction::with(['employee', 'client']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', str_replace('2025', '', $search)) // ✅ handle "2025xxx" format
+                    ->orWhereHas('employee', function ($sub) use ($search) {
+                        $sub->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('client', function ($sub) use ($search) {
+                        $sub->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('job_title', 'like', "%{$search}%")
+                    ->orWhere('amount', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhere('payment_method', 'like', "%{$search}%")
+                    ->orWhere('reference_no', 'like', "%{$search}%")
+                    ->orWhere('transaction_ref_no', 'like', "%{$search}%");
+            });
+        }
+
+        $transactions = $query->latest()->paginate(10);
+        $transactions->appends(['search' => $request->search]);
+
+        return view('admin.transactions', compact('transactions'));
+    }
+
+    public function updateTransactionStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,requested,completed',
+        ]);
+
+        $transaction = Transaction::findOrFail($id);
+        $transaction->status = $request->status;
+        $transaction->save();
+
+        return redirect()->back()->with('success', 'Transaction status updated successfully!');
+    }
+    public function destroy($id)
+    {
+        $transaction = Transaction::findOrFail($id);
+        $transaction->delete();
+
+        return redirect()->back()->with('success', 'Transaction deleted successfully!');
+    }
+
+
+
     public function showJob($title)
     {
         // decode + to spaces
@@ -93,6 +144,14 @@ class AdminController extends Controller
         $jobPosts = $query->paginate(10)->appends(['search' => $search]); // keep search term when paginating
 
         return view('admin.job_post', compact('jobPosts'));
+    }
+    public function updateJobStatus(Request $request, $id)
+    {
+        $job = \App\Models\JobPost::findOrFail($id);
+        $job->status = $request->input('status');
+        $job->save();
+
+        return redirect()->back()->with('success', 'Job status updated successfully!');
     }
 
 
@@ -284,10 +343,385 @@ class AdminController extends Controller
 
         return redirect()->route('admin.job_post')->with('success', 'Job post deleted successfully!');
     }
+    
+    public function messages(Request $request)
+    {
+        $search = $request->input('search');
+
+        $messages = \App\Models\Message::with(['sender', 'receiver'])
+            ->when($search, function ($query, $search) {
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWhereHas('sender', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('receiver', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('content', 'like', "%{$search}%")
+                    // ✅ Match the same display format as shown in table
+                    ->orWhereRaw(
+                        "DATE_FORMAT(created_at, '%b %d, %Y - %h:%i%p') LIKE ?",
+                        ["%{$search}%"]
+                    );
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->appends(['search' => $search]);
+
+        return view('admin.messages', compact('messages', 'search'));
+    }
+    public function users_chat() {
+
+        return view('admin.users_chat');
+    }
+    public function deleteChat($id)
+    {
+        $message = \App\Models\Message::findOrFail($id);
+        $message->delete();
+
+        return redirect()->back()->with('success', 'Chat deleted successfully!');
+    }
+    public function deleteConversation($name)
+    {
+        $receiver = \App\Models\User::where('name', $name)->firstOrFail();
+
+        // Delete all messages that belong to this user (either sent or received)
+        \App\Models\Message::where('sender_id', $receiver->id)
+            ->orWhere('receiver_id', $receiver->id)
+            ->delete();
+
+        return redirect()->route('admin.users_chat', ['name' => $receiver->name])
+                        ->with('success', 'Chat deleted successfully!');
+    }
+   public function chat($name)
+    {
+        $admin = auth()->user();
+        $receiver = \App\Models\User::where('name', $name)->firstOrFail();
+
+        // ✅ Mark all messages from this receiver to admin as seen
+        \App\Models\Message::where('sender_id', $receiver->id)
+            ->where('receiver_id', $admin->id)
+            ->where('seen', false)
+            ->update(['seen' => true]);
+
+        // ✅ Fetch all messages between admin and receiver
+        $messages = \App\Models\Message::where(function ($q) use ($admin, $receiver) {
+                $q->where('sender_id', $admin->id)
+                ->where('receiver_id', $receiver->id);
+            })
+            ->orWhere(function ($q) use ($admin, $receiver) {
+                $q->where('sender_id', $receiver->id)
+                ->where('receiver_id', $admin->id);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // ✅ Fetch users admin has chatted with, ordered by latest message
+        $chatUsers = \App\Models\User::where('id', '!=', $admin->id)
+            ->where(function ($q) use ($admin) {
+                $q->whereHas('messagesSent', function ($query) use ($admin) {
+                        $query->where('receiver_id', $admin->id);
+                    })
+                ->orWhereHas('messagesReceived', function ($query) use ($admin) {
+                        $query->where('sender_id', $admin->id);
+                    });
+            })
+            ->get()
+            ->sortByDesc(function ($user) use ($admin) {
+                return \App\Models\Message::where(function ($query) use ($admin, $user) {
+                        $query->where('sender_id', $admin->id)
+                            ->where('receiver_id', $user->id);
+                    })
+                    ->orWhere(function ($query) use ($admin, $user) {
+                        $query->where('sender_id', $user->id)
+                            ->where('receiver_id', $admin->id);
+                    })
+                    ->latest('created_at')
+                    ->value('created_at');
+            });
+
+        return view('admin.chat', compact('receiver', 'messages', 'chatUsers', 'admin'));
+    }
 
 
 
 
+    public function adminChat($name)
+    {
+        $admin = auth()->user(); // assuming logged-in admin
+        $receiver = User::where('name', $name)->firstOrFail();
+
+        $messages = Message::where(function ($query) use ($admin, $receiver) {
+            $query->where('sender_id', $admin->id)->where('receiver_id', $receiver->id);
+        })->orWhere(function ($query) use ($admin, $receiver) {
+            $query->where('sender_id', $receiver->id)->where('receiver_id', $admin->id);
+        })->orderBy('created_at')->get();
+
+        return view('admin.chat', compact('receiver', 'messages'));
+    }
+    public function sendMessage(Request $request, $name)
+    {
+        $receiver = User::where('name', $name)->firstOrFail();
+
+        Message::create([
+            'sender_id' => auth()->id(),
+            'receiver_id' => $receiver->id,
+            'content' => $request->content,
+        ]);
+
+        return redirect()->back();
+    }
+    public function usersChat($name)
+    {
+        // Find the user whose convo we want to view
+        $user = User::where('name', $name)->firstOrFail();
+
+        // Get all messages where this user is either the sender or receiver
+        $messages = Message::where('sender_id', $user->id)
+            ->orWhere('receiver_id', $user->id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Return the view
+        return view('admin.users_chat', compact('user', 'messages'));
+    }
+    
+    // Return messages between admin and specific user as JSON
+    public function chatMessages($name)
+    {
+        $admin = auth()->user();
+        $receiver = \App\Models\User::where('name', $name)->firstOrFail();
+
+        $messages = \App\Models\Message::where(function ($q) use ($admin, $receiver) {
+                $q->where('sender_id', $admin->id)
+                ->where('receiver_id', $receiver->id);
+            })
+            ->orWhere(function ($q) use ($admin, $receiver) {
+                $q->where('sender_id', $receiver->id)
+                ->where('receiver_id', $admin->id);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json($messages);
+    }
+
+    // Return chat list (menu) HTML snippet only
+    public function chatList()
+    {
+        $admin = auth()->user();
+
+        $chatUsers = \App\Models\User::where('id', '!=', $admin->id)
+            ->where(function ($q) use ($admin) {
+                $q->whereHas('messagesSent', function ($query) use ($admin) {
+                        $query->where('receiver_id', $admin->id);
+                    })
+                ->orWhereHas('messagesReceived', function ($query) use ($admin) {
+                        $query->where('sender_id', $admin->id);
+                    });
+            })
+            ->get()
+            ->sortByDesc(function ($user) use ($admin) {
+                return \App\Models\Message::where(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $admin->id)
+                        ->where('receiver_id', $user->id);
+                    })
+                    ->orWhere(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $user->id)
+                        ->where('receiver_id', $admin->id);
+                    })
+                    ->latest('created_at')
+                    ->value('created_at');
+            });
+
+        return view('admin.chat_menu_partial', compact('chatUsers', 'admin'))->render();
+    }
+    public function deleteUserChat($name)
+    {
+        $admin = auth()->user();
+        $receiver = \App\Models\User::where('name', $name)->firstOrFail();
+
+        \App\Models\Message::where(function ($q) use ($admin, $receiver) {
+            $q->where('sender_id', $admin->id)
+            ->where('receiver_id', $receiver->id);
+        })->orWhere(function ($q) use ($admin, $receiver) {
+            $q->where('sender_id', $receiver->id)
+            ->where('receiver_id', $admin->id);
+        })->delete();
+
+        return redirect()->back();
+    }
+    public function inbox()
+    {
+        $admin = auth()->user();
+
+        // Get all users that have chatted with admin
+        $chatUsers = \App\Models\User::where('id', '!=', $admin->id)
+            ->where(function ($q) use ($admin) {
+                $q->whereHas('messagesSent', function ($query) use ($admin) {
+                        $query->where('receiver_id', $admin->id);
+                    })
+                ->orWhereHas('messagesReceived', function ($query) use ($admin) {
+                        $query->where('sender_id', $admin->id);
+                    });
+            })
+            ->get()
+            ->sortByDesc(function ($user) use ($admin) {
+                return \App\Models\Message::where(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $admin->id)
+                            ->where('receiver_id', $user->id);
+                    })
+                    ->orWhere(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $user->id)
+                            ->where('receiver_id', $admin->id);
+                    })
+                    ->latest('created_at')
+                    ->value('created_at');
+            });
+
+        // Convert to paginator manually
+        $perPage = 7; // adjust this
+        $page = request()->get('page', 1);
+        $paginatedUsers = new \Illuminate\Pagination\LengthAwarePaginator(
+            $chatUsers->forPage($page, $perPage),
+            $chatUsers->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('admin.inbox', [
+            'chatUsers' => $paginatedUsers,
+            'admin' => $admin
+        ]);
+    }
+
+    public function unreadCount()
+    {
+        $admin = auth()->user();
+
+        $unreadCount = \App\Models\Message::where('receiver_id', $admin->id)
+            ->where('seen', false)
+            ->count();
+
+        return response()->json(['unreadCount' => $unreadCount]);
+    }
+    public function fetchAdminMessages()
+{
+    $admin = auth()->user();
+
+    $chatUsers = \App\Models\User::where('id', '!=', $admin->id)
+        ->where(function ($q) use ($admin) {
+            $q->whereHas('messagesSent', function ($query) use ($admin) {
+                    $query->where('receiver_id', $admin->id);
+                })
+            ->orWhereHas('messagesReceived', function ($query) use ($admin) {
+                    $query->where('sender_id', $admin->id);
+                });
+        })
+        ->get()
+        ->sortByDesc(function ($user) use ($admin) {
+            return \App\Models\Message::where(function ($q) use ($admin, $user) {
+                    $q->where('sender_id', $admin->id)
+                        ->where('receiver_id', $user->id);
+                })
+                ->orWhere(function ($q) use ($admin, $user) {
+                    $q->where('sender_id', $user->id)
+                        ->where('receiver_id', $admin->id);
+                })
+                ->latest('created_at')
+                ->value('created_at');
+        })
+        ->map(function ($user) use ($admin) {
+            $latestMessage = \App\Models\Message::where(function ($q) use ($admin, $user) {
+                    $q->where('sender_id', $admin->id)
+                        ->where('receiver_id', $user->id);
+                })
+                ->orWhere(function ($q) use ($admin, $user) {
+                    $q->where('sender_id', $user->id)
+                        ->where('receiver_id', $admin->id);
+                })
+                ->latest('created_at')
+                ->first();
+
+            $hasUnseen = \App\Models\Message::where('sender_id', $user->id)
+                ->where('receiver_id', $admin->id)
+                ->where('seen', false)
+                ->exists();
+
+            return [
+                'name' => $user->name,
+                'profile_pic' => $user->profile_pic 
+                    ? asset('storage/' . $user->profile_pic) 
+                    : asset('assets/defaultUserPic.png'),
+                'latest_message' => $latestMessage?->content ?? 'No messages yet',
+                'sender_label' => $latestMessage && $latestMessage->sender_id == $admin->id ? 'You: ' : '',
+                'time' => $latestMessage?->created_at?->diffForHumans() ?? '',
+                'has_unseen' => $hasUnseen,
+            ];
+        })
+        ->values();
+
+    return response()->json($chatUsers);
+}
+
+    
+
+
+    
+
+
+
+
+
+    // export for chats table to CSV
+    public function exportMessages(Request $request)
+    {
+        $search = $request->input('search');
+
+        $messages = \App\Models\Message::with(['sender', 'receiver'])
+            ->when($search, function ($query, $search) {
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWhereHas('sender', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('receiver', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhereRaw("DATE_FORMAT(created_at, '%b %d, %Y - %h:%i%p') LIKE ?", ["%{$search}%"]);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get(); // 👈 no pagination, we export all filtered data
+
+        // ✅ CSV header
+        $csvData = [
+            ['ID', 'Sender', 'Receiver', 'Content', 'Created At', 'Updated At', 'Seen']
+        ];
+
+        foreach ($messages as $message) {
+            $csvData[] = [
+                $message->id,
+                $message->sender->name ?? 'Unknown',
+                $message->receiver->name ?? 'Unknown',
+                $message->content,
+                $message->created_at,
+                $message->updated_at,
+                $message->seen ? 'Seen' : 'Not Seen',
+            ];
+        }
+
+        // ✅ Create CSV string
+        $output = fopen('php://temp', 'r+');
+        foreach ($csvData as $row) {
+            fputcsv($output, $row);
+        }
+        rewind($output);
+        $csvContent = stream_get_contents($output);
+        fclose($output);
+
+        // ✅ Download response
+        return Response::make($csvContent, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="messages_export.csv"',
+        ]);
+    }
 
 
 
@@ -511,4 +945,79 @@ class AdminController extends Controller
 
         return $response;
     }
+
+    // exrpot transactions to CSV
+    public function exportTransactions(Request $request)
+    {
+        $query = Transaction::with(['employee', 'client']);
+
+        // Apply search filter if present
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', str_replace('2025', '', $search))
+                    ->orWhereHas('employee', function ($sub) use ($search) {
+                        $sub->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('client', function ($sub) use ($search) {
+                        $sub->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('job_title', 'like', "%{$search}%")
+                    ->orWhere('amount', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhere('payment_method', 'like', "%{$search}%")
+                    ->orWhere('reference_no', 'like', "%{$search}%")
+                    ->orWhere('transaction_ref_no', 'like', "%{$search}%");
+            });
+        }
+
+        $transactions = $query->latest()->get();
+
+        // Stream CSV response
+        $response = new StreamedResponse(function () use ($transactions) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($handle, [
+                'Transaction ID',
+                'Employee Name',
+                'Client Name',
+                'Job Title',
+                'Amount',
+                'Status',
+                'Payment Method',
+                'Account No', // renamed from reference_no
+                'Transaction Ref No',
+                'Payment Date',
+            ]);
+
+            // CSV Rows
+            foreach ($transactions as $transaction) {
+                fputcsv($handle, [
+                    '2025' . $transaction->id,
+                    optional($transaction->employee)->name ?? 'N/A',
+                    optional($transaction->client)->name ?? 'N/A',
+                    $transaction->job_title ?? 'N/A',
+                    $transaction->amount ?? 'N/A',
+                    $transaction->status ?? 'N/A',
+                    $transaction->payment_method ?? 'N/A',
+                    $transaction->reference_no ?? 'N/A',
+                    $transaction->transaction_ref_no ?? 'N/A',
+                    $transaction->payment_date ?? 'N/A',
+                ]);
+            }
+
+            fclose($handle);
+        });
+
+        $filename = 'transactions_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', "attachment; filename={$filename}");
+
+        return $response;
+    }
 }
+
+
+

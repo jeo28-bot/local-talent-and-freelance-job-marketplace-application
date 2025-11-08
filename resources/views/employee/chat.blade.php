@@ -23,33 +23,41 @@
                         <input type="text" placeholder="Search" class="w-full p-2 pl-10 border-b border-gray-300 focus:outline-none">
                     </div>
                     {{-- chat menu --}}
-                    <div class="flex flex-col gap-2 overflow-x-auto p-2 w-full max-sm:max-h-50 overflow-auto ">
+                    <div class="flex flex-col gap-2 overflow-x-auto p-2 w-full max-sm:max-h-50 overflow-auto">
                         @forelse ($chatUsers as $chatUser)
-                            <a href="{{ route($rolePrefix . '.chat', ['name' => $chatUser->name]) }}"
-                            class="p-2 rounded-lg cursor-pointer flex items-center w-full
-                            {{ request()->is($rolePrefix . '/chat/' . $chatUser->name) ? 'bg-gray-200' : 'bg-white hover:bg-gray-200' }}">
+                            @php
+                                $lastMessage = \App\Models\Message::where(function ($query) use ($user, $chatUser) {
+                                        $query->where('sender_id', $user->id)
+                                            ->where('receiver_id', $chatUser->id);
+                                    })
+                                    ->orWhere(function ($query) use ($user, $chatUser) {
+                                        $query->where('sender_id', $chatUser->id)
+                                            ->where('receiver_id', $user->id);
+                                    })
+                                    ->latest()
+                                    ->first();
 
+                                $latestContent = $lastMessage
+                                    ? ($lastMessage->sender_id === $user->id
+                                        ? 'You: ' . $lastMessage->content
+                                        : $lastMessage->content)
+                                    : 'No messages yet';
+                            @endphp
+
+                            <a href="{{ route($rolePrefix . '.chat', ['name' => $chatUser->name]) }}"
+                                class="p-2 rounded-lg cursor-pointer flex items-center w-full 
+                                {{ request()->is($rolePrefix . '/chat/' . $chatUser->name) ? 'bg-gray-200' : 'bg-white hover:bg-gray-200' }}">
 
                                 <img src="{{ $chatUser->profile_pic 
                                         ? asset('storage/' . $chatUser->profile_pic) 
                                         : asset('assets/defaultUserPic.png') }}" 
-                                    alt="{{ $chatUser->name }}" alt="" class="w-10 h-10 rounded-full inline-block mr-2 border-2 border-gray-400">
-                                <div class=" ">
-                                        <h2 class="font-bold text-gray-800 p_font">{{ $chatUser->name }}</h2>
-                                        <p class="text-gray-600 text-sm truncate w-[150px]">
-                                            {{ optional(
-                                                \App\Models\Message::where(function ($query) use ($user, $chatUser) {
-                                                        $query->where('sender_id', $user->id)
-                                                            ->where('receiver_id', $chatUser->id);
-                                                    })
-                                                    ->orWhere(function ($query) use ($user, $chatUser) {
-                                                        $query->where('sender_id', $chatUser->id)
-                                                            ->where('receiver_id', $user->id);
-                                                    })
-                                                    ->latest()
-                                                    ->first()
-                                            )->content ?? 'No messages yet' }}
-                                        </p>
+                                    alt="{{ $chatUser->name }}" class="w-10 h-10 rounded-full inline-block mr-2 border-2 border-gray-400">
+
+                                <div>
+                                    <h2 class="font-bold text-gray-800 p_font ">{{ $chatUser->name }}</h2>
+                                    <p class="text-gray-600 text-sm truncate w-[150px] p_font">
+                                        {{ $latestContent }}
+                                    </p>
                                 </div>
                             </a>
                         @empty
@@ -145,6 +153,53 @@
         </div>
      </section>
 
+      </script>
+
+    {{-- filter and show chat menu around max-sm --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.querySelector('input[placeholder="Search"]');
+        const chatMenu = document.querySelector('.flex.flex-col.gap-2.overflow-x-auto');
+        const chatItems = chatMenu.querySelectorAll('a');
+
+        // ✅ show chat menu when focused or typing (mobile only)
+        const showChatMenu = () => {
+            if (window.innerWidth <= 640) {
+                chatMenu.classList.remove('max-sm:hidden', 'hidden');
+            }
+        };
+
+        // ✅ hide chat menu when blur + empty (mobile only)
+        const hideChatMenu = () => {
+            if (window.innerWidth <= 640 && searchInput.value.trim() === '') {
+                setTimeout(() => {
+                    chatMenu.classList.add('max-sm:hidden');
+                }, 150);
+            }
+        };
+
+        // focus → show
+        searchInput.addEventListener('focus', showChatMenu);
+
+        // blur → hide if empty
+        searchInput.addEventListener('blur', hideChatMenu);
+
+        // input → live filter + auto show
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+
+            chatItems.forEach(item => {
+                const name = item.querySelector('h2').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+
+            // also show when typing on mobile
+            if (query.length > 0) showChatMenu();
+        });
+    });
+    </script>
+
+
      <script>
         const chatContainer = document.querySelector('#chatContainer');
         const rolePrefix = "{{ $rolePrefix }}";
@@ -210,25 +265,25 @@
 
     <script>
     const deleteBtn = document.querySelector('#chat_options_menu button:first-child');
-deleteBtn.addEventListener('click', async () => {
-    if (!confirm('Are you sure you want to delete this chat?')) return;
+    deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to delete this chat?')) return;
 
-    const rolePrefix = "{{ $rolePrefix }}";
-    const receiverName = "{{ $receiver->name }}";
+        const rolePrefix = "{{ $rolePrefix }}";
+        const receiverName = "{{ $receiver->name }}";
 
-    const res = await fetch(`/${rolePrefix}/chat/${receiverName}/delete`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-            'X-Requested-With': 'XMLHttpRequest'
+        const res = await fetch(`/${rolePrefix}/chat/${receiverName}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        if (res.ok) {
+            // ✅ Refresh the current chat page
+            location.reload();
         }
     });
-
-    if (res.ok) {
-        // ✅ Refresh the current chat page
-        location.reload();
-    }
-});
 
 
     </script>

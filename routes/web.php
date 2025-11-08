@@ -10,6 +10,7 @@ use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Transaction;
 
 
 Route::get('/', function () {
@@ -53,6 +54,42 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin/job_post/export', [AdminController::class, 'exportJobPosts'])->name('admin.job_post.export');
     Route::delete('/admin/job_post/{id}', [AdminController::class, 'destroyJobPost'])->name('admin.job_post.destroy');
     Route::get('/admin/applications/export', [AdminController::class, 'exportApplications'])->name('admin.applications.export');
+    Route::get('/admin/messages', [AdminController::class, 'messages'])->name('admin.messages');
+    Route::get('/admin/messages/export', [App\Http\Controllers\AdminController::class, 'exportMessages'])
+    ->name('admin.messages.export');
+    Route::get('/admin/users_chat', [AdminController::class, 'users_chat'])->name('admin.users_chats');
+    Route::get('/admin/chat', [AdminController::class, 'chat'])->name('admin.chats');
+    Route::delete('/admin/delete_chat/{id}', [AdminController::class, 'deleteChat'])->name('admin.delete_chat');
+    Route::delete('/admin/delete_conversation/{name}', [AdminController::class, 'deleteConversation'])
+    ->name('admin.delete_conversation');
+    Route::get('/admin/chat/{name}', [AdminController::class, 'chat'])->name('admin.chat');
+    Route::post('/admin/chat/{name}/send', [AdminController::class, 'sendMessage'])->name('admin.send_message');
+    Route::get('/admin/users_chat/{name}', [AdminController::class, 'usersChat'])->name('admin.users_chat');
+    Route::get('/admin/chat/{name}', [App\Http\Controllers\AdminController::class, 'chat'])->name('admin.chat');
+    Route::put('/admin/job-post/{id}/status', [AdminController::class, 'updateJobStatus'])->name('admin.updateJobStatus');
+
+
+    // Fetch messages for real-time updates
+    Route::get('/admin/chat/{name}/messages', [AdminController::class, 'chatMessages'])->name('admin.chat.messages');
+
+    // Fetch chat list for real-time updates
+    Route::get('/admin/chats', [AdminController::class, 'chatList'])->name('admin.chat.list');
+    Route::delete('/admin/chat/{name}/delete', [AdminController::class, 'deleteUserChat'])->name('admin.deleteUserChat');
+    Route::get('/admin/inbox', [AdminController::class, 'inbox'])->name('admin.inbox');
+    Route::get('/admin/unread-count', [AdminController::class, 'unreadCount'])
+    ->name('admin.unreadCount');
+    Route::get('/admin/messages/fetch', [AdminController::class, 'fetchAdminMessages'])
+    ->name('admin.messages.fetch');
+
+    
+    Route::get('/admin/transactions', [AdminController::class, 'transactions'])->name('admin.transactions');
+    Route::put('/admin/transactions/{id}/update-status', [AdminController::class, 'updateTransactionStatus'])
+    ->name('admin.transactions.updateStatus');
+    Route::delete('/admin/transactions/{id}', [AdminController::class, 'destroy'])
+    ->name('admin.transactions.destroy');
+   Route::get('/admin/transactions/export', [App\Http\Controllers\AdminController::class, 'exportTransactions'])
+    ->name('admin.transactions.export');
+
 
 });
 
@@ -81,6 +118,27 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
 
     Route::get('/employee/messages', [ChatController::class, 'employeeMessages'])->name('employee.messages');
     Route::get('/employee/messages/fetch', [ChatController::class, 'fetchEmployeeMessages'])->name('employee.messages.fetch');
+    Route::get('/employee/applied', [EmployeeController::class, 'applied'])->name('employee.applied');
+
+
+    Route::prefix('employee')->group(function () {
+    Route::get('/transactions', [EmployeeController::class, 'transactions'])
+        ->name('employee.transactions');
+
+    Route::get('/transactions/pending', [EmployeeController::class, 'pendingTransactions'])
+        ->name('employee.transactions.pending');
+
+    Route::get('/transactions/completed', [EmployeeController::class, 'completedTransactions'])
+        ->name('employee.transactions.completed');
+
+    Route::delete('/transactions/{id}', [EmployeeController::class, 'destroyTransaction'])
+        ->name('employee.transactions.destroy');
+
+    Route::post('/transactions/request-payout', [EmployeeController::class, 'requestPayout'])
+    ->name('employee.transactions.requestPayout');
+
+    });
+    
 
 });
 
@@ -113,6 +171,31 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client/messages', [ChatController::class, 'clientMessages'])->name('client.messages');
     Route::get('/client/messages/fetch', [ChatController::class, 'fetchRecentChats'])->name('client.messages.fetch');
 
+    Route::prefix('client')->group(function () {
+    // Route::get('/transactions', [ClientController::class, 'transactions'])
+    //     ->name('employee.transactions');
+
+    Route::get('/transactions/pending', [ClientController::class, 'pendingTransactions'])
+        ->name('client.transactions.pending');
+
+    Route::get('/transactions/completed', [ClientController::class, 'completedTransactions'])
+        ->name('client.transactions.completed');
+
+    Route::delete('/transactions/{id}', [ClientController::class, 'destroyTransaction'])
+        ->name('client.transactions.destroy');
+    });
+
+    Route::post('/client/transactions/{id}/mark-paid', [ClientController::class, 'markAsPaid'])
+    ->name('client.transactions.markAsPaid');
+
+    Route::get('/client/applicants', [ClientController::class, 'indexForClient'])
+    ->name('client.applicants');
+
+    // Add this for the paginated fetch (AJAX)
+    Route::get('/employee/messages/fetch-paginated', [ChatController::class, 'fetchEmployeeMessagesPaginated'])
+    ->name('employee.messages.paginated');
+
+    
 });
 
 Route::get('/nav', function () {
@@ -174,3 +257,10 @@ Route::delete('/profile/uploads/{id}', [ProfileController::class, 'destroyUpload
 Route::post('/profile/about/update', [ProfileController::class, 'updateAbout'])
     ->name('profile.updateAbout')
     ->middleware('auth');
+
+
+// Employee chat menu JSON
+Route::get('/employee/fetch-messages-json', [ChatController::class, 'fetchEmployeeMessages'])->name('employee.fetchMessagesJson');
+
+// Client chat menu JSON
+Route::get('/client/fetch-messages-json', [ChatController::class, 'fetchRecentChats'])->name('client.fetchMessagesJson');

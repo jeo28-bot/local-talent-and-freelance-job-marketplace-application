@@ -9,8 +9,32 @@
     <!-- main content -->
     <section class="w-full flex min-h-[80vh] flex-col items-center  px-20 max-lg:px-10 max-sm:px-5 pt-10 max-lg:pt-5 mb-20">
         <div class="xl:w-6xl  mx-auto px-5 max-sm:px-2 mb-10 w-full max-lg:px-0 ">
-            <h1 class="sub_title sm:text-xl">Job Applied</h1>
-            <p class="home_p_font mb-5 text-sm">Manage and review job postings you applied for.</p>
+            <div class="flex items-center justify-between max-lg:flex-col max-lg:gap-2 max-xl:items-start max-xl:mb-4 mb-5">
+                <div>
+                    <h1 class="sub_title sm:text-xl">Applicants</h1>
+                    <p class="home_p_font text-sm">Manage and review freelancers who applied to your job postings.</p>
+                </div>
+
+                {{-- search input div --}}
+                <div class="ml-auto max-lg:w-sm max-sm:w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute mt-2 max-sm:mt-2 ml-2 max-sm:size-5 max-sm:ml-1.5">
+                    <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                    </svg>
+                    {{-- search inputs --}}
+                    <form action="{{ route('employee.applied') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font max-sm:text-sm flex items-center">
+                            {{-- input 1 job title, skills, company --}}
+                            <input type="text" name="q" value="{{ request('q') }}"  value="" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm pr-20 w-sm max-lg:w-full" placeholder="Search job title, users, status">
+                            
+                            
+                    
+                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-77 max-sm:right-9 absolute ">Search</button>
+                    </form>
+
+                </div>
+
+
+            </div>
+
 
            
             @if($applications->isNotEmpty())
@@ -66,7 +90,7 @@
                                         {{ $application->status == 'pending' ? 'border-1 border-amber-600 bg-orange-200' 
                                             : ($application->status == 'accepted' ? 'border-1 border-green-600 bg-green-200' 
                                             : ($application->status == 'rejected' ? 'border-1 border-red-600 bg-red-200' 
-                                            : 'border-1 border-black bg-gray-400')) }}">
+                                            : 'border-1 border-black bg-gray-300')) }}">
                                         {{ ucfirst($application->status) }}
                                     </span>
                                 </td>

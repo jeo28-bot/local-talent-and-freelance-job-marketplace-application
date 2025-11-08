@@ -204,7 +204,7 @@ class ChatController extends Controller
         return view('client.messages', compact('chatUsers'));
     }
 
-   public function fetchRecentChats()
+  public function fetchRecentChats()
     {
         $user = auth()->user();
 
@@ -221,17 +221,26 @@ class ChatController extends Controller
                 $lastMessage = $messages->first();
                 $otherUser = User::find($userId);
 
-                // 👇 Add "You:" prefix if the authenticated client sent the last message
+                // 👇 Add "You:" prefix if the authenticated user sent the last message
                 $content = $lastMessage->sender_id === $user->id
                     ? 'You: ' . $lastMessage->content
                     : $lastMessage->content;
 
+                // 👇 Check if there are any unseen messages from this chat user
+                $hasUnseen = Message::where('sender_id', $userId)
+                    ->where('receiver_id', $user->id)
+                    ->where('seen', false)
+                    ->exists();
+
                 return [
                     'name' => $otherUser->name,
-                    'profile_pic' => $otherUser->profile_pic 
+                    'profile_pic' => $otherUser->profile_pic
                         ? asset('storage/' . $otherUser->profile_pic)
                         : asset('assets/defaultUserPic.png'),
                     'latest_message' => $content,
+                    'latest_sender_id' => $lastMessage->sender_id,
+                    'seen' => $lastMessage->seen, // keeps the original last message seen
+                    'has_unseen' => $hasUnseen,   // ✅ new flag for unseen messages
                     'time' => $lastMessage->created_at->diffForHumans(),
                 ];
             })
@@ -240,7 +249,9 @@ class ChatController extends Controller
         return response()->json($recentChats);
     }
 
-    public function clientMessages()
+
+
+   public function clientMessages(Request $request)
     {
         $user = auth()->user();
 
@@ -269,17 +280,37 @@ class ChatController extends Controller
                         ? (($lastMessage->sender_id === $user->id ? 'You: ' : '') . $lastMessage->content)
                         : 'No messages yet',
                     'time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : '',
+                    'last_message_time' => $lastMessage ? $lastMessage->created_at : now()->subYears(10),
                 ];
-            });
+            })
+            ->sortByDesc('last_message_time')
+            ->values();
 
-        return view('client.messages', compact('chatUsers'));
+        // 🔹 Manual Pagination
+        $perPage = 5;
+        $page = $request->input('page', 1);
+        $items = $chatUsers->forPage($page, $perPage);
+
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $chatUsers->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('client.messages', [
+            'chatUsers' => $paginated,
+        ]);
     }
+
+
 
 
 
     // employee messages fetch for auto refresh purpose
 
-    public function employeeMessages()
+    public function employeeMessages(Request $request)
     {
         $user = auth()->user();
 
@@ -309,14 +340,33 @@ class ChatController extends Controller
                         ? (($lastMessage->sender_id === $user->id ? 'You: ' : '') . $lastMessage->content)
                         : 'No messages yet',
                     'time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : '',
+                    'last_message_time' => $lastMessage ? $lastMessage->created_at : now()->subYears(10), // for sorting
                 ];
-            });
+            })
+            ->sortByDesc('last_message_time') // latest first
+            ->values();
 
-        return view('employee.messages', compact('chatUsers'));
+        // 🔹 Manual Pagination
+        $perPage = 5;
+        $page = $request->input('page', 1);
+        $items = $chatUsers->forPage($page, $perPage);
+
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $chatUsers->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('employee.messages', [
+            'chatUsers' => $paginated,
+        ]);
     }
 
 
-    public function fetchEmployeeMessages()
+
+   public function fetchEmployeeMessages()
     {
         $user = auth()->user();
 
@@ -339,6 +389,11 @@ class ChatController extends Controller
                     ->latest()
                     ->first();
 
+                $hasUnseenMessage = \App\Models\Message::where('sender_id', $chatUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->where('seen', false)
+                    ->exists();
+
                 return [
                     'name' => $chatUser->name,
                     'profile_pic' => $chatUser->profile_pic 
@@ -348,8 +403,11 @@ class ChatController extends Controller
                         ? (($lastMessage->sender_id === $user->id ? 'You: ' : '') . $lastMessage->content)
                         : 'No messages yet',
                     'time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : '',
+                    'has_unseen' => $hasUnseenMessage,
+                    'last_message_time' => $lastMessage ? $lastMessage->created_at : now()->subYears(10),
                 ];
             })
+            ->sortByDesc('last_message_time') // 🧠 consistent sorting
             ->values();
 
         return response()->json($chatUsers);
@@ -357,7 +415,61 @@ class ChatController extends Controller
 
 
 
+    public function fetchEmployeeMessagesPaginated(Request $request)
+    {
+        $user = auth()->user();
 
+        // Same logic as your original fetchEmployeeMessages
+        $chatUsers = \App\Models\User::whereHas('messagesSent', fn($q) => $q->where('receiver_id', $user->id))
+            ->orWhereHas('messagesReceived', fn($q) => $q->where('sender_id', $user->id))
+            ->get()
+            ->map(function ($chatUser) use ($user) {
+                $lastMessage = \App\Models\Message::where(fn($q) => $q->where('sender_id', $user->id)
+                        ->where('receiver_id', $chatUser->id))
+                    ->orWhere(fn($q) => $q->where('sender_id', $chatUser->id)
+                        ->where('receiver_id', $user->id))
+                    ->latest()
+                    ->first();
+
+                $hasUnseenMessage = \App\Models\Message::where('sender_id', $chatUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->where('seen', false)
+                    ->exists();
+
+                return [
+                    'name' => $chatUser->name,
+                    'profile_pic' => $chatUser->profile_pic 
+                        ? asset('storage/' . $chatUser->profile_pic)
+                        : asset('assets/defaultUserPic.png'),
+                    'latest_message' => $lastMessage 
+                        ? (($lastMessage->sender_id === $user->id ? 'You: ' : '') . $lastMessage->content)
+                        : 'No messages yet',
+                    'time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : '',
+                    'has_unseen' => $hasUnseenMessage,
+                    'last_message_time' => $lastMessage ? $lastMessage->created_at : now()->subYears(10),
+                ];
+            })
+            ->sortByDesc('last_message_time')
+            ->values();
+
+        // Manual pagination
+        $perPage = 5;
+        $page = $request->input('page', 1);
+        $items = $chatUsers->forPage($page, $perPage);
+
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items,
+            $chatUsers->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return response()->json($paginated);
+    }
+
+    
+    
 
 
 

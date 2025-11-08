@@ -186,7 +186,7 @@
     {{-- report modal --}}
     <div class="report_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
       {{-- menu control --}}
-        <div class="sm:w-2xl mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+        <div class="w-2xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
             {{-- modal sub title and close button --}}
             <div class="flex justify-between items-center mb-2">
                 <h3 class="sub_title_font max-sm:text-sm">Describe your problem below:</h3>

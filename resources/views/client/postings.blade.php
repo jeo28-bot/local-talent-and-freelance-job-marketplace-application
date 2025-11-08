@@ -23,7 +23,7 @@
                     {{-- search inputs --}}
                     <form action="{{ route('client.postings') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font pr-2 max-sm:text-sm flex items-center">
                             {{-- input 1 job title, skills, company --}}
-                            <input type="text" name="q" value="{{ request('q') }}" class=" max-xl:w-full pl-10 max-sm:pl-7 py-2  pr-5 rounded-lg p_font max-sm:text-sm" placeholder="Search job title, skills, company">
+                            <input type="text" name="q" value="{{ request('q') }}" class=" max-xl:w-full pl-10 max-sm:pl-7 py-2  pr-5 rounded-lg p_font max-sm:text-sm" placeholder="Search job title, users, status">
                             
                             <span class="w-[1px] h-[30px] bg-gray-500 opacity-50"></span>
                         
@@ -42,7 +42,6 @@
 
                 </div>
 
-                
 
             </div>
 

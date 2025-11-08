@@ -117,36 +117,45 @@ let dropdown_jobPosts = document.getElementById('dropdown_jobPosts')
 const modalBg = document.getElementById('modal_bg');
 const vertNav = document.getElementById('vert_nav');
 const hamburger_button = document.getElementById('hamburder_button');
+const searchIcon = document.getElementById('search_icon'); // give your SVG this ID
 
-// Hide nav when modal background is clicked
-modalBg.addEventListener('click', () => {
-    vertNav.classList.add('hidden');
+function openModal() {
+    modalBg.classList.remove('hidden');
+    if (searchIcon) searchIcon.style.display = 'none';
+}
+
+function closeModal() {
     modalBg.classList.add('hidden');
-});
+    if (searchIcon) searchIcon.style.display = 'block';
+}
 
-// Toggle nav when hamburger clicked
+function checkScreenSize() {
+    if (window.innerWidth < 1024) {
+        vertNav.classList.add('hidden');
+        closeModal();
+    } else {
+        vertNav.classList.remove('hidden');
+        closeModal();
+    }
+}
+
+// 🔥 Hide nav on mobile/tablet when page loads
+document.addEventListener('DOMContentLoaded', checkScreenSize);
+
+// Toggle menu
 hamburger_button.addEventListener('click', () => {
     const isHidden = vertNav.classList.contains('hidden');
-
     vertNav.classList.toggle('hidden');
-
-    if (isHidden) {
-        // menu is now open
-        modalBg.classList.remove('hidden');
-    } else {
-        // menu is now closed
-        modalBg.classList.add('hidden');
-    }
+    if (isHidden) openModal();
+    else closeModal();
 });
 
-window.addEventListener('resize', () => {
-  if (window.innerWidth >= 1024) {
-    // desktop: show nav, hide modal
-    vertNav.classList.remove('hidden');
-    modalBg.classList.add('hidden');
-  } else {
-    // mobile: hide nav + modal initially (optional)
+// Click outside to close
+modalBg.addEventListener('click', () => {
     vertNav.classList.add('hidden');
-    modalBg.classList.add('hidden');
-  }
+    closeModal();
 });
+
+// Handle resize
+window.addEventListener('resize', checkScreenSize);
+

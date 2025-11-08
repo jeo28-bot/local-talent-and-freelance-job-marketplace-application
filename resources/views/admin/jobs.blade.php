@@ -7,7 +7,7 @@
 
      <!-- main content -->
     <section class="w-full  z-0">
-        <div class="pt-35 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
+        <div class="pt-35 max-sm:pt-25 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
             <div class=" bg-white rounded-xl shadow-lg xl:w-[80%] mx-auto">
                 <div class="cover_color h-30 bg-[#1E2939] rounded-t-xl max-sm:h-20"></div>
                     {{-- div control for the applying content --}}
@@ -16,8 +16,15 @@
                         <img src="{{asset('assets/corporate.jpg')}}" alt="" class="border-2 rounded-xl border-gray-300 h-20 w-20 -mt-20 mb-5 max-sm:w-15 max-sm:-mt-16">
                         {{-- div for job title and save icon --}}
                         <div class="div_control mb-2 flex flex-row items-center justify-between">
-                            <h1 class="job_posting_title text-2xl max-sm:text-xl">{{ $job->job_title }}</h1>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 cursor-pointer hover:opacity-60 max-sm:size-5 -mt-20">
+                            <div>
+                                <h1 class="job_posting_title text-2xl max-sm:text-xl">{{ $job->job_title }}</h1>
+                                <a href="{{ route('admin.public_profile', $job->client->name) }}"
+                                    class="job_posting_company text-xl max-sm:text-sm capitalize cursor-pointer hover:underline hover:text-blue-700! text-blue-500!">
+                                    {{ $job->client->name }}
+                                </a>
+                            </div>
+                            
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 cursor-pointer hover:opacity-60 max-sm:size-5 -mt-15">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                             </svg>
                         </div>

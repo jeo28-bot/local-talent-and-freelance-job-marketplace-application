@@ -7,7 +7,7 @@
 
      <!-- main content -->
     <section class="w-full  z-0">
-        <div class="pt-35 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
+        <div class="pt-35 max-sm:pt-25 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
             {{-- padding top --}}
             {{-- title & sub title --}}
             <h1 class="home_p_font font-semibold! max-lg:text-sm text-lg">Job Posts</h1>
@@ -64,7 +64,7 @@
                         <tr class="bg-gray-300 ">
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">#</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
-                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">User</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">User<span class="text-gray-500">(Poster)</span></th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Location</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job-Type</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job-Pay</th>
@@ -101,10 +101,23 @@
                                  <h1>{{ ucfirst($job->salary_release) }}</h1>
                             </td>
                              <td class="px-4 py-2 p_font max-lg:text-sm ">
-                                 <h1><span class="{{ $job->status === 'open' ? 'text-green-600! p-2 rounded-lg bg-green-200 border-1 border-green-500' : 'text-red-600! p-2 rounded-lg bg-red-200 border-1 border-red-500 ' }}">
+                                <button
+                                data-id="{{ $job->id }}" 
+                                data-status="{{ $job->status }}"
+                                  class="open-status-modal cursor-pointer hover:opacity-60"><span class="
+                                  @if($job->status === 'open')
+                                        text-green-600! p-2 rounded-lg bg-green-200 border-1 border-green-500
+                                    @elseif($job->status === 'pause')
+                                        text-gray-600! p-2 rounded-lg bg-gray-300 border-1 border-gray-500
+                                    @else
+                                        text-red-600! p-2 rounded-lg bg-red-200 border-1 border-red-500
+                                    @endif
+                                  ">
                                     {{ ucfirst($job->status) }}
                                 </span></h1>
                             </td>
+
+
                              <td class="px-4 py-2 p_font max-lg:text-sm ">
                                  <h1>{{ $job->created_at->format('M d, Y') }}</h1>
                             </td>
@@ -128,26 +141,26 @@
 
                             <td class="pr-4 py-2 p_font max-lg:text-sm ">
                                 <form action="{{ route('admin.job_post.destroy', $job->id) }}" method="POST" class="delete-job-form">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="open-delete-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                                                stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21
-                                                    c.342.052.682.107 1.022.166m-1.022-.165L18.16 
-                                                    19.673a2.25 2.25 0 0 1-2.244 2.077H8.084
-                                                    a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79
-                                                    m14.456 0a48.108 48.108 0 0 0-3.478-.397
-                                                    m-12 .562c.34-.059.68-.114 1.022-.165
-                                                    m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 
-                                                    0v-.916c0-1.18-.91-2.164-2.09-2.201
-                                                    a51.964 51.964 0 0 0-3.32 0c-1.18.037
-                                                    -2.09 1.022-2.09 2.201v.916m7.5 
-                                                    0a48.667 48.667 0 0 0-7.5 0" />
-                                            </svg>
-                                        </button>
-                                    </form>
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="open-delete-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                            stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21
+                                                c.342.052.682.107 1.022.166m-1.022-.165L18.16 
+                                                19.673a2.25 2.25 0 0 1-2.244 2.077H8.084
+                                                a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79
+                                                m14.456 0a48.108 48.108 0 0 0-3.478-.397
+                                                m-12 .562c.34-.059.68-.114 1.022-.165
+                                                m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 
+                                                0v-.916c0-1.18-.91-2.164-2.09-2.201
+                                                a51.964 51.964 0 0 0-3.32 0c-1.18.037
+                                                -2.09 1.022-2.09 2.201v.916m7.5 
+                                                0a48.667 48.667 0 0 0-7.5 0" />
+                                        </svg>
+                                    </button>
+                                </form>
                             </td>
                             
                         </tr> 
@@ -180,7 +193,7 @@
                     <div class="flex ml-auto gap-2 max-sm:ml-0">
                         {{-- Previous button --}}
                         @if ($jobPosts->onFirstPage())
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Previous</button>
+                            <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Previous</button>
                         @else
                             <a href="{{ $jobPosts->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm hover:opacity-90">Previous</a>
                         @endif
@@ -189,7 +202,7 @@
                         @if ($jobPosts->hasMorePages())
                             <a href="{{ $jobPosts->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm hover:opacity-90">Next</a>
                         @else
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Next</button>
+                            <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Next</button>
                         @endif
                     </div>
                 </div>
@@ -313,6 +326,67 @@
             </div>
         </div>
     </div>
+
+    {{-- status modal --}}
+    <div id="status_modal" class="modal_bg edit_job_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 px-10 hidden">
+        <div class="sm:w-xl max-h-[80vh] overflow-y-auto mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal header --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Job Status</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_status_modal" class="size-5 cursor-pointer hover:bg-red-400! rounded-sm max-sm:size-5 bg-gray-300!">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+
+            {{-- modal body --}}
+            <div class="px-5 py-3 bg-white shadow-sm rounded-lg">
+                <h1 class="p_font text-blue-500 mb-1">
+                    Current Status: <span class="uppercase status_text"></span>
+                </h1>
+                <p class="home_p_font mb-3">Click a button below to change the job status.</p>
+
+                <form id="status_form" action="" method="POST" class="flex gap-2 max-sm:flex-col max-sm:w-full max-lg:gap-2">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" name="status" value="open" class="px-4 py-2 bg-green-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Open</button>
+                    <button type="submit" name="status" value="close" class="px-3 py-2 bg-red-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Close</button>
+                    <button type="submit" name="status" value="pause" class="px-3 py-2 bg-gray-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Pause</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('status_modal');
+        const closeModal = document.getElementById('close_status_modal');
+        const statusText = document.querySelector('.status_text');
+        const form = document.getElementById('status_form');
+
+        // open modal
+        document.querySelectorAll('.open-status-modal').forEach(button => {
+            button.addEventListener('click', () => {
+                const jobId = button.getAttribute('data-id');
+                const currentStatus = button.getAttribute('data-status');
+
+                statusText.textContent = currentStatus;
+                form.action = `/admin/job-post/${jobId}/status`; // route we'll define next
+
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // close modal
+        closeModal.addEventListener('click', () => modal.classList.add('hidden'));
+
+        // optional: close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
+    });
+    </script>
+
+    
     
     <script src="{{ asset('js/admin/job_post.js') }}"></script>
     <script src="{{ asset('js/admin/nav_admin.js') }}"></script>

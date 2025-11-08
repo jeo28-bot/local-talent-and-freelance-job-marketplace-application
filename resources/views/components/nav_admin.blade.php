@@ -1,13 +1,13 @@
 {{-- parent div --}}
 <div class="flex fixed w-full pointer-events-none">
     {{-- vertical nav --}}
-    <div id="vert_nav" class="bg-[#1E2939] w-auto min-h-[100vh] flex flex-col items-center border-r-1 border-gray-600 max-lg:fixed max-lg:w-60 z-1  pointer-events-auto ">
+    <div id="vert_nav" class="bg-[#1E2939] w-auto min-h-[100vh] flex flex-col items-center border-r-1 border-gray-600 max-lg:fixed max-lg:w-80 max-sm:w-65 z-50 pointer-events-auto ">
         {{-- logo --}}
         <div class=" px-6 py-2">
         {{-- logo --}}
         <img src="{{asset('assets/logoNoBg.png')}}" alt="logo image" class="w-75 cursor-pointer max-sm:w-60">
         </div>    
-
+        
         {{-- links --}}
         <div class="p_font text-white flex flex-col w-full px-5 gap-2 max-sm:px-3">
             {{-- menu section --}}
@@ -83,7 +83,7 @@
                 Applications
             </a>
              {{-- link 5 --}}
-            <a href="#" id="nav_applications" class="flex items-center gap-2 py-2 hover:bg-gray-700 px-5 rounded-lg max-sm:text-sm">
+            <a href="{{ route('admin.transactions') }}" id="nav_applications" class="flex items-center gap-2 py-2 hover:bg-gray-700 px-5 rounded-lg max-sm:text-sm {{ request()->routeIs('admin.transactions') ? 'admin_selected_nav' : '' }}">
                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
                 </svg>
@@ -93,10 +93,11 @@
             {{-- support section --}}
             <h1 class="text-sm p_font uppercase text-gray-400 py-2 max-sm:text-xs">Support</h1>
             {{-- link 5 --}}
-            <a href="#" id="nav_applications" class="flex items-center gap-2 py-2 hover:bg-gray-700 px-5 rounded-lg max-sm:text-sm">
+            <a href="{{route('admin.messages')}}" id="nav_applications" class="flex items-center gap-2 py-2 hover:bg-gray-700 px-5 rounded-lg max-sm:text-sm {{ request()->routeIs('admin.messages') ? 'admin_selected_nav' : '' }}">
                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
                 </svg>
+
                 Chats
             </a>
             {{-- link 6 --}}
@@ -124,7 +125,7 @@
         </div>
 
     {{-- horizontal nav --}}
-    <div class="pl-7 bg-[#1E2939] h-25 border-b-1 border-gray-600 flex items-center w-full pr-5 max-sm:pl-4 max-sm:pr-2 max-lg:-z-3 pointer-events-auto">
+    <div class="pl-7 bg-[#1E2939] h-25 border-b-1 border-gray-600 flex items-center w-full pr-5 max-sm:pl-4 max-sm:pr-2 max-lg:-z-3 pointer-events-auto max-sm:h-20">
         {{-- hamburder button --}}
         <button id="hamburder_button" class="lg:hidden p-2 border-1 border-gray-600 rounded-lg cursor-pointer hover:shadow-sm shadow-white mr-5 max-sm:mr-3">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 text-white max-lg:size-6 max-sm:size-5">
@@ -146,7 +147,57 @@
             </button>
         </div>
         {{-- profile and others --}}
-        <div class="ml-auto flex gap-5 items-center max-sm:gap-2">
+        <div class="ml-auto flex gap-3 items-center max-sm:gap-2">
+            {{-- inbox --}}
+            <div class=" border-1 border-gray-600 rounded-full cursor-pointer hover:shadow-sm shadow-white flex relative">
+                {{-- notification dot (hidden by default) --}}
+                <div id="notifDot" class="p-1 bg-red-500 rounded-full absolute mt-1 hidden"></div>
+
+                <a href="{{route('admin.inbox')}}" class="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white max-sm:size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                </svg>
+                </a>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const notifDot = document.getElementById('notifDot');
+                const url = "{{ route('admin.unreadCount') }}";
+
+                async function checkUnread() {
+                    try {
+                        const res = await fetch(url, { credentials: 'same-origin' });
+                        const data = await res.json();
+
+                        if (data.unreadCount > 0) {
+                            notifDot.classList.remove('hidden');
+                        } else {
+                            notifDot.classList.add('hidden');
+                        }
+                    } catch (err) {
+                        console.error('Error checking unread count:', err);
+                    }
+                }
+
+                // check immediately
+                checkUnread();
+
+                // check every 3 seconds while page is visible
+                let interval = setInterval(() => {
+                    if (!document.hidden) checkUnread();
+                }, 3000);
+
+                // if admin switches tab or minimizes window, pause polling
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) clearInterval(interval);
+                    else interval = setInterval(() => checkUnread(), 3000);
+                });
+            });
+            </script>
+
+
+
             {{-- notifaction --}}
             <a class="p-2 border-1 border-gray-600 rounded-full cursor-pointer hover:shadow-sm shadow-white">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white max-sm:size-5">
@@ -157,7 +208,7 @@
             {{-- profile --}}
             <button id="profile_dropdown" class="flex items-center text-gray-400 p_font cursor-pointer">
                 <img src="{{ asset('assets/defaultUserPic.png') }}" alt="" class="w-13 max-sm:w-10">
-                <h1 class="mr-2 max-sm:text-sm">{{ Auth::user()->name }}</h1>
+                <h1 class="mr-2 max-sm:text-sm max-sm:hidden">{{ Auth::user()->name }}</h1>
                 <svg id="arrow_icon" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                     class="size-4 transition-transform duration-200">
@@ -168,20 +219,20 @@
 
 
             {{-- dropdown items --}}
-            <div id="dropdown_items" class="py-2 px-3 bg-gray-900 absolute shadow-sm right-5 top-25 text-gray-400 p_font rounded-lg w-60 hidden">
+            <div id="dropdown_items" class="py-2 px-3 bg-gray-900 absolute shadow-sm right-5 top-25 max-sm:top-20 text-gray-400 p_font rounded-lg w-60 max-sm:w-50 hidden">
                 <h1 class="text-sm">{{ Auth::user()->name }}</h1>
                 <h3 class="text-xs mb-2">{{ Auth::user()->email }}</h3>
                 {{-- links --}}
                 <div class="text-sm border-b-1 border-gray-600 mb-2 pb-2">
                     {{-- link 1 --}}
-                    <a href="{{ route('admin.profile') }}" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <a href="{{ route('admin.profile') }}" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg max-sm:text-sm"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
                     Edit Profile
                     </a>
                     {{-- link 2 --}}
-                    <a href="#" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg "> 
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <a href="#" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg  max-sm:text-sm"> 
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
@@ -192,8 +243,8 @@
                 {{-- links --}}
                 <div class="text-sm">
                     {{-- link 1 --}}
-                        <a href="#" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <a href="#" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg max-sm:text-sm" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
                             </svg>
                         Sign out

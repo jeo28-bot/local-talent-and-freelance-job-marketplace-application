@@ -8,7 +8,7 @@
 
     <!-- main content -->
     <section class="w-full  z-0">
-        <div class="pt-35 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
+        <div class="pt-35 max-sm:pt-25 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
             {{-- padding top --}}
             {{-- title --}}
             <h1 class="home_p_font font-semibold! max-lg:text-sm mb-6">Dashboard</h1>

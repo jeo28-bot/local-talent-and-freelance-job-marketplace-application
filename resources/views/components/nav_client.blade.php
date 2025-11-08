@@ -12,7 +12,33 @@
         <a href="{{ route('client.index') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('client.index') ? 'selected_nav' : '' }}">Home</a>
         <a href="{{ route('client.postings') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('client.postings') ? 'selected_nav' : '' }}">Job Posting</a>
         <a href="{{ route('client.applicants') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('client.applicants') ? 'selected_nav' : '' }}">Applicants</a>
-        <a href="{{ route('client.transactions') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('client.transactions') ? 'selected_nav' : '' }}">Transactions</a>
+        
+          {{-- transaction dropdown --}}
+            <div class="flex relative group">
+                <a 
+                  class="pages_nav a_font px-2 py-8 flex items-center cursor-default
+                  {{ request()->routeIs('client.transactions*') ? 'selected_nav' : '' }}">
+                  Transactions 
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1 mt-[2px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </a>
+
+                <!-- Dropdown -->
+                <div class="absolute top-20 left-0 mt-2 w-40 bg-[#1E2939] border border-gray-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100  z-50 pointer-events-none group-hover:pointer-events-auto">
+                  <a href="{{ route('client.transactions.pending') }}" 
+                    class="block px-4 py-2 max-sm:text-sm text-white hover:opacity-70 p_font {{ request()->routeIs('client.transactions.pending') ? 'text-blue-400!' : '' }}">
+                    Pending
+                  </a>
+                  <a href="{{ route('client.transactions.completed') }}" 
+                    class="block px-4 py-2 max-sm:ext-sm text-white hover:opacity-70 p_font {{ request()->routeIs('client.transactions.completed') ? 'text-blue-400!' : '' }}">
+                    Completed
+                  </a>
+                </div>
+            </div>
+
+
+
        </div>
       </div>
 
@@ -60,7 +86,31 @@
               <a href="{{ route('client.index') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Home</a>
               <a href="{{ route('client.postings') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Job Posting</a>
               <a href="{{ route('client.applicants') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Applicants</a>
-              <a href="{{ route('client.transactions') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Transactions</a>
+              
+
+              <div class="group">
+                  <a class="pages_nav border-b-1 px-5 py-3 border-gray-500 flex items-center cursor-default">
+                    Transactions
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1 mt-[2px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </a>
+
+                  {{-- drop down --}}
+                  <div class="flex flex-col hidden group-hover:flex">
+                    <a href="{{ route('client.transactions.pending') }}" 
+                      class="pages_nav border-b-1 px-10 py-3 border-gray-600 text-sm text-gray-400 hover:opacity-70">
+                      Pending
+                    </a>
+                    <a href="{{ route('client.transactions.completed') }}" 
+                      class="pages_nav border-b-1 px-10 py-3 border-gray-600 text-sm text-gray-400 hover:opacity-70">
+                      Completed
+                    </a>
+                  </div>
+                </div>
+
+
+
               <a href="{{ route('client.profile') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
               {{-- <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Settings</a> --}}
               {{-- logout --}}
@@ -87,8 +137,6 @@
   <script>
   document.addEventListener('DOMContentLoaded', () => {
       const newChatIndicator = document.getElementById('newChatIndicator');
-
-      // Helper: detect if user is currently on a chat page
       const isOnChatPage = window.location.pathname.includes('/client/chat/');
 
       async function checkNewMessages() {
@@ -96,15 +144,12 @@
               const response = await fetch("{{ route('client.messages.fetch') }}");
               const data = await response.json();
 
-              // Show red dot if there's a new message NOT from you
-              const hasNewMessage = data.some(chat => 
-                  chat.latest_message && !chat.latest_message.startsWith('You:')
+              // ✅ Only show red dot if there are unseen messages not sent by the client
+              const hasUnseenMessage = data.some(chat =>
+                  chat.latest_sender_id !== {{ auth()->id() }} && chat.seen == false
               );
 
-              // 👇 Only show the indicator if:
-              // 1. There is a new message, AND
-              // 2. You're NOT currently viewing a chat page
-              if (hasNewMessage && !isOnChatPage) {
+              if (hasUnseenMessage && !isOnChatPage) {
                   newChatIndicator.classList.remove('hidden');
               } else {
                   newChatIndicator.classList.add('hidden');
@@ -115,9 +160,9 @@
           }
       }
 
-      // Run on load + every 3 seconds
       checkNewMessages();
       setInterval(checkNewMessages, 3000);
   });
   </script>
+
 

@@ -64,6 +64,56 @@ class ClientController extends Controller
         return view('client.public_profile', compact('user'));
     }
 
+     public function pendingTransactions()
+    {
+        $user = auth()->user();
+
+        // Only get non-completed transactions
+        $transactions = \App\Models\Transaction::where('client_id', $user->id)
+            ->whereIn('status', ['pending', 'paid', 'requested']) // 👈 Only these
+            ->latest()
+            ->paginate(3);
+
+        return view('client.transactions.pending', compact('transactions'));
+    }
+
+    public function completedTransactions()
+    {
+        $user = auth()->user();
+
+        // Only show completed transactions
+        $transactions = \App\Models\Transaction::where('client_id', $user->id)
+            ->where('status', 'completed')
+            ->latest()
+            ->paginate(3);
+
+        return view('client.transactions.completed', compact('transactions'));
+    }
+    public function destroyTransaction($id)
+    {
+        $transaction = \App\Models\Transaction::findOrFail($id);
+        $transaction->delete();
+
+        return redirect()->back()->with('success', 'Transaction deleted successfully.');
+    }
+    public function markAsPaid(Request $request, $id)
+    {
+        $request->validate([
+            'transaction_ref_no' => 'required|string',
+        ]);
+
+        $transaction = \App\Models\Transaction::findOrFail($id);
+
+        $transaction->update([
+            'transaction_ref_no' => $request->transaction_ref_no,
+            'status' => 'completed',
+            'payment_date' => now(), // ✅ sets current timestamp
+        ]);
+
+        return redirect()->back()->with('success', 'Payment marked as completed successfully.');
+    }
+
+
     
 }
 

@@ -41,32 +41,152 @@ class EmployeeController extends Controller
             $query->where('job_location', 'like', "%{$request->location}%");
         }
 
-        // 📑 Pagination (3 per page just like your code)
+        // 🆕 Always show newest jobs first
+        $query->orderBy('created_at', 'desc');
+
+        // 📑 Pagination (3 per page)
         $posts = $query->paginate(3);
 
         return view('employee.postings', compact('posts'));
     }
+
     public function public_profile()
     {
         return view('employee.public_profile');
     }
-  public function transactions()
+    public function transactions()
     {
-        return view('employee.transactions');
+        $user = auth()->user();
+
+        // Only show 3 per page
+        $transactions = \App\Models\Transaction::where('employee_id', $user->id)
+            ->latest()
+            ->paginate(3);
+
+        return view('employee.transactions', compact('transactions'));
     }
+   public function pendingTransactions(Request $request)
+    {
+        $user = auth()->user();
+        $search = $request->input('q');
+
+        // ✅ Base query for employee's non-completed transactions
+        $transactionsQuery = \App\Models\Transaction::where('employee_id', $user->id)
+            ->whereIn('status', ['pending', 'paid', 'requested'])
+            ->with('client') // eager-load client
+            ->latest();
+
+        // ✅ If user searched something, filter by job title, client name, amount, or status
+        if (!empty($search)) {
+            $transactionsQuery->where(function ($q) use ($search) {
+                $q->where('job_title', 'like', "%{$search}%")
+                ->orWhereHas('client', function ($clientQuery) use ($search) {
+                    $clientQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('amount', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%");
+            });
+        }
+
+        // ✅ Paginate and keep query string
+        $transactions = $transactionsQuery->paginate(3)->withQueryString();
+
+        return view('employee.transactions.pending', compact('transactions'));
+    }
+
+
+    public function completedTransactions(Request $request)
+    {
+        $user = auth()->user();
+        $search = $request->input('q');
+
+        // ✅ Base query for completed transactions
+        $transactionsQuery = \App\Models\Transaction::where('employee_id', $user->id)
+            ->where('status', 'completed')
+            ->with('client') // eager load client info
+            ->latest();
+
+        // ✅ Apply search filter if query exists
+        if (!empty($search)) {
+            $transactionsQuery->where(function ($q) use ($search) {
+                $q->where('job_title', 'like', "%{$search}%")
+                ->orWhereHas('client', function ($clientQuery) use ($search) {
+                    $clientQuery->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('amount', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%");
+            });
+        }
+
+        // ✅ Paginate and preserve query string
+        $transactions = $transactionsQuery->paginate(3)->withQueryString();
+
+        return view('employee.transactions.completed', compact('transactions'));
+    }
+
+    public function destroyTransaction($id)
+    {
+        $transaction = \App\Models\Transaction::findOrFail($id);
+        $transaction->delete();
+
+        return redirect()->back()->with('success', 'Transaction deleted successfully.');
+    }
+    public function requestPayout(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,id',
+            'payment_method' => 'required|string',
+            'reference_no' => 'required|string',
+        ]);
+
+        $transaction = \App\Models\Transaction::findOrFail($request->transaction_id);
+
+        $transaction->update([
+            'payment_method' => $request->payment_method,
+            'reference_no' => $request->reference_no,
+            'status' => 'requested',
+        ]);
+
+        return redirect()->back()->with('success', 'Payout request submitted successfully.');
+    }
+    
+
+
+
+
   public function jobs()
     {
         return view('employee.jobs');
     }
-    public function applied()
-    {
-        $applications = JobApplication::with(['job', 'user'])
-            ->where('user_id', Auth::id())
-            ->latest()
-            ->paginate(10); // ✅ only 10 per page
+    
+    public function applied(Request $request)
+{
+    $search = $request->input('q');
 
-        return view('employee.applied', compact('applications'));
-    }
+    $applications = \App\Models\JobApplication::with(['job', 'user'])
+        ->where('user_id', Auth::id())
+        ->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                // Search inside related Job
+                $q->whereHas('job', function ($jobQuery) use ($search) {
+                    $jobQuery->where('job_title', 'like', "%{$search}%");
+                })
+                // Search inside User
+                ->orWhereHas('user', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'like', "%{$search}%");
+                })
+                // Search in own application columns
+                ->orWhere('full_name', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhereDate('created_at', $search);
+            });
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    return view('employee.applied', compact('applications', 'search'));
+}
+
 
 
   public function messages()
@@ -95,12 +215,32 @@ class EmployeeController extends Controller
     }
 
     // save function
-      public function saved()
-      {
-          $savedJobs = auth()->user()->savedJobs()->paginate(5);
+    public function saved(Request $request)
+{
+    $search = $request->input('q');
 
-          return view('employee.saved', compact('savedJobs'));
-      }
+    $savedJobsQuery = auth()->user()->savedJobs()
+        ->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('job_title', 'LIKE', "%{$search}%")
+                  ->orWhere('job_location', 'LIKE', "%{$search}%")
+                  ->orWhere('job_type', 'LIKE', "%{$search}%")
+                  ->orWhere('job_pay', 'LIKE', "%{$search}%")
+                  ->orWhere('salary_release', 'LIKE', "%{$search}%")
+                  ->orWhere('short_description', 'LIKE', "%{$search}%")
+                  ->orWhere('skills_required', 'LIKE', "%{$search}%")
+                  ->orWhere('status', 'LIKE', "%{$search}%")
+                  ->orWhereHas('client', function ($clientQuery) use ($search) {
+                      $clientQuery->where('name', 'LIKE', "%{$search}%");
+                  });
+            });
+        });
+
+    $savedJobs = $savedJobsQuery->paginate(3)->withQueryString();
+
+    return view('employee.saved', compact('savedJobs', 'search'));
+}
+
 
     public function saveJob($id)
     {
@@ -146,6 +286,7 @@ class EmployeeController extends Controller
 
         return view('employee.public_profile', compact('user'));
     }
+  
 
 
 

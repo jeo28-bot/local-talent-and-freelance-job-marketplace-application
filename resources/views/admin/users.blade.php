@@ -8,12 +8,12 @@
 
     <!-- main content -->
     <section class="w-full  z-0">
-        <div class="pt-35 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
+        <div class="pt-35 max-sm:pt-25 pl-85 max-[1270px]:pl-75 max-lg:pl-7  pr-10 max-sm:pr-5 pb-15">
             {{-- padding top --}}
             {{-- title & sub title --}}
             <h1 class="home_p_font font-semibold! max-lg:text-sm text-lg">Users</h1>
             <p class="home_p_font mb-5 text-sm">Manage and review system users.</p>
-             {{-- export and search bar control div --}}
+            {{-- export and search bar control div --}}
             <div class="flex justify-between max-sm:gap-3 mb-3 max-sm:flex-col-reverse">
                 {{-- export to csv button --}}
                 <div>
@@ -80,7 +80,7 @@
                         @foreach($users as $index => $user)
                         <tr class="border-b-2 border-gray-300 py-2 hover:bg-gray-200 ">
                             <td class="px-4 py-2 p_font max-lg:text-sm home_p_font">
-                                 <a href="" >{{ $users->firstItem() + $index }}</a>
+                                 {{ $users->firstItem() + $index }}
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm">
                                 <a href="{{ route('admin.public_profile', ['name' => urlencode($user->name)]) }}" 
@@ -158,7 +158,7 @@
                     <div class="flex ml-auto gap-2 max-sm:ml-0">
                         {{-- Previous button --}}
                         @if ($users->onFirstPage())
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Previous</button>
+                            <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Previous</button>
                         @else
                             <a href="{{ $users->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm hover:opacity-90">Previous</a>
                         @endif
@@ -167,7 +167,7 @@
                         @if ($users->hasMorePages())
                             <a href="{{ $users->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm hover:opacity-90">Next</a>
                         @else
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Next</button>
+                            <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 rounded-lg text-sm">Next</button>
                         @endif
                     </div>
                 </div>

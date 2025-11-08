@@ -6,18 +6,44 @@
      <!-- navigation bar -->
     <nav class="w-full  bg-[#1E2939] text-white flex items-center px-8 max-lg:py-4 max-lg:px-4 max-sm:px-2">
       <div class="flex items-center">
-       <img src="{{asset('assets/logoNoBg.png')}}" alt="logo image" class="w-65 max-xl:w-50 max-sm:w-40">
-
-       <div class=" flex ml-10 gap-5 max-lg:hidden">
-        <a href="{{ auth()->user()->user_type === 'client' ? route('client.index') : route('employee.index') }}" 
-            class="pages_nav a_font px-2 py-8 
-                {{ request()->routeIs(auth()->user()->user_type === 'client' ? 'client.index' : 'employee.index') ? 'selected_nav' : '' }}">
-            Home
+        <a href="{{route('employee.index')}}">
+         <img src="{{asset('assets/logoNoBg.png')}}" alt="logo image" class="w-65 max-xl:w-50 max-sm:w-40">
         </a>
-        <a href="{{ route('employee.postings') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.postings') ? 'selected_nav' : '' }}">Job Posting</a>
-        <a href="{{ route('employee.applied') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.applied') ? 'selected_nav' : '' }}">Job Applied</a>
-        <a href="{{ route('employee.transactions') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.transactions') ? 'selected_nav' : '' }}">Transactions</a>
-       </div>
+
+        <div class=" flex ml-10 gap-5 max-lg:hidden">
+          <a href="{{ auth()->user()->user_type === 'client' ? route('client.index') : route('employee.index') }}" 
+              class="pages_nav a_font px-2 py-8 
+                  {{ request()->routeIs(auth()->user()->user_type === 'client' ? 'client.index' : 'employee.index') ? 'selected_nav' : '' }}">
+              Home
+          </a>
+          <a href="{{ route('employee.postings') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.postings') ? 'selected_nav' : '' }}">Job Posting</a>
+          <a href="{{ route('employee.applied') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.applied') ? 'selected_nav' : '' }}">Job Applied</a>
+          
+            {{-- transaction dropdown --}}
+            <div class="flex relative group">
+                <a 
+                  class="pages_nav a_font px-2 py-8 flex items-center cursor-default
+                  {{ request()->routeIs('employee.transactions*') ? 'selected_nav' : '' }}">
+                  Transactions 
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1 mt-[2px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </a>
+
+                <!-- Dropdown -->
+                <div class="absolute top-20 left-0 mt-2 w-40 bg-[#1E2939] border border-gray-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100  z-50 pointer-events-none group-hover:pointer-events-auto">
+                  <a href="{{ route('employee.transactions.pending') }}" 
+                    class="block px-4 py-2 max-sm:text-sm text-white hover:opacity-70 p_font {{ request()->routeIs('employee.transactions.pending') ? 'text-blue-400!' : '' }}">
+                    Pending
+                  </a>
+                  <a href="{{ route('employee.transactions.completed') }}" 
+                    class="block px-4 py-2 max-sm:ext-sm text-white hover:opacity-70 p_font {{ request()->routeIs('employee.transactions.completed') ? 'text-blue-400!' : '' }}">
+                    Completed
+                  </a>
+                </div>
+            </div>
+
+        </div>
       </div>
 
       <div class="ml-auto flex items-center gap-8 max-lg:gap-6 max-sm:gap-4">
@@ -69,7 +95,30 @@
               <a href="{{ route('employee.index') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Home</a>
               <a href="{{ route('employee.postings') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Job Posting</a>
               <a href="{{ route('employee.applied') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Job Applied</a>
-              <a href="{{ route('employee.transactions') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Transactions</a>
+              
+                <div class="group">
+                  <a class="pages_nav border-b-1 px-5 py-3 border-gray-500 flex items-center cursor-default">
+                    Transactions
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1 mt-[2px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </a>
+
+                  {{-- drop down --}}
+                  <div class="flex flex-col hidden group-hover:flex">
+                    <a href="{{ route('employee.transactions.pending') }}" 
+                      class="pages_nav border-b-1 px-10 py-3 border-gray-600 text-sm text-gray-400 hover:opacity-70">
+                      Pending
+                    </a>
+                    <a href="{{ route('employee.transactions.completed') }}" 
+                      class="pages_nav border-b-1 px-10 py-3 border-gray-600 text-sm text-gray-400 hover:opacity-70">
+                      Completed
+                    </a>
+                  </div>
+                </div>
+
+
+
               <a href="{{ route('employee.profile') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
               {{-- <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Settings</a> --}}
               {{-- logout --}}
@@ -94,8 +143,6 @@
  <script>
   document.addEventListener('DOMContentLoaded', () => {
       const newChatIndicator = document.getElementById('newChatIndicator');
-
-      // Helper: detect if user is currently on a chat page
       const isOnChatPage = window.location.pathname.includes('/employee/chat/');
 
       async function checkNewMessages() {
@@ -103,26 +150,19 @@
               const response = await fetch("{{ route('employee.messages.fetch') }}");
               const data = await response.json();
 
-              // Show red dot if there's a new message NOT from you
-              const hasNewMessage = data.some(chat => 
-                  chat.latest_message && !chat.latest_message.startsWith('You:')
-              );
+              // 👇 Show red dot only if there's any unseen message
+              const hasNewMessage = data.some(chat => chat.has_unseen);
 
-              // 👇 Only show the indicator if:
-              // 1. There is a new message, AND
-              // 2. You're NOT currently viewing a chat page
               if (hasNewMessage && !isOnChatPage) {
                   newChatIndicator.classList.remove('hidden');
               } else {
                   newChatIndicator.classList.add('hidden');
               }
-
           } catch (err) {
               console.error('Error checking new messages:', err);
           }
       }
 
-      // Run on load + every 3 seconds
       checkNewMessages();
       setInterval(checkNewMessages, 3000);
   });
