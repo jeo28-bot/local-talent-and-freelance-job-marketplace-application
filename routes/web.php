@@ -11,6 +11,7 @@ use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Transaction;
+use App\Http\Controllers\ReportController;
 
 
 Route::get('/', function () {
@@ -90,6 +91,10 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
    Route::get('/admin/transactions/export', [App\Http\Controllers\AdminController::class, 'exportTransactions'])
     ->name('admin.transactions.export');
 
+    Route::get('/admin/reports', [AdminController::class, 'reports'])->name('admin.reports');
+    Route::get('/admin/reports/export', [AdminController::class, 'exportReports'])->name('admin.reports.export');
+    Route::delete('/admin/reports/{id}', [AdminController::class, 'destroyReport'])->name('admin.reports.destroy');
+
 
 });
 
@@ -139,6 +144,13 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
 
     });
     
+    Route::post('/employee/block/{id}', [EmployeeController::class, 'blockUser'])->name('employee.block');
+    Route::delete('/employee/unblock/{id}', [\App\Http\Controllers\EmployeeController::class, 'unblockUser'])
+    ->name('employee.unblock')
+    ->middleware('auth');
+
+
+
 
 });
 
@@ -197,6 +209,8 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
 
     
 });
+
+Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
 
 Route::get('/nav', function () {
     return view('components.nav');

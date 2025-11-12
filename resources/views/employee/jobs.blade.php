@@ -183,6 +183,10 @@
        </div>
     </div>
 
+    <input type="hidden" name="reportable_id" value="{{ $job->id }}">
+    <input type="hidden" name="reportable_type" value="App\Models\JobPost">
+
+
     {{-- report modal --}}
     <div class="report_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
       {{-- menu control --}}
@@ -194,24 +198,53 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </div>
-             <form action="" class="w-full bg-white p-3 rounded-lg shadow-sm ">
+             <form id="reportForm" action="{{ route('reports.store') }}" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm ">
+                @csrf
+                <input type="hidden" name="reportable_id" value="{{ $job->id }}">
+                <input type="hidden" name="reportable_type" value="App\Models\JobPost">
+
                 <div class="input_control flex flex-col mb-3">
-                   <h1 class="p_font max-sm:text-sm">Job Title</h1>
-                   <h3 class="home_p_font max-sm:text-sm">Company Name</h3>
+                    <h1 class="p_font max-sm:text-sm text-lg font-semibold!">{{ $job->job_title }}</h1>
+                    <h3 class="home_p_font max-sm:text-sm"> {{ $job->client->name }}</h3>
                 </div>
                 
                 <div class="input_control flex flex-col mb-3 w-full">
-                    <label for="report_message" class=" mb-1 home_p_font text-black! max-sm:text-sm">Message <span class="text-gray-400">(optional)</span></label>
-                    <textarea id="report_message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"></textarea> 
+                    <label for="report_message" class=" mb-1 home_p_font text-black! max-sm:text-sm">
+                        Message <span class="text-gray-400">(optional)</span>
+                    </label>
+                    <textarea id="report_message" name="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"></textarea> 
                 </div>
                 
                 <div class="flex">
-                <input type="submit" value="Submit Report" class="cursor-pointer p_font bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                    <input type="submit" value="Submit Report" class="cursor-pointer p_font bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
                 </div>
-             </form>
+            </form>
+
        </div>
     </div>
 
+    <script>
+    document.querySelector('#reportForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+
+        const response = await fetch(e.target.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            document.querySelector('.report_modal').classList.add('hidden');
+        }
+    });
+    </script>
 
     @include('components.footer_employee')
 @endsection

@@ -13,7 +13,7 @@ use App\Models\JobPost;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\Response;
 use App\Models\Message;
-
+use App\Models\Report;
 
 class AdminController extends Controller
 {
@@ -343,6 +343,50 @@ class AdminController extends Controller
 
         return redirect()->route('admin.job_post')->with('success', 'Job post deleted successfully!');
     }
+    public function reports(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = Report::with(['reportable', 'reporter'])
+            ->orderBy('created_at', 'desc');
+
+        if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('message', 'LIKE', "%{$search}%")
+                ->orWhere('id', 'LIKE', "%{$search}%") // ✅ ADD THIS LINE
+                ->orWhere('reportable_id', 'LIKE', "%{$search}%")
+                ->orWhere('reportable_type', 'LIKE', "%{$search}%")
+                ->orWhereHas('reporter', function ($r) use ($search) {
+                    $r->where('name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHasMorph(
+                    'reportable',
+                    [User::class, JobPost::class],
+                    function ($related, $type) use ($search) {
+                        if ($type === User::class) {
+                            $related->where('name', 'LIKE', "%{$search}%");
+                        } elseif ($type === JobPost::class) {
+                            $related->where('job_title', 'LIKE', "%{$search}%");
+                        }
+                    }
+                );
+        });
+    }
+
+
+        $reports = $query->paginate(10)->appends(['search' => $search]);
+
+        return view('admin.reports', compact('reports'));
+    }
+    public function destroyReport($id)
+    {
+        $report = Report::findOrFail($id);
+        $report->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+
     
     public function messages(Request $request)
     {
@@ -1014,6 +1058,83 @@ class AdminController extends Controller
 
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set('Content-Disposition', "attachment; filename={$filename}");
+
+        return $response;
+    }
+
+    // export reports to CSV
+    public function exportReports(Request $request)
+    {
+        $search = $request->input('search');
+
+        // Base query
+        $query = Report::with(['reportable', 'reporter'])->orderBy('created_at', 'desc');
+
+        // Apply same search logic as your reports() function
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('message', 'LIKE', "%{$search}%")
+                ->orWhere('reportable_id', 'LIKE', "%{$search}%")
+                ->orWhere('reportable_type', 'LIKE', "%{$search}%")
+                ->orWhereHas('reporter', function ($r) use ($search) {
+                    $r->where('name', 'LIKE', "%{$search}%");
+                })
+                ->orWhereHasMorph(
+                    'reportable',
+                    [User::class, JobPost::class],
+                    function ($related, $type) use ($search) {
+                        if ($type === User::class) {
+                            $related->where('name', 'LIKE', "%{$search}%");
+                        } elseif ($type === JobPost::class) {
+                            $related->where('job_title', 'LIKE', "%{$search}%");
+                        }
+                    }
+                );
+            });
+        }
+
+        $reports = $query->get(); // Get all results (no pagination)
+
+        // CSV stream response
+        $response = new StreamedResponse(function () use ($reports) {
+            $handle = fopen('php://output', 'w');
+
+            // CSV header row
+            fputcsv($handle, [
+                'Report ID',
+                'Type',
+                'Reported Entity',
+                'Reported By',
+                'Message',
+                'Created At'
+            ]);
+
+            // CSV data rows
+            foreach ($reports as $report) {
+                $type = class_basename($report->reportable_type);
+                $reportedEntity = $report->reportable
+                    ? ($type === 'User'
+                        ? $report->reportable->name
+                        : ($report->reportable->job_title ?? 'Job #' . $report->reportable_id))
+                    : 'N/A';
+
+                fputcsv($handle, [
+                    '2025' . $report->id,
+                    $type,
+                    $reportedEntity,
+                    $report->reporter->name ?? 'N/A',
+                    $report->message,
+                    $report->created_at->format('M d, Y - h:ia')
+                ]);
+            }
+
+            fclose($handle);
+        });
+
+        // CSV headers
+        $date = now()->format('Y-m-d');
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', "attachment; filename=\"reports_export_{$date}.csv\"");
 
         return $response;
     }

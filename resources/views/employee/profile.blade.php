@@ -15,9 +15,6 @@
                     {{ Auth::user()->name }}
                     </a>
 
-
-
-                    
                     {{-- edit user details button --}}
                     <a class="edit_details_button cursor-pointer hover:opacity-50">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-4">
@@ -51,6 +48,29 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                 </svg>
             {{ Auth::user()->address }}</p>
+            
+            {{-- settings button --}}
+            <div class="flex mb-3">
+                <button id="profile_settings" class="p-1 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 ml-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                    </svg>
+                </button>
+            </div>
+            {{-- dropdown settings --}}
+            <div class="max-sm:w-[135px] flex flex-col p-2 gap-2 p_font absolute -mt-2 ml-120 max-lg:ml-95 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="dropdown_settings">
+                <button 
+                    id="blocked_user_btn"
+                    class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1 text-red-500! max-sm:text-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                    Blocked User
+                </button>
+            </div>
+
 
             {{-- about section --}}
             <div class="flex items-center justify-between mb-2">
@@ -249,6 +269,43 @@
      </section>
 
             {{-- modal section --}}
+
+            {{-- blocked user modal --}}
+            <div id="blocked_user_modal" class="fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 modal_bg hidden">
+                <div class="w-xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="sub_title_font max-sm:text-sm">Blocked users:</h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_blocked_modal" class="size-5 cursor-pointer hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+
+                    <div class="w-full bg-white p-3 rounded-lg shadow-sm mb-3 max-h-80 overflow-y-auto">
+                        @if($blockedUsers->isEmpty())
+                            <p id="no_blocked_users" class="home_p_font italic py-5">No blocked users.</p>
+                        @else
+                            @foreach($blockedUsers as $blocked)
+                                <a href="{{ url('employee/public_profile/' . $blocked->blocked->name) }}" 
+                                class="p-1 shadow-lg rounded-lg bg-gray-200 border-2 border-red-300 flex items-center gap-3 max-sm:gap-2 hover:bg-gray-300 mb-2">
+                                    <img src="{{ $blocked->blocked->profile_pic ? asset('storage/' . $blocked->blocked->profile_pic) : asset('assets/defaultUserPic.png') }}" 
+                                        alt="" class="w-10 h-10 rounded-full">
+                                    <h1 class="p_font font-semibold! lg:text-lg">{{ $blocked->blocked->name }}</h1>
+                                    <p class="home_p_font text-sm max-sm:text-xs ml-auto">{{ \Carbon\Carbon::parse($blocked->blocked_at)->diffForHumans() }}</p>
+                                </a>
+                            @endforeach
+                        @endif
+                    </div>
+
+
+
+                    <div class="flex">
+                        <button id="close_blocked_btn" class="cursor-pointer p_font bg-[#1E2939] text-white px-4 py-2 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
 
             {{-- delete image upload modal --}}
             <div id="delete_image_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
@@ -522,6 +579,75 @@
             </div>
 
             {{-- end of modal section --}}
+
+            {{-- scripts --}}
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                const settingsBtn = document.getElementById('profile_settings');
+                if (!settingsBtn) return;
+
+                // dropdown is the next sibling of the wrapper div that contains the button
+                const wrapper = settingsBtn.parentElement; 
+                let dropdown = wrapper ? wrapper.nextElementSibling : null;
+
+                // fallback: try to find a nearby dropdown if DOM structure differs
+                if (!dropdown) {
+                    dropdown = document.querySelector('.max-sm\\:w-\\[135px\\], .shadow-lg'); // best-effort fallback
+                }
+                if (!dropdown) return;
+
+                // toggle dropdown
+                settingsBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                });
+
+                // close when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!dropdown.contains(e.target) && !settingsBtn.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    }
+                });
+
+                // close on Escape
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') dropdown.classList.add('hidden');
+                });
+
+                // prevent clicks inside dropdown from bubbling (so outside click doesn't immediately close)
+                dropdown.addEventListener('click', (e) => e.stopPropagation());
+                });
+            </script>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const blockedUserBtn = document.getElementById('blocked_user_btn');
+                const blockedUserModal = document.getElementById('blocked_user_modal');
+                const closeModalIcon = document.getElementById('close_blocked_modal');
+                const closeModalBtn = document.getElementById('close_blocked_btn');
+
+                if (!blockedUserBtn || !blockedUserModal) return;
+
+                // 🟢 Open modal
+                blockedUserBtn.addEventListener('click', () => {
+                    blockedUserModal.classList.remove('hidden');
+                });
+
+                // 🔴 Close modal (via close button or icon)
+                closeModalBtn.addEventListener('click', () => blockedUserModal.classList.add('hidden'));
+                closeModalIcon.addEventListener('click', () => blockedUserModal.classList.add('hidden'));
+
+                // 🟠 Close when clicking outside modal content
+                blockedUserModal.addEventListener('click', (e) => {
+                    if (e.target === blockedUserModal) {
+                        blockedUserModal.classList.add('hidden');
+                    }
+                });
+            });
+            </script>
+
+
+
            
 @include('components.footer_employee')
 <script src="{{ asset('js/employee.js') }}"></script>    

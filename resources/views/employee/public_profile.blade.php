@@ -7,15 +7,14 @@
 
 
      <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
-        <div class="sm:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
+        <div class="lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between">
-            <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
+                <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
 
-             <img 
+                <img 
                 src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : asset('assets/defaultUserPic.png') }}" 
                 alt="profile pic" 
-                class="profile_pic_clicked w-30 h-30 max-sm:w-20 max-sm:h-20 rounded-full border-3 bg-[#1e2939] border-gray-400 my-3 shadow-sm cursor-pointer">
-                    
+                class="profile_pic_clicked w-30 h-30 max-sm:w-20 max-sm:h-20 rounded-full border-3 bg-[#1e2939] border-gray-400 my-3 shadow-sm cursor-pointer"> 
             </div>
 
             {{-- mail, phone, address section --}}
@@ -35,6 +34,15 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                 </svg>
             {{ $user->address }}</p>
+
+            {{-- blocked status --}}
+            <p class="{{ $isBlocked ? '' : 'hidden' }} p-2 rounded-lg text-center p_font mb-4 bg-red-200 text-red-600 border border-red-400 flex items-center justify-center gap-1 max-sm:text-sm"> 
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                Blocked
+            </p>
+
 
             {{-- follow, block, send message --}}
             <div class="p_font flex gap-2 items-center mb-4">
@@ -81,7 +89,7 @@
                     </button>
                 @endif
                 <button
-                        id="block_report_show"
+                        id="block_report_show" data-user-id="{{ $user->id }}"
                         class="p-1 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 ml-auto
                         @if(Auth::check() && Auth::user()->name === $user->name)
                             opacity-50 cursor-not-allowed pointer-events-none
@@ -100,20 +108,44 @@
 
             </div>
                 {{-- block and report dropdown --}}
+                @php
+                    $blocked = $isBlocked ?? false;
+                @endphp
+
                 <div class="flex flex-col p-2 gap-2 p_font absolute -mt-3 ml-130 max-lg:right-15 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="block_report_dropdown">
-                    <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
+
+                    <button 
+                        id="block_user_btn"
+                        class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1 text-red-500!"
+                        style="{{ $blocked ? 'display:none;' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>
                         Block
                     </button>
-                    <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
+
+                    <button 
+                        id="unblock_user_btn"
+                        class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1 text-red-500!"
+                        style="{{ $blocked ? '' : 'display:none;' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Unblock
+                    </button>
+
+                    <button id="report_user_btn" class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                         </svg>
                         Report
                     </button>
                 </div>
+
+                <div id="block_report_show" data-user-id="{{ $user->id }}" style="display:none;"></div>
+
+
+
 
         {{-- about section --}}
             <div class="flex items-center justify-between mb-2">
@@ -300,11 +332,243 @@
         
      </section>
 
-  
+     {{-- modal section --}}
+
+    {{-- block modal warning --}}
+    <div id="block_user" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20">
+            <h2 class="text-xl sub_title_font font-semibold mb-2">Block this user?</h2>
+            <p class="home_p_font text-gray-600 mb-3">You can still unblock the user after the action. <br>Are you sure you want to block this?</p>
+
+            <div class="flex gap-2 justify-end">
+                <button id="cancel_block" type="button"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Cancel
+                </button>
+            
+                <button type="button" id="confirm_block"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Block
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- unblock modal warning --}}
+    <div id="unblock_user" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20">
+            <h2 class="text-xl sub_title_font font-semibold mb-2">Unblock this user?</h2>
+            <p class="home_p_font text-gray-600 mb-3">You can still block the user after the action. <br>Are you sure you want to unblock this?</p>
+
+            <div class="flex gap-2 justify-end">
+                <button id="cancel_unblock" type="button"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Cancel
+                </button>
+            
+                <button type="button" id="confirm_unblock"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Unblock
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- report modal --}}
+    <div class="report_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
+      {{-- menu control --}}
+        <div class="w-2xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal sub title and close button --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Describe your problem below:</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_report_modal" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+                <form id="reportForm" action="{{ route('reports.store') }}" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm">
+                    @csrf
+                    <input type="hidden" name="reportable_id" value="{{ $user->id }}">
+                    <input type="hidden" name="reportable_type" value="App\Models\User">
+
+                    <div class="input_control flex flex-col mb-3">
+                        <h1 class="p_font max-sm:text-sm lg:text-xl font-semibold!">{{ $user->name }}</h1>
+                        <h3 class="home_p_font max-sm:text-sm">{{ $user->email }}</h3>
+                    </div>
+                    
+                    <div class="input_control flex flex-col mb-3 w-full">
+                        <label for="report_message" class=" mb-1 home_p_font text-black! max-sm:text-sm">
+                            Message <span class="text-gray-400">(optional)</span>
+                        </label>
+                        <textarea id="report_message" name="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"></textarea> 
+                    </div>
+                    
+                    <div class="flex">
+                        <input type="submit" value="Submit Report" class="cursor-pointer p_font bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                    </div>
+                </form>
+
+       </div>
+    </div>
+
+    {{-- report script --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const reportButton = document.querySelector('#report_user_btn');
+        const reportModal = document.querySelector('.report_modal');
+        const closeReportModal = document.getElementById('close_report_modal');
+        const reportForm = document.getElementById('reportForm');
+
+        // open modal
+        reportButton.addEventListener('click', () => {
+            reportModal.classList.remove('hidden');
+        });
+
+        // close modal
+        closeReportModal.addEventListener('click', () => {
+            reportModal.classList.add('hidden');
+        });
+
+        // submit report via AJAX
+        reportForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // ✅ STOP normal form submission
+
+            const formData = new FormData(reportForm);
+            const response = await fetch(reportForm.action, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': formData.get('_token') },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // ✅ refresh the page
+            } else {
+                alert('Something went wrong. Please try again.');
+            }
+        });
+    });
+    </script>
+
+  {{-- for block script --}}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const blockModal = document.getElementById('block_user');
+        const cancelBlock = document.getElementById('cancel_block');
+        const confirmBlock = document.getElementById('confirm_block');
+        const dropdownToggle = document.getElementById('block_report_show'); // user ID is here
+
+        // Select the actual Block button inside dropdown
+        const blockButton = document.querySelector('#block_report_dropdown button.text-red-500\\!');
+
+        if (blockButton) {
+            blockButton.addEventListener('click', () => {
+                blockModal.classList.remove('hidden'); // show modal
+            });
+        }
+
+        // Cancel block
+        cancelBlock.addEventListener('click', () => {
+            blockModal.classList.add('hidden'); // hide modal
+        });
+
+        // Confirm block (AJAX)
+        confirmBlock.addEventListener('click', async () => {
+            const userId = dropdownToggle.dataset.userId;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            try {
+                const response = await fetch(`/employee/block/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token
+                    }
+                });
+
+                const data = await response.json();
+                    blockModal.classList.add('hidden');
+                    location.reload(); // refresh page to reflect changes
+               
+            } catch (err) {
+                console.error(err);
+                alert('An error occurred while blocking the user.');
+            }
+        });
+
+        // Close modal if click outside
+        blockModal.addEventListener('click', (e) => {
+            if (e.target === blockModal) {
+                blockModal.classList.add('hidden');
+            }
+        });
+    });
+    </script>
+    
+    {{-- unblock script --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const unblockBtn = document.getElementById('unblock_user_btn');
+        const unblockModal = document.getElementById('unblock_user');
+        const cancelUnblock = document.getElementById('cancel_unblock');
+        const confirmUnblock = document.getElementById('confirm_unblock');
+        const userId = document.getElementById('block_report_show')?.dataset.userId; // hidden element with user ID
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        if (!unblockBtn || !unblockModal || !userId) return;
+
+        // Show unblock modal
+        unblockBtn.addEventListener('click', () => {
+            unblockModal.classList.remove('hidden');
+        });
+
+        // Cancel button hides modal
+        cancelUnblock.addEventListener('click', () => {
+            unblockModal.classList.add('hidden');
+        });
+
+        // Confirm unblock AJAX
+        confirmUnblock.addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/employee/unblock/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Hide modal then refresh the page
+                    unblockModal.classList.add('hidden');
+                    location.reload(); // 🔄 refresh page
+                }
+            } catch (err) {
+                console.error('Unblock error:', err);
+            }
+        });
+
+        // Close modal if clicking outside
+        unblockModal.addEventListener('click', (e) => {
+            if (e.target === unblockModal) {
+                unblockModal.classList.add('hidden');
+            }
+        });
+    });
+    </script>
+
+
+
+
 
     
            
 @include('components.footer_employee')
 <script src="{{ asset('js/employee/public_profile.js') }}"></script>
+<script src="{{ asset('js/client/public_profile.js') }}"></script>
+
 
 @endsection

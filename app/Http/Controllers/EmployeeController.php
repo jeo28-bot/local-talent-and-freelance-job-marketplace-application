@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\SavedJob;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
+use App\Models\BlockedUser;
 
 class EmployeeController extends Controller
 {
@@ -16,12 +17,13 @@ class EmployeeController extends Controller
     }
    public function postings(Request $request)
     {
-        $query = JobPost::with('client'); // eager load client for searching by name
+        $user = auth()->user();
 
-        // 🔎 Search filter (across multiple fields)
+        $query = JobPost::with('client');
+
+        // 🔎 Search filter
         if ($request->filled('q')) {
             $q = $request->q;
-
             $query->where(function ($subQuery) use ($q) {
                 $subQuery->where('job_title', 'like', "%$q%")
                     ->orWhere('job_type', 'like', "%$q%")
@@ -36,19 +38,31 @@ class EmployeeController extends Controller
             });
         }
 
-        // 📍 Location filter (optional)
+        // 📍 Location filter
         if ($request->filled('location')) {
             $query->where('job_location', 'like', "%{$request->location}%");
+        }
+
+        // ❌ Exclude blocked clients
+        if ($user) {
+            $blockedClientIds = BlockedUser::where('user_id', $user->id)
+                ->pluck('blocked_user_id')
+                ->toArray();
+
+            if (!empty($blockedClientIds)) {
+                $query->whereNotIn('client_id', $blockedClientIds);
+            }
         }
 
         // 🆕 Always show newest jobs first
         $query->orderBy('created_at', 'desc');
 
-        // 📑 Pagination (3 per page)
+        // 📑 Pagination
         $posts = $query->paginate(3);
 
         return view('employee.postings', compact('posts'));
     }
+
 
     public function public_profile()
     {
@@ -199,7 +213,15 @@ class EmployeeController extends Controller
     }
     public function profile()
     {
-        return view('employee.profile');
+        $user = Auth::user();
+
+        // Get blocked users by this employee
+        $blockedUsers = BlockedUser::where('user_id', $user->id)
+            ->with('blocked') // eager load blocked user info
+            ->orderBy('blocked_at', 'desc')
+            ->get();
+
+        return view('employee.profile', compact('blockedUsers'));
     }
     public function showJob($slug)
     {
@@ -278,17 +300,68 @@ class EmployeeController extends Controller
 
         return view('employee.applied', compact('applications'));
     }
+
     // EmployeeController
     public function publicProfile($name)
     {
         $decodedName = urldecode($name);
         $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
 
-        return view('employee.public_profile', compact('user'));
+        // Check if the currently logged-in user has blocked this user
+        $isBlocked = false;
+        if (auth()->check()) {
+            $isBlocked = \App\Models\BlockedUser::where('user_id', auth()->id())
+                ->where('blocked_user_id', $user->id)
+                ->exists();
+        }
+
+        return view('employee.public_profile', compact('user', 'isBlocked'));
     }
+
+
   
+    public function blockUser(Request $request, $id)
+    {
+        $user = \App\Models\User::findOrFail($id);
 
+        // Prevent self-block
+        if ($user->id === auth()->id()) {
+            return response()->json(['success' => false, 'message' => "You can't block yourself 😅"]);
+        }
 
+        // Check if already blocked
+        $exists = BlockedUser::where('user_id', auth()->id())
+                            ->where('blocked_user_id', $user->id)
+                            ->exists();
+
+        if ($exists) {
+            return response()->json(['success' => false, 'message' => "User already blocked."]);
+        }
+
+        BlockedUser::create([
+            'user_id' => auth()->id(),
+            'blocked_user_id' => $user->id,
+            'blocked_at' => now(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'User blocked successfully.']);
+    }
+    public function unblockUser($id)
+    {
+        $user = auth()->user();
+
+        $blocked = \App\Models\BlockedUser::where('user_id', $user->id)
+            ->where('blocked_user_id', $id)
+            ->first();
+
+        if (!$blocked) {
+            return response()->json(['success' => false, 'message' => 'User is not blocked.'], 404);
+        }
+
+        $blocked->delete();
+
+        return response()->json(['success' => true]);
+    }
 
 
 

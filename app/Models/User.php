@@ -80,6 +80,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\Message::class, 'receiver_id');
     }
+    public function blockedUsers()
+    {
+        return $this->hasMany(BlockedUser::class, 'user_id');
+    }
 
 
 }

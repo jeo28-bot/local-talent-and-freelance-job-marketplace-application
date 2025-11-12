@@ -105,7 +105,7 @@
             </div>
             {{-- block and report dropdown --}}
             <div class="flex flex-col p-2 gap-2 p_font absolute -mt-3 ml-130 max-lg:right-15 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="block_report_dropdown">
-                <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
+                <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1 text-red-500">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
@@ -311,10 +311,37 @@
     </section>
 
 
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('block_report_show');
+        const dropdown = document.getElementById('block_report_dropdown');
+
+        // Toggle dropdown when button is clicked
+        toggleButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent click from propagating to document
+            dropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && !toggleButton.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Optional: Prevent closing dropdown if clicking inside
+        dropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+    </script>
+
+
+
 
 
     
-    <script src="{{ asset('js/client/public_profile.js') }}"></script>
+
     <script src="{{ asset('js/employee/public_profile.js') }}"></script>
     <script src="{{ asset('js/admin/nav_admin.js') }}"></script>
 @endsection

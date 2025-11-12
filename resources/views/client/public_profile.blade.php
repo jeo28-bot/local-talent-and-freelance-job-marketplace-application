@@ -101,7 +101,7 @@
             </div>
                 {{-- block and report dropdown --}}
                 <div class="flex flex-col p-2 gap-2 p_font absolute -mt-3 ml-130 max-lg:right-15 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="block_report_dropdown">
-                    <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1">
+                    <button class="p-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 flex items-center gap-1 text-red-500">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>
@@ -272,6 +272,84 @@
         </div>
         
      </section>
+
+     {{-- modal section --}}
+
+    {{-- report modal --}}
+    <div class="report_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
+      {{-- menu control --}}
+        <div class="w-2xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal sub title and close button --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Describe your problem below:</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_report_modal" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+                <form id="reportForm" action="{{ route('reports.store') }}" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm">
+                    @csrf
+                    <input type="hidden" name="reportable_id" value="{{ $user->id }}">
+                    <input type="hidden" name="reportable_type" value="App\Models\User">
+
+                    <div class="input_control flex flex-col mb-3">
+                        <h1 class="p_font max-sm:text-sm lg:text-xl font-semibold!">{{ $user->name }}</h1>
+                        <h3 class="home_p_font max-sm:text-sm">{{ $user->email }}</h3>
+                    </div>
+                    
+                    <div class="input_control flex flex-col mb-3 w-full">
+                        <label for="report_message" class=" mb-1 home_p_font text-black! max-sm:text-sm">
+                            Message <span class="text-gray-400">(optional)</span>
+                        </label>
+                        <textarea id="report_message" name="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"></textarea> 
+                    </div>
+                    
+                    <div class="flex">
+                        <input type="submit" value="Submit Report" class="cursor-pointer p_font bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                    </div>
+                </form>
+
+       </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const reportButton = document.querySelector('#block_report_dropdown button:nth-child(2)');
+        const reportModal = document.querySelector('.report_modal');
+        const closeReportModal = document.getElementById('close_report_modal');
+        const reportForm = document.getElementById('reportForm');
+
+        // open modal
+        reportButton.addEventListener('click', () => {
+            reportModal.classList.remove('hidden');
+        });
+
+        // close modal
+        closeReportModal.addEventListener('click', () => {
+            reportModal.classList.add('hidden');
+        });
+
+        // submit report via AJAX
+        reportForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // ✅ STOP normal form submission
+
+            const formData = new FormData(reportForm);
+            const response = await fetch(reportForm.action, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': formData.get('_token') },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                location.reload(); // ✅ refresh the page
+            } else {
+                alert('Something went wrong. Please try again.');
+            }
+        });
+    });
+    </script>
 
   
 

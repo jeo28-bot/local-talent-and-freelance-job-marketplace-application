@@ -58,8 +58,8 @@
                                     5.414a1 1 0 01.293.707V20a2 2 0 
                                     01-2 2z" />
                         </svg>
-                        <h2 class="text-xl font-semibold text-gray-800">No job postings yet</h2>
-                        <p class="text-gray-500 mt-1">Please check back later for available job opportunities.</p>
+                        <h2 class="text-xl font-semibold text-gray-800 p_font">No job postings yet</h2>
+                        <p class="text-gray-500 mt-1 home_p_font">Please check back later for available job opportunities.</p>
                     </div>
                 @else
                 
@@ -225,7 +225,7 @@
                             01-2 2z" />
                 </svg>
             
-                <h2 class="text-xl font-semibold text-gray-800 sub_title_font">No job postings yet</h2>
+                <h2 class="text-xl font-semibold text-gray-800 p_font!">No job postings yet</h2>
                 <p class="text-gray-500 mt-1 home_p_font">Please check back later for available job opportunities.</p>
             </div>
 

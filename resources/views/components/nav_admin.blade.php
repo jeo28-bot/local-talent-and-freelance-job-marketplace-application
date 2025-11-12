@@ -101,7 +101,7 @@
                 Chats
             </a>
             {{-- link 6 --}}
-            <a href="#" id="nav_applications" class="flex items-center gap-2 py-2 hover:bg-gray-700 px-5 rounded-lg max-sm:text-sm">
+            <a href="{{route('admin.reports')}}" id="nav_applications" class="flex items-center gap-2 py-2 hover:bg-gray-700 px-5 rounded-lg max-sm:text-sm {{ request()->routeIs('admin.reports') ? 'admin_selected_nav' : '' }}">
                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                 </svg>

@@ -151,29 +151,29 @@
         @endif
 
         {{-- Custom Pagination --}}
-            @if ($applications->total() > 10)
-                <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
-                    <h3 class="home_p_font text-sm max-sm:text-xs">
-                        Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
-                    </h3>
+        @if ($applications->total() > 10)
+            <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
+                <h3 class="home_p_font text-sm max-sm:text-xs">
+                    Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
+                </h3>
 
-                    <div class="flex ml-auto gap-2 max-sm:ml-0">
-                        {{-- Previous button --}}
-                        @if ($applications->onFirstPage())
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</button>
-                        @else
-                            <a href="{{ $applications->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</a>
-                        @endif
+                <div class="flex ml-auto gap-2 max-sm:ml-0">
+                    {{-- Previous button --}}
+                    @if ($applications->onFirstPage())
+                        <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</button>
+                    @else
+                        <a href="{{ $applications->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</a>
+                    @endif
 
-                        {{-- Next button --}}
-                        @if ($applications->hasMorePages())
-                            <a href="{{ $applications->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
-                        @else
-                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
-                        @endif
-                    </div>
+                    {{-- Next button --}}
+                    @if ($applications->hasMorePages())
+                        <a href="{{ $applications->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
+                    @else
+                        <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
+                    @endif
                 </div>
-            @endif
+            </div>
+        @endif
 
 
         </div>

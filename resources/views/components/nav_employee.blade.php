@@ -67,9 +67,11 @@
           
         </a>
 
-        <a href="{{route('employee.profile')}}" class="pages_nav max-lg:hidden">
-          <img src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : asset('assets/defaultUserPic.png') }}"  alt="profile image" class="w-10 h-10 rounded-full border-2 border-gray-400 ">
-        </a>
+          <a href="{{route('employee.profile')}}" class="pages_nav max-lg:hidden">
+            <img src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : asset('assets/defaultUserPic.png') }}"  alt="profile image" class="w-10 h-10 rounded-full border-2 border-gray-400 ">
+          </a>
+          
+       
 
         <span class="cursor-pointer lg:hidden pages_nav hamburger_menu">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
