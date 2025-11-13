@@ -174,32 +174,32 @@ class EmployeeController extends Controller
     }
     
     public function applied(Request $request)
-{
-    $search = $request->input('q');
+    {
+        $search = $request->input('q');
 
-    $applications = \App\Models\JobApplication::with(['job', 'user'])
-        ->where('user_id', Auth::id())
-        ->when($search, function ($query, $search) {
-            $query->where(function ($q) use ($search) {
-                // Search inside related Job
-                $q->whereHas('job', function ($jobQuery) use ($search) {
-                    $jobQuery->where('job_title', 'like', "%{$search}%");
-                })
-                // Search inside User
-                ->orWhereHas('user', function ($userQuery) use ($search) {
-                    $userQuery->where('name', 'like', "%{$search}%");
-                })
-                // Search in own application columns
-                ->orWhere('full_name', 'like', "%{$search}%")
-                ->orWhere('status', 'like', "%{$search}%")
-                ->orWhereDate('created_at', $search);
-            });
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        $applications = \App\Models\JobApplication::with(['job', 'user'])
+            ->where('user_id', Auth::id())
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    // Search inside related Job
+                    $q->whereHas('job', function ($jobQuery) use ($search) {
+                        $jobQuery->where('job_title', 'like', "%{$search}%");
+                    })
+                    // Search inside User
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    })
+                    // Search in own application columns
+                    ->orWhere('full_name', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhereDate('created_at', $search);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-    return view('employee.applied', compact('applications', 'search'));
-}
+        return view('employee.applied', compact('applications', 'search'));
+    }
 
 
 
@@ -362,6 +362,7 @@ class EmployeeController extends Controller
 
         return response()->json(['success' => true]);
     }
+    
 
 
 

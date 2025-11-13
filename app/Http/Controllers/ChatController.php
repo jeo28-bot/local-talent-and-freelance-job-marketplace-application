@@ -5,56 +5,70 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Message;
 use App\Models\User;
+use App\Models\BlockedUser;
+use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
 {
     public function show($name)
-    {
-        $receiver = User::where('name', $name)->firstOrFail();
-        $user = auth()->user();
+{
+    $receiver = User::where('name', $name)->firstOrFail();
+    $user = auth()->user();
 
-        // ✅ Mark all messages from the receiver as seen when the employee opens the chat
-        Message::where('sender_id', $receiver->id)
-            ->where('receiver_id', $user->id)
-            ->where('seen', false)
-            ->update(['seen' => true]);
+    // ✅ Mark all messages from the receiver as seen when the employee opens the chat
+    Message::where('sender_id', $receiver->id)
+        ->where('receiver_id', $user->id)
+        ->where('seen', false)
+        ->update(['seen' => true]);
 
-        // messages between the two
-        $messages = Message::where(function ($query) use ($user, $receiver) {
-                $query->where('sender_id', $user->id)
-                    ->where('receiver_id', $receiver->id);
-            })
-            ->orWhere(function ($query) use ($user, $receiver) {
-                $query->where('sender_id', $receiver->id)
-                    ->where('receiver_id', $user->id);
-            })
-            ->orderBy('created_at', 'asc')
-            ->get();
+    // messages between the two
+    $messages = Message::where(function ($query) use ($user, $receiver) {
+            $query->where('sender_id', $user->id)
+                ->where('receiver_id', $receiver->id);
+        })
+        ->orWhere(function ($query) use ($user, $receiver) {
+            $query->where('sender_id', $receiver->id)
+                ->where('receiver_id', $user->id);
+        })
+        ->orderBy('created_at', 'asc')
+        ->get();
 
-        // recent chats
-        $recentChats = Message::where(function ($query) use ($user) {
-                $query->where('sender_id', $user->id)
-                    ->orWhere('receiver_id', $user->id);
-            })
-            ->latest('created_at')
-            ->get()
-            ->groupBy(function ($message) use ($user) {
-                return $message->sender_id == $user->id ? $message->receiver_id : $message->sender_id;
-            });
+    // recent chats
+    $recentChats = Message::where(function ($query) use ($user) {
+            $query->where('sender_id', $user->id)
+                ->orWhere('receiver_id', $user->id);
+        })
+        ->latest('created_at')
+        ->get()
+        ->groupBy(function ($message) use ($user) {
+            return $message->sender_id == $user->id ? $message->receiver_id : $message->sender_id;
+        });
 
-        $chatUserIds = array_keys($recentChats->toArray());
+    $chatUserIds = array_keys($recentChats->toArray());
 
-        $chatUsers = User::whereIn('id', $chatUserIds)
-            ->get()
-            ->sortBy(function ($user) use ($chatUserIds) {
-                return array_search($user->id, $chatUserIds);
-            });
+    $chatUsers = User::whereIn('id', $chatUserIds)
+        ->get()
+        ->sortBy(function ($user) use ($chatUserIds) {
+            return array_search($user->id, $chatUserIds);
+        });
 
-        $rolePrefix = request()->is('employee/*') ? 'employee' : 'client';
-        $view = $rolePrefix === 'employee' ? 'employee.chat' : 'client.chat';
+    // ✅ NEW: check if this chat should show the "blocked" div
+    $isBlocked = \App\Models\BlockedUser::where(function ($query) use ($user, $receiver) {
+            $query->where('user_id', $user->id)
+                  ->where('blocked_user_id', $receiver->id);
+        })
+        ->orWhere(function ($query) use ($user, $receiver) {
+            $query->where('user_id', $receiver->id)
+                  ->where('blocked_user_id', $user->id);
+        })
+        ->exists();
 
-        return view($view, compact('receiver', 'messages', 'chatUsers', 'user', 'rolePrefix'));
-    }
+    $rolePrefix = request()->is('employee/*') ? 'employee' : 'client';
+    $view = $rolePrefix === 'employee' ? 'employee.chat' : 'client.chat';
+
+    return view($view, compact('receiver', 'messages', 'chatUsers', 'user', 'rolePrefix', 'isBlocked'));
+}
+
 
 
 
@@ -469,7 +483,22 @@ class ChatController extends Controller
     }
 
     
-    
+    public function employeeBlockedDiv($receiverId)
+    {
+        $employee = auth()->user();
+
+        return \App\Models\BlockedUser::where(function ($query) use ($employee, $receiverId) {
+                // Employee blocked the receiver
+                $query->where('user_id', $employee->id)
+                    ->where('blocked_user_id', $receiverId);
+            })
+            ->orWhere(function ($query) use ($employee, $receiverId) {
+                // Receiver blocked the employee
+                $query->where('user_id', $receiverId)
+                    ->where('blocked_user_id', $employee->id);
+            })
+            ->exists();
+    }
 
 
 

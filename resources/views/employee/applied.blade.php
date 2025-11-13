@@ -12,7 +12,7 @@
             <div class="flex items-center justify-between max-lg:flex-col max-lg:gap-2 max-xl:items-start max-xl:mb-4 mb-5">
                 <div>
                     <h1 class="sub_title sm:text-xl">Applicants</h1>
-                    <p class="home_p_font text-sm">Manage and review freelancers who applied to your job postings.</p>
+                    <p class="home_p_font text-sm">Manage and review your applied job postings.</p>
                 </div>
 
                 {{-- search input div --}}

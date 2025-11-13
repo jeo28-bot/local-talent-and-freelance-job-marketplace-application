@@ -75,7 +75,7 @@
                     <div class="px-4 py-3.5 border-gray-300 border-b flex items-center">
                         <img src="{{ $receiver->profile_pic ? asset('storage/' . $receiver->profile_pic) : asset('assets/defaultUserPic.png') }}" alt="" class="w-10 h-10 rounded-full inline-block mr-2 border-2 border-gray-400">
 
-                        <a href="" class="text-2xl font-bold! p_font  text-blue-500 hover:underline cursor-pointer">{{ $receiver->name }}</a>
+                        <a href="{{ route('client.public_profile', ['name' => urlencode($receiver->name)]) }}" class="text-2xl font-bold! p_font  text-blue-500 hover:underline cursor-pointer">{{ $receiver->name }}</a>
                         {{-- ellipse for block and report dropdown --}}
                         <div class="relative ml-auto">
                             <!-- Ellipsis button -->
@@ -134,13 +134,23 @@
                     </div>
 
 
+                    {{-- chat when blocked --}}
+                   @if($isBlocked)
+                        {{-- chat when blocked --}}
+                        <div class="p-4 border-t border-gray-300 flex flex-col items-center gap-1 bg-gray-200">
+                            <h1 class="p_font text-sm">This user is unavailable.</h1>
+                            <p class="home_p_font text-xs">You can’t message this user right now. Try again later.</p>
+                        </div>
+                    @else
+                        {{-- chat input --}}
+                        <form id="chatForm" action="{{ route($rolePrefix . '.chat.send', ['name' => $receiver->name]) }}" method="POST" class="p-4 border-t border-gray-300 flex items-center gap-2">
+                            @csrf
+                            <input id="messageInput" type="text" name="content" placeholder="Type your message..." class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none">
+                            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 p_font cursor-pointer">Send</button>
+                        </form>
+                    @endif
 
-                    {{-- chat input --}}
-                    <form id="chatForm" action="{{ route($rolePrefix . '.chat.send', ['name' => $receiver->name]) }}" method="POST" class="p-4 border-t border-gray-300 flex items-center gap-2">
-                        @csrf
-                        <input id="messageInput" type="text" name="content" placeholder="Type your message..." class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none">
-                        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 p_font cursor-pointer">Send</button>
-                    </form>
+                    
 
 
                 </div>

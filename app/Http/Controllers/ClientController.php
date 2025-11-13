@@ -7,6 +7,8 @@ use App\Models\JobPost;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\JobApplication;
+use App\Models\BlockedUser;
+use App\Models\User;
 
 
 class ClientController extends Controller
@@ -55,14 +57,27 @@ class ClientController extends Controller
 
         return view('client.jobs', compact('job'));
     }
-    // EmployeeController
+
     public function publicProfile($name)
     {
         $decodedName = urldecode($name);
         $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
+        $viewer = auth()->user();
 
-        return view('client.public_profile', compact('user'));
+        // Check if the **profile user blocked the viewer**
+        $isBlockedByUser = \App\Models\BlockedUser::where('user_id', $user->id)
+                            ->where('blocked_user_id', $viewer->id)
+                            ->exists();
+
+        // Check if **viewer blocked the profile user** (optional, for button hiding)
+        $blockedByViewer = \App\Models\BlockedUser::where('user_id', $viewer->id)
+                                ->where('blocked_user_id', $user->id)
+                                ->exists();
+
+        return view('client.public_profile', compact('user', 'isBlockedByUser', 'blockedByViewer'));
     }
+
+
 
      public function pendingTransactions()
     {
@@ -112,8 +127,67 @@ class ClientController extends Controller
 
         return redirect()->back()->with('success', 'Payment marked as completed successfully.');
     }
+    public function blockUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $viewer = auth()->user();
 
+        // Prevent self-block
+        if ($user->id === $viewer->id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You can't block yourself 😅"
+            ]);
+        }
 
+        // Check if already blocked
+        $exists = BlockedUser::where('user_id', $viewer->id)
+                              ->where('blocked_user_id', $user->id)
+                              ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => "User is already blocked."
+            ]);
+        }
+
+        // Block the user
+        BlockedUser::create([
+            'user_id' => $viewer->id,
+            'blocked_user_id' => $user->id,
+            'blocked_at' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "User blocked successfully."
+        ]);
+    }
+    public function unblockUser($id)
+    {
+        $viewer = auth()->user();
+
+        $blocked = \App\Models\BlockedUser::where('user_id', $viewer->id)
+                    ->where('blocked_user_id', $id)
+                    ->first();
+
+        if (!$blocked) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User is not blocked.'
+            ], 404);
+        }
+
+        $blocked->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User unblocked successfully.'
+        ]);
+    }
+    
+    
     
 }
 

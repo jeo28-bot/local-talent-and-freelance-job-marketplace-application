@@ -94,7 +94,7 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin/reports', [AdminController::class, 'reports'])->name('admin.reports');
     Route::get('/admin/reports/export', [AdminController::class, 'exportReports'])->name('admin.reports.export');
     Route::delete('/admin/reports/{id}', [AdminController::class, 'destroyReport'])->name('admin.reports.destroy');
-
+    
 
 });
 
@@ -148,8 +148,8 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::delete('/employee/unblock/{id}', [\App\Http\Controllers\EmployeeController::class, 'unblockUser'])
     ->name('employee.unblock')
     ->middleware('auth');
-
-
+    
+    
 
 
 });
@@ -207,7 +207,14 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/employee/messages/fetch-paginated', [ChatController::class, 'fetchEmployeeMessagesPaginated'])
     ->name('employee.messages.paginated');
 
+    Route::post('/client/block/{id}', [ClientController::class, 'blockUser'])
+    ->name('client.block')
+    ->middleware('auth');
+    Route::delete('/client/unblock/{id}', [ClientController::class, 'unblockUser'])
+    ->name('client.unblock')
+    ->middleware('auth');
     
+
 });
 
 Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
