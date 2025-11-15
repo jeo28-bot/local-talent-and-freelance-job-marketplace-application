@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\JobApplication;
 use App\Models\BlockedUser;
 use App\Models\User;
+use App\Models\Notification;
 
 
 class ClientController extends Controller
@@ -31,8 +32,50 @@ class ClientController extends Controller
     }
     public function notifications()
     {
-        return view('client.notifications');
+        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(5); // <-- only 5 per page
+
+        return view('client.notifications', compact('notifications'));
     }
+
+    public function openNotification($id)
+    {
+        $note = \App\Models\Notification::findOrFail($id);
+
+        // Mark as read
+        $note->is_read = true;
+        $note->save();
+
+        // Get stored application_id
+        $applicationId = $note->data['application_id'] ?? null;
+
+        // Safeguard: if application_id missing
+        if (!$applicationId) {
+            return redirect()->route('client.notifications')
+                            ->with('error', 'Invalid notification data.');
+        }
+
+        // Redirect to applicants page with search param
+        return redirect('/client/applicants?q=' . $applicationId);
+    }
+    public function deleteNotification($id)
+    {
+        $notification = Notification::find($id); // use the correct model
+
+        if (!$notification) {
+            return redirect()->back()->with('error', 'Notification not found.');
+        }
+
+        $notification->delete();
+
+        return redirect()->back()->with('success', 'Notification deleted.');
+    }
+
+
+
+
+
     public function profile()
     {
         return view('client.profile');

@@ -7,6 +7,25 @@
 
 
      <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
+        {{-- when blocked show this --}}
+        @if($isBlockedByUser)
+            <div class="lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
+                <div class="flex flex-col items-center bg-white p-10 rounded-lg shadow-sm">
+                    <img 
+                        src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : asset('assets/defaultUserPic.png') }}" 
+                        alt="blocked user" 
+                        class="w-40 h-40 max-sm:w-30 max-sm:h-30 rounded-full border-3 bg-[#1e2939] border-gray-400 my-3 shadow-sm cursor-pointer">
+                    
+                    <h1 class="sub_title sm:text-4xl text-lg text-center mt-5 mb-3">
+                        User <span class="text-blue-500">{{ $user->name }}</span> is not available.
+                    </h1>
+                    <p class="home_p_font text-center text-gray-600 max-sm:text-sm">
+                        You cannot view the profile details or interact with this user. Try again later.
+                    </p>
+                </div>
+            </div>
+        @else
+        
         <div class="lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between">
                 <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
@@ -329,7 +348,7 @@
              </div>
 
         </div>
-        
+        @endif
      </section>
 
      {{-- modal section --}}

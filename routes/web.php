@@ -149,8 +149,10 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     ->name('employee.unblock')
     ->middleware('auth');
     
-    
-
+    Route::get('/employee/notification/{id}/open', [EmployeeController::class, 'openNotification'])
+    ->name('employee.notification.open');
+    Route::delete('/employee/notifications/delete/{id}', [EmployeeController::class, 'deleteNotification'])
+    ->name('employee.notification.delete');
 
 });
 
@@ -213,7 +215,10 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::delete('/client/unblock/{id}', [ClientController::class, 'unblockUser'])
     ->name('client.unblock')
     ->middleware('auth');
-    
+    Route::get('/client/notification/open/{id}', [ClientController::class, 'openNotification'])
+     ->name('client.notification.open');
+    Route::delete('/client/notifications/delete/{id}', [ClientController::class, 'deleteNotification'])
+    ->name('client.notification.delete');
 
 });
 

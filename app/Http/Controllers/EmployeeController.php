@@ -9,6 +9,7 @@ use App\Models\SavedJob;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BlockedUser;
+use App\Models\Notification;
 
 class EmployeeController extends Controller
 {
@@ -179,27 +180,60 @@ class EmployeeController extends Controller
 
         $applications = \App\Models\JobApplication::with(['job', 'user'])
             ->where('user_id', Auth::id())
-            ->when($search, function ($query, $search) {
+           ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                    // Search inside related Job
-                    $q->whereHas('job', function ($jobQuery) use ($search) {
-                        $jobQuery->where('job_title', 'like', "%{$search}%");
-                    })
-                    // Search inside User
-                    ->orWhereHas('user', function ($userQuery) use ($search) {
-                        $userQuery->where('name', 'like', "%{$search}%");
-                    })
-                    // Search in own application columns
+                    $q->whereHas('job', fn($jobQuery) => $jobQuery->where('job_title', 'like', "%{$search}%"))
+                    ->orWhereHas('user', fn($userQuery) => $userQuery->where('name', 'like', "%{$search}%"))
                     ->orWhere('full_name', 'like', "%{$search}%")
                     ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhereDate('created_at', $search);
+                    ->orWhereRaw("CONCAT('2025', id) LIKE ?", ["%{$search}%"]);
+
+                    // Optional: date search
+                    if (\Carbon\Carbon::hasFormat($search, 'Y-m-d')) {
+                        $q->orWhereDate('created_at', $search);
+                    }
                 });
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString(); // keeps search query in pagination links
 
         return view('employee.applied', compact('applications', 'search'));
     }
+    public function openNotification($id)
+    {
+        $notification = \App\Models\Notification::findOrFail($id);
+
+        // Mark as read
+        $notification->update(['is_read' => true]);
+
+        // Get the application ID from data
+        $noteData = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
+        $applicationId = $noteData['application_id'] ?? null;
+
+        // Redirect to applied page with search query
+        if ($applicationId) {
+            return redirect()->route('employee.applied', ['q' => $applicationId]);
+        }
+
+        // Fallback: redirect to notifications page
+        return redirect()->back();
+    }
+    public function deleteNotification($id)
+    {
+        $notification = \App\Models\Notification::where('id', $id)
+            ->where('user_id', auth()->id()) // ensure it's the logged-in user's notification
+            ->first();
+
+        if ($notification) {
+            $notification->delete();
+            return redirect()->back()->with('success', 'Notification deleted successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Notification not found.');
+    }
+
+
 
 
 
@@ -209,8 +243,15 @@ class EmployeeController extends Controller
     }
    public function notifications()
     {
-        return view('employee.notifications');
+        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+            ->where('type', 'job_status')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        return view('employee.notifications', compact('notifications'));
     }
+    
+
     public function profile()
     {
         $user = Auth::user();
@@ -306,6 +347,13 @@ class EmployeeController extends Controller
     {
         $decodedName = urldecode($name);
         $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
+        $viewer = auth()->user();
+
+        // Check if the **profile user blocked the viewer**
+        $isBlockedByUser = \App\Models\BlockedUser::where('user_id', $user->id)
+                            ->where('blocked_user_id', $viewer->id)
+                            ->exists();
+
 
         // Check if the currently logged-in user has blocked this user
         $isBlocked = false;
@@ -315,7 +363,7 @@ class EmployeeController extends Controller
                 ->exists();
         }
 
-        return view('employee.public_profile', compact('user', 'isBlocked'));
+        return view('employee.public_profile', compact('user', 'isBlocked', 'isBlockedByUser'));
     }
 
 

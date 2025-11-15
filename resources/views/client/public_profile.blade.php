@@ -535,7 +535,7 @@
     {{-- drowndown option --}}
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const reportButton = document.querySelector('#block_report_dropdown button:nth-child(3)');
+        const reportButton = document.querySelector('#report_user_btn');
         const reportModal = document.querySelector('.report_modal');
         const closeReportModal = document.getElementById('close_report_modal');
         const reportForm = document.getElementById('reportForm');

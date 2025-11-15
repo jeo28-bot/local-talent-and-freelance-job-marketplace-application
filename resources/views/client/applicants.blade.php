@@ -53,6 +53,7 @@
                 <thead class="bg-gray-200 ">
                     <tr class="bg-gray-300">
                          <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Application ID</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">User Name</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Full Name</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
@@ -67,6 +68,9 @@
                     <tr  class="applicant_row border-b-2 border-gray-300 py-2 hover:bg-gray-200 ">
                         <td class="px-4 py-2 p_font max-lg:text-sm home_p_font">
                             {{ $loop->iteration + ($applications->currentPage() - 1) * $applications->perPage() }}
+                        </td>
+                        <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
+                                {{ '2025'.$application->id }}
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                             <a href="{{ route('client.public_profile', $application->user->name) }}" class="underline text-blue-700 hover:text-blue-400">

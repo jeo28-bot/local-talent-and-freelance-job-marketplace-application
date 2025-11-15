@@ -7,6 +7,7 @@ use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Transaction;
 use App\Models\JobPostController;
+use App\Models\Notification;
 
 
 
@@ -21,9 +22,15 @@ class JobApplicationController extends Controller
             'message'   => 'nullable|string',
         ]);
 
-        JobApplication::create([
+        // 🔥 Get the job first
+        $job = \App\Models\JobPost::findOrFail($jobId);
+        $employee = auth()->user(); // the one applying
+        $employerId = $job->client_id; // the client who owns the job
+
+        // Create the job application
+        $application = JobApplication::create([
             'job_id'    => $jobId,
-            'user_id'   => auth()->check() ? auth()->id() : null, // ✅ attaches logged in user
+            'user_id'   => $employee->id ?? null,
             'full_name' => $data['full_name'],
             'email'     => $data['email'],
             'phone_num' => $data['phone_num'] ?? null,
@@ -31,34 +38,60 @@ class JobApplicationController extends Controller
             'status'    => 'pending',
         ]);
 
+        // Create a single notification with proper array in `data`
+        \App\Models\Notification::create([
+            'user_id' => $employerId, // who receives it
+            'type'    => 'job_application',
+            'title'   => 'New Job Application',
+            'body'    => "{$employee->name} applied for your job: {$job->job_title}",
+            'data'    => [
+                'job_id' => $job->id,
+                'applicant_id' => $employee->id,
+                'application_id' => $application->id,
+            ],
+            'is_read' => false,
+        ]);
+
         return back()->with('success', 'Application submitted successfully!');
     }
+
+
+
 
     public function indexForClient(Request $request)
     {
         $clientId = auth()->id();
-        $search = $request->input('q'); // search query
+        $search = $request->input('q');
 
         $applications = \App\Models\JobApplication::with(['job', 'user'])
             ->whereHas('job', function ($q) use ($clientId) {
                 $q->where('client_id', $clientId);
             })
             ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    // 🔍 Search by applicant name (from users table)
+
+                // Check if search is formatted like 2025{id}
+                $numericId = null;
+                if (preg_match('/^2025(\d+)$/', $search, $matches)) {
+                    $numericId = $matches[1];
+                }
+
+                $query->where(function ($q) use ($search, $numericId) {
                     $q->whereHas('user', function ($userQuery) use ($search) {
                         $userQuery->where('name', 'like', "%{$search}%");
                     })
-                    // 🔍 OR search by full name (from job_applications table)
                     ->orWhere('full_name', 'like', "%{$search}%")
-                    // 🔍 OR search by job title (from job_posts table)
                     ->orWhereHas('job', function ($jobQuery) use ($search) {
                         $jobQuery->where('job_title', 'like', "%{$search}%");
                     })
-                    // 🔍 OR search by status
                     ->orWhere('status', 'like', "%{$search}%")
-                    // 🔍 OR search by created_at date (like "2025-11-01")
                     ->orWhereDate('created_at', $search);
+
+                    // 🔍 Search by application ID (raw or prefixed with 2025)
+                    if ($numericId) {
+                        $q->orWhere('id', $numericId);
+                    } elseif (is_numeric($search)) {
+                        $q->orWhere('id', $search);
+                    }
                 });
             })
             ->orderBy('created_at', 'desc')
@@ -66,6 +99,7 @@ class JobApplicationController extends Controller
 
         return view('client.applicants', compact('applications', 'search'));
     }
+
 
 
 
@@ -78,7 +112,6 @@ class JobApplicationController extends Controller
         $application = JobApplication::findOrFail($id);
         $newStatus = $request->status;
 
-        // Toggle logic
         if ($application->status === $newStatus) {
             $application->status = 'pending';
         } else {
@@ -87,11 +120,37 @@ class JobApplicationController extends Controller
 
         $application->save();
 
-        // ✅ Handle transaction logic
         $job = $application->job;
 
+        // ------------------------------------
+        // 🔥 CREATE NOTIFICATION FOR EMPLOYEE
+        // ------------------------------------
+        $statusMessage = match($application->status) {
+            'accepted' => "Client accepted your application for {$job->job_title}.",
+            'rejected' => "Client rejected your application for {$job->job_title}.",
+            'pending'  => "Client moved your application for {$job->job_title} to pending.",
+            default     => null
+        };
+
+        if ($statusMessage) {
+            Notification::create([
+                'user_id' => $application->user_id,
+                'type' => 'job_status',
+                'title' => 'Job Application Update',
+                'body' => $statusMessage,
+                'is_read' => false,
+                'data' => [
+                    'client_id' => $job->client_id,
+                    'application_id' => $application->id, // <- needed!
+                ]
+            ]);
+        }
+
+        // ---------------------------------------------------------------
+        // existing transaction logic...
+        // ---------------------------------------------------------------
+
         if ($application->status === 'accepted') {
-            // Create transaction if not exists
             $exists = \App\Models\Transaction::where('job_id', $job->id)
                 ->where('employee_id', $application->user_id)
                 ->first();
@@ -107,7 +166,6 @@ class JobApplicationController extends Controller
                 ]);
             }
         } else {
-            // ❌ If status is changed from accepted → remove transaction
             \App\Models\Transaction::where('job_id', $job->id)
                 ->where('employee_id', $application->user_id)
                 ->delete();
@@ -115,6 +173,7 @@ class JobApplicationController extends Controller
 
         return redirect()->back()->with('success', 'Application status updated!');
     }
+
     
 
     public function destroy($id)
