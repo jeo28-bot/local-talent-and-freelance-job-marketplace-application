@@ -13,10 +13,10 @@ use App\Models\Notification;
 
 class EmployeeController extends Controller
 {
-  public function index() {
+    public function index() {
         return view('employee.index');
     }
-   public function postings(Request $request)
+    public function postings(Request $request)
     {
         $user = auth()->user();
 
@@ -46,12 +46,21 @@ class EmployeeController extends Controller
 
         // ❌ Exclude blocked clients
         if ($user) {
+            // User → blocked client
             $blockedClientIds = BlockedUser::where('user_id', $user->id)
                 ->pluck('blocked_user_id')
                 ->toArray();
 
-            if (!empty($blockedClientIds)) {
-                $query->whereNotIn('client_id', $blockedClientIds);
+            // Client → blocked user
+            $clientsWhoBlockedMe = BlockedUser::where('blocked_user_id', $user->id)
+                ->pluck('user_id')
+                ->toArray();
+
+            // Merge all
+            $allBlockedClientIds = array_unique(array_merge($blockedClientIds, $clientsWhoBlockedMe));
+
+            if (!empty($allBlockedClientIds)) {
+                $query->whereNotIn('client_id', $allBlockedClientIds);
             }
         }
 
@@ -80,7 +89,7 @@ class EmployeeController extends Controller
 
         return view('employee.transactions', compact('transactions'));
     }
-   public function pendingTransactions(Request $request)
+    public function pendingTransactions(Request $request)
     {
         $user = auth()->user();
         $search = $request->input('q');
@@ -165,11 +174,7 @@ class EmployeeController extends Controller
         return redirect()->back()->with('success', 'Payout request submitted successfully.');
     }
     
-
-
-
-
-  public function jobs()
+    public function jobs()
     {
         return view('employee.jobs');
     }
@@ -237,7 +242,7 @@ class EmployeeController extends Controller
 
 
 
-  public function messages()
+    public function messages()
     {
         return view('employee.messages');
     }
