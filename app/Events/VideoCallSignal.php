@@ -29,4 +29,5 @@ class VideoCallSignal implements ShouldBroadcast
     {
         return new PrivateChannel('video-call.' . $this->to);
     }
+
 }

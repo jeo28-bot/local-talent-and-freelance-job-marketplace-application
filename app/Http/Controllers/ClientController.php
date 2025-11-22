@@ -267,9 +267,18 @@ class ClientController extends Controller
     
     
     // video call method
-    public function videoCall()
+    public function videoCall($receiverId)
     {
-        return view('client.video-call');
+        $receiverUser = User::findOrFail($receiverId);
+        $meId = auth()->id();
+
+        // canonical room id: smallerId-largerId so both sides compute the same string
+        $sorted = [$meId, $receiverUser->id];
+        sort($sorted, SORT_NUMERIC);
+        $roomId = $sorted[0] . '-' . $sorted[1];
+
+        return view('client.video-call', compact('receiverUser', 'roomId'));
     }
+
 }
 

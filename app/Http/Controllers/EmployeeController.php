@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\BlockedUser;
 use App\Models\Notification;
 use App\Models\Transaction;
+use App\Models\User;
 
 class EmployeeController extends Controller
 {
@@ -444,10 +445,18 @@ class EmployeeController extends Controller
     }
     
 
-    // video call
-    public function videoCall()
+    // video call method
+    public function videoCall($receiverId)
     {
-        return view('employee.video-call');
+        $receiverUser = User::findOrFail($receiverId);
+        $meId = auth()->id();
+
+        // canonical room id: smallerId-largerId so both sides compute the same string
+        $sorted = [$meId, $receiverUser->id];
+        sort($sorted, SORT_NUMERIC);
+        $roomId = $sorted[0] . '-' . $sorted[1];
+
+        return view('employee.video-call', compact('receiverUser', 'roomId'));
     }
 
 

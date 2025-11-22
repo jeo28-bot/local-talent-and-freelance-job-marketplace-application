@@ -26,91 +26,6 @@
     
     <div id="app" class="">
         
-{{-- <nav class="bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            
-            <!-- Left Side (Logo / Nav links) -->
-            <div class="flex items-center">
-                <a href="{{ url('/') }}" class="text-xl font-bold text-gray-800">
-                 <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-50">
-                </a>
-            </div>
-
-            <!-- Right Side -->
-            <div class="hidden md:flex items-center space-x-4">
-                @guest
-                    @if (Route::has('login'))
-                        <a href="{{ route('login') }}"
-                           class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
-                            {{ __('Login') }}
-                        </a>
-                    @endif
-
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}"
-                           class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
-                            {{ __('Register') }}
-                        </a>
-                    @endif
-                @else
-                    <div class="relative">
-                        <button type="button"
-                                class="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
-                                onclick="document.getElementById('userMenu').classList.toggle('hidden')">
-                            {{ Auth::user()->name }}
-                        </button>
-
-                        <div id="userMenu"
-                             class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg hidden">
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                        class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                    {{ __('Logout') }}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @endguest
-            </div>
-
-            <!-- Mobile Hamburger -->
-            <div class="flex items-center md:hidden">
-                <button onclick="document.getElementById('mobileMenu').classList.toggle('hidden')"
-                        class="text-gray-600 focus:outline-none">
-                    ☰
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="md:hidden hidden px-4 pb-3 space-y-2">
-        @guest
-            @if (Route::has('login'))
-                <a href="{{ route('login') }}"
-                   class="block px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
-                   {{ __('Login') }}
-                </a>
-            @endif
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}"
-                   class="block px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
-                   {{ __('Register') }}
-                </a>
-            @endif
-        @else
-            <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit"
-                        class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                    {{ __('Logout') }}
-                </button>
-            </form>
-        @endguest
-    </div>
-</nav> --}}
 
 
         <main class="">
@@ -119,6 +34,7 @@
     </div>
     
     
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   
 

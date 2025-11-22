@@ -8,7 +8,7 @@
     <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
 
         <div class="xl:w-6xl mx-auto px-5 max-sm:px-3 mb-10 bg-gray-300 shadow-lg rounded-xl p-6">
-            <h1 class="sub_title sm:text-xl">Video Call</h1>
+            <h1 class="sub_title sm:text-xl">Video Calling <span class="text-blue-500">{{ $receiverUser->name }}</span></h1>
             <p class="home_p_font mb-5 text-sm">This is where your video calls will take place.</p>
             
             {{-- container video call --}}
@@ -52,6 +52,64 @@
         </div>
         
     </section>
+
+    @php
+        $me = auth()->id();
+        $other = $receiverUser->id;
+        $roomId = $me < $other ? $me . '-' . $other : $other . '-' . $me;
+    @endphp
+
+    <script>
+    const roomId = @json($roomId);
+    console.log('roomId:', roomId);
+    connection.openOrJoin(roomId);
+</script>
+
+
+
+    <script src="https://cdn.webrtc-experiment.com/RTCMultiConnection.js"></script>
+<script src="https://cdn.webrtc-experiment.com/socket.io.js"></script>
+
+<script>
+    var connection = new RTCMultiConnection();
+
+    // use a known-working public signaling server
+    connection.socketURL = 'https://rtc-signaling.multiconnection.org:443/';
+
+    connection.session = { audio: true, video: true };
+
+    connection.sdpConstraints.mandatory = {
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true
+    };
+
+    connection.onstream = function(event) {
+        if (event.type === "local") {
+            document.getElementById("localVideo").srcObject = event.stream;
+        }
+        if (event.type === "remote") {
+            document.getElementById("remoteVideo").srcObject = event.stream;
+        }
+    };
+
+    // roomId must be passed by controller or computed earlier in Blade
+    const roomId = @json($roomId);
+
+    console.log('Attempting openOrJoin for room:', roomId);
+
+    connection.openOrJoin(roomId);
+
+    // debug helpers
+    connection.onSocketError = function(error) {
+        console.error('Socket error:', error);
+    };
+    connection.onMediaError = function(error) {
+        console.error('Media error:', error);
+    };
+</script>
+
+
+    
     
 
        @include('components.footer_client')

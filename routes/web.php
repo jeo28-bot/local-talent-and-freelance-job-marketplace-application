@@ -154,7 +154,10 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::delete('/employee/notifications/delete/{id}', [EmployeeController::class, 'deleteNotification'])
     ->name('employee.notification.delete');
 
+    // video call
     Route::get('/employee/video-call', [EmployeeController::class, 'videoCall'])->name('employee.video-call');
+    // video call route with receiver ID
+    Route::get('/employee/video-call/{receiver}', [EmployeeController::class, 'videoCall'])->name('employee.video-call');
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
@@ -223,6 +226,9 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
 
     // video call route
     Route::get('/client/video-call', [ClientController::class, 'videoCall'])->name('client.video-call');
+    // video call route with receiver ID
+    Route::get('/client/video-call/{receiver}', [ClientController::class, 'videoCall'])->name('client.video-call');
+
 });
 
 Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
