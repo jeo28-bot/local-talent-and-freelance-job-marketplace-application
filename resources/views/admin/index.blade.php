@@ -109,29 +109,11 @@
                         <h2 class="font-semibold! mb-2 home_p_font max-sm:text-sm border-b-2 border-gray-300 pb-3">Latest Activity</h2>
                         {{-- activity list parent div --}}
                         <div class="p-2">
+
                             {{-- activity list --}}
-                           <ul id="latestActivities" class="p_font max-sm:text-sm overflow-y-auto max-h-120"></ul>
-                                {{-- <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Jane Smith posted a new job titled "Web Developer".</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Mike Johnson updated his profile information.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Emily Davis changed her password.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Chris Brown deleted his account.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Sarah Wilson applied for the job "Graphic Designer".</li>
-                                <h3 class="text-red-400 py-2">October 24, 2025</h3>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User David Lee uploaded a new portfolio item.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Anna Kim sent a message to support.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Tom Clark logged in from a new device.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Laura Scott updated her notification preferences.</li>
-                                <h3 class="text-red-400 py-2">October 24, 2025</h3>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User David Lee uploaded a new portfolio item.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Anna Kim sent a message to support.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Tom Clark logged in from a new device.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Laura Scott updated her notification preferences.</li>
-                                <h3 class="text-red-400 py-2">October 24, 2025</h3>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User David Lee uploaded a new portfolio item.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Anna Kim sent a message to support.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Tom Clark logged in from a new device.</li>
-                                <li class="p-2 border-b-1 border-gray-300 hover:bg-gray-100">User Laura Scott updated her notification preferences.</li> --}}
+                            <ul id="latestActivities" class="p_font max-sm:text-sm overflow-y-auto max-h-120">
                             </ul>
+                            
                         
                         </div>
                     </div>
@@ -179,74 +161,74 @@
     </section>
 
    
-  <script>
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    if (isNaN(date)) return '';
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+    <script>
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        if (isNaN(date)) return '';
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
 
-function formatDayHeader(dateStr) {
-    const notifDate = new Date(dateStr);
-    if (isNaN(notifDate)) return '';
+    function formatDayHeader(dateStr) {
+        const notifDate = new Date(dateStr);
+        if (isNaN(notifDate)) return '';
 
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(today.getDate() - 1);
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
 
-    if (notifDate.toDateString() === today.toDateString()) return 'Today';
-    if (notifDate.toDateString() === yesterday.toDateString()) return 'Yesterday';
-    return formatDate(dateStr);
-}
+        if (notifDate.toDateString() === today.toDateString()) return 'Today';
+        if (notifDate.toDateString() === yesterday.toDateString()) return 'Yesterday';
+        return formatDate(dateStr);
+    }
 
-async function fetchNotifications() {
-    const res = await fetch('http://localhost:3001/api/notifications');
-    const notifications = await res.json();
+    async function fetchNotifications() {
+        const res = await fetch('http://localhost:3001/api/notifications');
+        const notifications = await res.json();
 
-    const list = document.getElementById('latestActivities');
-    list.innerHTML = '';
+        const list = document.getElementById('latestActivities');
+        list.innerHTML = '';
 
-    let lastDate = '';
-    notifications.forEach(notif => {
-        const createdAt = notif.created_at || new Date().toISOString();
-        const notifDateHeader = formatDayHeader(createdAt);
+        let lastDate = '';
+        notifications.forEach(notif => {
+            const createdAt = notif.created_at || new Date().toISOString();
+            const notifDateHeader = formatDayHeader(createdAt);
 
-        if (notifDateHeader !== lastDate) {
-            const h3 = document.createElement('h3');
-            h3.classList.add('text-red-400', 'py-2');
-            h3.textContent = notifDateHeader;
-            list.appendChild(h3);
-            lastDate = notifDateHeader;
-        }
+            if (notifDateHeader !== lastDate) {
+                const h3 = document.createElement('h3');
+                h3.classList.add('text-red-400', 'py-2');
+                h3.textContent = notifDateHeader;
+                list.appendChild(h3);
+                lastDate = notifDateHeader;
+            }
 
-        const li = document.createElement('li');
-        li.classList.add('p-2', 'border-b-1', 'border-gray-300', 'hover:bg-gray-100');
+            const li = document.createElement('li');
+            li.classList.add('p-2', 'border-b-1', 'border-gray-300', 'hover:bg-gray-100');
 
-        let sentence = '';
-        switch(notif.title) {
-            case 'Payment Completed':
-                sentence = `Client #${notif.data.client_id} completed a payment (Transaction #${notif.data.transaction_id})`;
-                break;
-            case 'Payout Request':
-                sentence = `Employee #${notif.data.employee_id} requested a payout (Transaction #${notif.data.transaction_id})`;
-                break;
-            case 'New Job Application':
-                sentence = `Employee #${notif.data.applicant_id} applied for Job #${notif.data.job_id} (Application #${notif.data.application_id})`;
-                break;
-            case 'Job Application Update':
-                sentence = `Client #${notif.data.client_id} updated application #${notif.data.application_id}`;
-                break;
-            default:
-                sentence = JSON.stringify(notif.data);
-        }
+            let sentence = '';
+            switch(notif.title) {
+                case 'Payment Completed':
+                    sentence = `Client #${notif.data.client_id} completed a payment (Transaction #${notif.data.transaction_id})`;
+                    break;
+                case 'Payout Request':
+                    sentence = `Employee #${notif.data.employee_id} requested a payout (Transaction #${notif.data.transaction_id})`;
+                    break;
+                case 'New Job Application':
+                    sentence = `Employee #${notif.data.applicant_id} applied for Job #${notif.data.job_id} (Application #${notif.data.application_id})`;
+                    break;
+                case 'Job Application Update':
+                    sentence = `Client #${notif.data.client_id} updated application #${notif.data.application_id}`;
+                    break;
+                default:
+                    sentence = JSON.stringify(notif.data);
+            }
 
-        li.innerHTML = `<span class="font-semibold!">${notif.title}</span> - ${sentence}`;
-        list.appendChild(li);
-    });
-}
+            li.innerHTML = `<span class="font-semibold!">${notif.title}</span> - ${sentence}`;
+            list.appendChild(li);
+        });
+    }
 
-fetchNotifications();
-</script>
+    fetchNotifications();
+    </script>
 
 
     
