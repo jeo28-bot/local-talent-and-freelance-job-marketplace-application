@@ -154,6 +154,7 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::delete('/employee/notifications/delete/{id}', [EmployeeController::class, 'deleteNotification'])
     ->name('employee.notification.delete');
 
+    Route::get('/employee/video-call', [EmployeeController::class, 'videoCall'])->name('employee.video-call');
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
@@ -220,6 +221,8 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::delete('/client/notifications/delete/{id}', [ClientController::class, 'deleteNotification'])
     ->name('client.notification.delete');
 
+    // video call route
+    Route::get('/client/video-call', [ClientController::class, 'videoCall'])->name('client.video-call');
 });
 
 Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
@@ -290,3 +293,8 @@ Route::get('/employee/fetch-messages-json', [ChatController::class, 'fetchEmploy
 
 // Client chat menu JSON
 Route::get('/client/fetch-messages-json', [ChatController::class, 'fetchRecentChats'])->name('client.fetchMessagesJson');
+
+Route::post('/video-call/signal', function (Illuminate\Http\Request $request) {
+    broadcast(new App\Events\VideoCallSignal($request->signal, auth()->id(), $request->to));
+    return ['status' => 'ok'];
+});

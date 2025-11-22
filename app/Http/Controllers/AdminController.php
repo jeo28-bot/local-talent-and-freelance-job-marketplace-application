@@ -507,14 +507,36 @@ class AdminController extends Controller
     {
         $receiver = User::where('name', $name)->firstOrFail();
 
-        Message::create([
+        $data = [
             'sender_id' => auth()->id(),
             'receiver_id' => $receiver->id,
             'content' => $request->content,
-        ]);
+        ];
+
+        // 🔥 If user uploaded a file
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+
+            // Store file to storage/app/public/chat_files/
+            $path = $file->store('chat_files', 'public');
+
+            // Determine file type
+            $mime = $file->getMimeType();
+
+            if (str_starts_with($mime, 'image/')) {
+                $data['file_type'] = 'image';
+            } else {
+                $data['file_type'] = 'file'; // pdf, docx, zip, etc.
+            }
+
+            $data['file'] = $path;
+        }
+
+        Message::create($data);
 
         return redirect()->back();
     }
+
     public function usersChat($name)
     {
         // Find the user whose convo we want to view

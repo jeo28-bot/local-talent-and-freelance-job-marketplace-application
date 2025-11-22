@@ -47,18 +47,23 @@ class ClientController extends Controller
         $note->is_read = true;
         $note->save();
 
-        // Get stored application_id
-        $applicationId = $note->data['application_id'] ?? null;
-
-        // Safeguard: if application_id missing
-        if (!$applicationId) {
-            return redirect()->route('client.notifications')
-                            ->with('error', 'Invalid notification data.');
+        // Check if this is a job application notification
+        if (isset($note->data['application_id'])) {
+            $applicationId = $note->data['application_id'];
+            return redirect('/client/applicants?q=' . $applicationId);
         }
 
-        // Redirect to applicants page with search param
-        return redirect('/client/applicants?q=' . $applicationId);
+        // Check if this is a payout request notification
+        if (isset($note->data['transaction_id'])) {
+            $transactionId = $note->data['transaction_id'];
+            return redirect('/client/transactions/pending?q=' . $transactionId);
+        }
+
+        // Fallback: unknown notification type
+        return redirect()->route('client.notifications')
+                        ->with('error', 'Invalid notification data.');
     }
+
     public function deleteNotification($id)
     {
         $notification = Notification::find($id); // use the correct model
@@ -122,18 +127,33 @@ class ClientController extends Controller
 
 
 
-     public function pendingTransactions()
+    public function pendingTransactions(Request $request)
     {
         $user = auth()->user();
 
-        // Only get non-completed transactions
-        $transactions = \App\Models\Transaction::where('client_id', $user->id)
-            ->whereIn('status', ['pending', 'paid', 'requested']) // 👈 Only these
-            ->latest()
-            ->paginate(3);
+        $query = \App\Models\Transaction::where('client_id', $user->id)
+            ->whereIn('status', ['pending', 'paid', 'requested']); // only relevant statuses
+
+        // 🔎 Search filter
+        if ($request->filled('q')) {
+            $q = $request->q;
+
+            $query->where(function ($subQuery) use ($q) {
+                $subQuery->where('job_title', 'like', "%$q%")
+                        ->orWhere('status', 'like', "%$q%")
+                        ->orWhere('id', $q) // exact match for transaction id
+                        ->orWhereHas('employee', function ($employeeQuery) use ($q) {
+                            $employeeQuery->where('name', 'like', "%$q%");
+                        });
+            });
+        }
+
+        // 🆕 Sort newest first
+        $transactions = $query->latest()->paginate(3);
 
         return view('client.transactions.pending', compact('transactions'));
     }
+
 
     public function completedTransactions()
     {
@@ -162,14 +182,29 @@ class ClientController extends Controller
 
         $transaction = \App\Models\Transaction::findOrFail($id);
 
+        // Update transaction
         $transaction->update([
             'transaction_ref_no' => $request->transaction_ref_no,
             'status' => 'completed',
-            'payment_date' => now(), // ✅ sets current timestamp
+            'payment_date' => now(),
+        ]);
+
+        // 🔔 Send notification to employee
+        \App\Models\Notification::create([
+            'user_id' => $transaction->employee_id,  // employee receives it
+            'type' => 'payment_completed',
+            'title' => 'Payment Completed',
+            'body' => 'Your payment for "' . $transaction->job_title . '" has been completed by the client.',
+            'data' => [
+                'client_id' => $transaction->client_id,
+                'transaction_id' => $transaction->id,
+            ],
+            'is_read' => false,
         ]);
 
         return redirect()->back()->with('success', 'Payment marked as completed successfully.');
     }
+
     public function blockUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -231,6 +266,10 @@ class ClientController extends Controller
     }
     
     
-    
+    // video call method
+    public function videoCall()
+    {
+        return view('client.video-call');
+    }
 }
 

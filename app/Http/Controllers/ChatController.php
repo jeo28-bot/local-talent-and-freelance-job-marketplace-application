@@ -11,97 +11,113 @@ use Illuminate\Support\Facades\Auth;
 class ChatController extends Controller
 {
     public function show($name)
-{
-    $receiver = User::where('name', $name)->firstOrFail();
-    $user = auth()->user();
+    {
+        $receiver = User::where('name', $name)->firstOrFail();
+        $user = auth()->user();
 
-    // ✅ Mark all messages from the receiver as seen when the employee opens the chat
-    Message::where('sender_id', $receiver->id)
-        ->where('receiver_id', $user->id)
-        ->where('seen', false)
-        ->update(['seen' => true]);
+        // ✅ Mark all messages from the receiver as seen when the employee opens the chat
+        Message::where('sender_id', $receiver->id)
+            ->where('receiver_id', $user->id)
+            ->where('seen', false)
+            ->update(['seen' => true]);
 
-    // messages between the two
-    $messages = Message::where(function ($query) use ($user, $receiver) {
-            $query->where('sender_id', $user->id)
-                ->where('receiver_id', $receiver->id);
-        })
-        ->orWhere(function ($query) use ($user, $receiver) {
-            $query->where('sender_id', $receiver->id)
-                ->where('receiver_id', $user->id);
-        })
-        ->orderBy('created_at', 'asc')
-        ->get();
+        // messages between the two
+        $messages = Message::where(function ($query) use ($user, $receiver) {
+                $query->where('sender_id', $user->id)
+                    ->where('receiver_id', $receiver->id);
+            })
+            ->orWhere(function ($query) use ($user, $receiver) {
+                $query->where('sender_id', $receiver->id)
+                    ->where('receiver_id', $user->id);
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
 
-    // recent chats
-    $recentChats = Message::where(function ($query) use ($user) {
-            $query->where('sender_id', $user->id)
-                ->orWhere('receiver_id', $user->id);
-        })
-        ->latest('created_at')
-        ->get()
-        ->groupBy(function ($message) use ($user) {
-            return $message->sender_id == $user->id ? $message->receiver_id : $message->sender_id;
-        });
+        // recent chats
+        $recentChats = Message::where(function ($query) use ($user) {
+                $query->where('sender_id', $user->id)
+                    ->orWhere('receiver_id', $user->id);
+            })
+            ->latest('created_at')
+            ->get()
+            ->groupBy(function ($message) use ($user) {
+                return $message->sender_id == $user->id ? $message->receiver_id : $message->sender_id;
+            });
 
-    $chatUserIds = array_keys($recentChats->toArray());
+        $chatUserIds = array_keys($recentChats->toArray());
 
-    $chatUsers = User::whereIn('id', $chatUserIds)
-        ->get()
-        ->sortBy(function ($user) use ($chatUserIds) {
-            return array_search($user->id, $chatUserIds);
-        });
+        $chatUsers = User::whereIn('id', $chatUserIds)
+            ->get()
+            ->sortBy(function ($user) use ($chatUserIds) {
+                return array_search($user->id, $chatUserIds);
+            });
 
-    // ✅ NEW: check if this chat should show the "blocked" div
-    $isBlocked = \App\Models\BlockedUser::where(function ($query) use ($user, $receiver) {
-            $query->where('user_id', $user->id)
-                  ->where('blocked_user_id', $receiver->id);
-        })
-        ->orWhere(function ($query) use ($user, $receiver) {
-            $query->where('user_id', $receiver->id)
-                  ->where('blocked_user_id', $user->id);
-        })
-        ->exists();
+        // ✅ NEW: check if this chat should show the "blocked" div
+        $isBlocked = \App\Models\BlockedUser::where(function ($query) use ($user, $receiver) {
+                $query->where('user_id', $user->id)
+                    ->where('blocked_user_id', $receiver->id);
+            })
+            ->orWhere(function ($query) use ($user, $receiver) {
+                $query->where('user_id', $receiver->id)
+                    ->where('blocked_user_id', $user->id);
+            })
+            ->exists();
 
-    $rolePrefix = request()->is('employee/*') ? 'employee' : 'client';
-    $view = $rolePrefix === 'employee' ? 'employee.chat' : 'client.chat';
+        $rolePrefix = request()->is('employee/*') ? 'employee' : 'client';
+        $view = $rolePrefix === 'employee' ? 'employee.chat' : 'client.chat';
 
-    return view($view, compact('receiver', 'messages', 'chatUsers', 'user', 'rolePrefix', 'isBlocked'));
-}
-
-
-
-
-
+        return view($view, compact('receiver', 'messages', 'chatUsers', 'user', 'rolePrefix', 'isBlocked'));
+    }
 
 
     public function sendMessage(Request $request, $receiverName)
     {
         $receiver = User::where('name', $receiverName)->firstOrFail();
 
-        $message = Message::create([
-            'sender_id' => auth()->id(),
-            'receiver_id' => $receiver->id,
-            'content' => $request->content,
-        ]);
+        $data = [
+            'sender_id'    => auth()->id(),
+            'receiver_id'  => $receiver->id,
+            'content'      => $request->content,
+            'file'         => null,
+            'file_type'    => null,
+        ];
 
-        // If AJAX request, return JSON
-        if ($request->ajax()) {
-            return response()->json([
-                'content' => $message->content,
-                'created_at' => $message->created_at->format('g:i a'),
-                'sender_id' => $message->sender_id
-            ]);
+        // ✔ If file exists
+        if ($request->hasFile('file')) {
+            $file     = $request->file('file');
+            $path     = $file->store('chat_files', 'public');
+            $mimeType = $file->getMimeType();
+
+            $data['file'] = $path;
+
+            // classify file type
+            if (str_contains($mimeType, 'image')) {
+                $data['file_type'] = 'image';
+            } else {
+                $data['file_type'] = 'file';
+            }
+
+            // If sending a file, clear text content (optional)
+            if (!$request->content) {
+                $data['content'] = null;
+            }
         }
 
-        // fallback (for non-AJAX)
+        $message = Message::create($data);
+
+        if ($request->ajax()) {
+            return response()->json($message);
+        }
+
         $routeName = $request->route() ? $request->route()->getName() : null;
+
         if (is_string($routeName) && str_starts_with($routeName, 'employee.')) {
             return redirect()->route('employee.chat', ['name' => $receiver->name]);
         }
 
         return redirect()->route('client.chat', ['name' => $receiver->name]);
     }
+
 
 
     public function getMessages($name)

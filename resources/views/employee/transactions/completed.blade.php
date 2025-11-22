@@ -104,8 +104,11 @@
                                     <h2 class="home_p_font text-sm text-gray-500 mb-2">
                                         Date: {{ $transaction->created_at->format('M d, Y') }}
                                     </h2>
-                                    <h2 class="home_p_font text-sm text-gray-500 mb-4">
+                                    <h2 class="home_p_font text-sm text-gray-500 mb-2">
                                         Status: <span class="text-green-600 font-semibold">Completed</span>
+                                    </h2>
+                                    <h2 class="home_p_font text-sm text-gray-500 mb-4">
+                                        Transaction ID: {{ $transaction->id ?? 'N/A' }}
                                     </h2>
                                 </div>
 

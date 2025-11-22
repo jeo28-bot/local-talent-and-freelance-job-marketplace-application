@@ -87,6 +87,12 @@
                         <a href="" class="text-2xl font-bold! p_font  text-blue-500 hover:underline cursor-pointer max-sm:text-lg">{{ $receiver->name }}</a>
                          <!-- Ellipse for block and report dropdown -->
                         <div class="ml-auto" id="chat_options_wrapper">
+                            {{-- video call --}}
+                            <button id="video_call" class="p-1 rounded-lg cursor-pointer hover:bg-gray-300 ml-auto">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                                </svg>
+                            </button>
                             <!-- Ellipsis button -->
                             <button
                                 id="chat_options_btn"
@@ -121,27 +127,86 @@
     
                     {{-- chat messages --}}
                     <div id="chatContainer" class="p-4 h-130 overflow-y-auto flex flex-col gap-4 bg-gray-100 p_font">
+
+                        @php
+                            $previousDate = null;
+                        @endphp
+
                         @foreach ($messages as $message)
-                            @if ($message->sender_id === auth()->id())
-                                {{-- sender (admin / current user) --}}
-                                <p class="p-2 bg-blue-300 rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm ml-auto break-words">
-                                    {{ $message->content }}
-                                    <br>
-                                    <span class="text-gray-500 text-xs block text-right">
-                                        {{ $message->created_at->format('g:i A') }}
+
+                            @php
+                                $currentDate = $message->created_at->toDateString();
+                            @endphp
+
+                            {{-- 🔥 DATE HEADER --}}
+                            @if ($currentDate !== $previousDate)
+                                <div class="flex justify-center my-2">
+                                    <span class="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
+                                        {{ $message->created_at->format('F j, Y') }}
                                     </span>
-                                </p>
-                            @else
-                                {{-- receiver --}}
-                                <p class="p-2 bg-gray-300 text-left rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm break-words">
-                                    {{ $message->content }}
-                                    <br>
-                                    <span class="text-gray-500 text-xs block text-right">
-                                        {{ $message->created_at->format('g:i A') }}
-                                    </span>
-                                </p>
+                                </div>
+                                @php $previousDate = $currentDate; @endphp
                             @endif
-                        @endforeach 
+
+
+                            {{-- Determine bubble alignment --}}
+                            @php
+                                $isSender = $message->sender_id === Auth::id();
+                                $bubbleClass = $isSender
+                                    ? 'bg-blue-300 ml-auto'
+                                    : 'bg-gray-300';
+                            @endphp
+
+
+                            {{-- ===========================
+                                MESSAGE BUBBLE
+                            ============================ --}}
+                            <div class="p-2 rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm break-words {{ $bubbleClass }}">
+
+                                {{-- 📝 TEXT MESSAGE --}}
+                                @if ($message->content)
+                                    <p>{{ $message->content }}</p>
+                                @endif
+
+                                {{-- 🖼 IMAGE PREVIEW --}}
+                                @if ($message->file_type === 'image')
+                                    <div class="mt-2">
+                                        <img src="{{ asset('storage/' . $message->file) }}"
+                                            class="max-w-60 max-h-60 rounded-lg border cursor-pointer hover:opacity-90"
+                                            onclick="window.open('{{ asset('storage/' . $message->file) }}', '_blank')" />
+                                    </div>
+                                @endif
+
+                                {{-- 📄 FILE PREVIEW / DOWNLOAD --}}
+                                @if ($message->file_type === 'file')
+                                    <a href="{{ asset('storage/' . $message->file) }}"
+                                    download
+                                    class="flex items-center gap-2 p-2 mt-2 bg-white rounded-md shadow-sm hover:bg-gray-100 border">
+
+                                        {{-- File Icon --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375H8.25m0
+                                                    0L12 4.5m-3.75 4.125L12 12.75m0 0l3.75-4.125M12 
+                                                    12.75l-3.75 4.125M12 12.75l3.75 4.125" />
+                                        </svg>
+
+                                        <span class="text-sm underline truncate max-w-40">
+                                            {{ basename($message->file) }}
+                                        </span>
+                                    </a>
+                                @endif
+
+                                {{-- 🕒 TIMESTAMP --}}
+                                <span class="text-gray-500 text-xs block text-right mt-1">
+                                    {{ $message->created_at->format('g:i a') }}
+                                </span>
+
+                            </div>
+
+                        @endforeach
                     </div>
 
 
@@ -151,8 +216,21 @@
                     <form id="chatForm" 
                         action="{{ route('admin.send_message', ['name' => $receiver->name]) }}" 
                         method="POST" 
+                        enctype="multipart/form-data"
                         class="p-4 border-t border-gray-300 flex items-center gap-2">
                         @csrf
+                        <label for="fileInput" class="hover:bg-gray-300 p-2 rounded-full cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 max-sm:size-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" />
+                            </svg>
+                        </label>
+
+                        <input id="fileInput"
+                            type="file"
+                            name="file"
+                            class="hidden"
+                            onchange="document.getElementById('chatForm').submit()" />
+
                         <input 
                             id="messageInput" 
                             type="text" 
@@ -272,40 +350,100 @@
 
     </script>
 
+     {{-- reload when new message sent --}}
     <script>
         const chatContainer = document.querySelector('#chatContainer');
         const rolePrefix = "{{ $rolePrefix }}";
         const receiverName = "{{ $receiver->name }}";
-        const chatMenu = document.querySelector('.flex.flex-col.gap-2.overflow-x-auto'); 
+        const chatMenu = document.querySelector('.flex.flex-col.gap-2.overflow-x-auto');
         let lastMessageCount = {{ count($messages) }};
 
         async function fetchMessages() {
             try {
                 const res = await fetch(`/${rolePrefix}/chat/${receiverName}/messages`);
                 if (!res.ok) return;
+
                 const data = await res.json();
 
                 if (data.length !== lastMessageCount) {
                     lastMessageCount = data.length;
                     chatContainer.innerHTML = '';
+
+                    let previousDate = null;
+
                     data.forEach(msg => {
-                        const bubble = document.createElement('p');
+                        const msgDate = new Date(msg.created_at).toISOString().split('T')[0];
+
+                        // 🔥 Date header if day changes
+                        if (msgDate !== previousDate) {
+                            const dateBox = document.createElement('div');
+                            dateBox.className = "flex justify-center my-2";
+                            dateBox.innerHTML = `
+                                <span class="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
+                                    ${new Date(msg.created_at).toLocaleDateString('en-US', {
+                                        month: 'long', day: 'numeric', year: 'numeric'
+                                    })}
+                                </span>
+                            `;
+                            chatContainer.appendChild(dateBox);
+                            previousDate = msgDate;
+                        }
+
+                        // 🔵 Message bubble
                         const isSender = msg.sender_id === {{ Auth::id() }};
-                        bubble.className = isSender
-                            ? "p-2 bg-blue-300 rounded-lg w-fit max-w-120 ml-auto break-words"
-                            : "p-2 bg-gray-300 rounded-lg w-fit max-w-120 break-words";
-                        bubble.innerHTML = `
-                            ${isSender ? 'You: ' : ''}${msg.content}
-                            <br>
-                            <span class="text-gray-500 text-xs block text-right">
+                        const bubble = document.createElement('div');
+                        bubble.className = `p-2 rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm break-words ${isSender ? 'bg-blue-300 ml-auto' : 'bg-gray-300'}`;
+
+                        let bubbleContent = '';
+
+                        // 📝 Text
+                        if (msg.content) {
+                            bubbleContent += `<p>${msg.content}</p>`;
+                        }
+
+                        // 🖼 Image preview
+                        if (msg.file_type === 'image') {
+                            bubbleContent += `
+                                <div class="mt-2">
+                                    <img src="/storage/${msg.file}"
+                                        class="rounded-lg max-w-60 max-h-60 border cursor-pointer hover:opacity-90"
+                                        onclick="window.open('/storage/${msg.file}', '_blank')"
+                                    />
+                                </div>
+                            `;
+                        }
+
+                        // 📄 File (PDF, DOCX, XLSX, ZIP, etc.)
+                        if (msg.file_type === 'file') {
+                            const fileName = msg.file.split('/').pop();
+                            bubbleContent += `
+                                <a href="/storage/${msg.file}" download
+                                class="flex items-center gap-2 p-2 mt-2 bg-white rounded-md shadow-sm hover:bg-gray-100 border">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5"
+                                        stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375H8.25m0
+                                                0L12 4.5m-3.75 4.125L12 12.75m0 0l3.75-4.125M12 
+                                                12.75l-3.75 4.125M12 12.75l3.75 4.125" />
+                                    </svg>
+                                    <span class="text-sm underline truncate max-w-40">${fileName}</span>
+                                </a>
+                            `;
+                        }
+
+                        // 🕒 Time
+                        bubbleContent += `
+                            <span class="text-gray-500 text-xs block text-right mt-1">
                                 ${new Date(msg.created_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                             </span>
                         `;
+
+                        bubble.innerHTML = bubbleContent;
                         chatContainer.appendChild(bubble);
                     });
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-                    // ✅ Refresh chat menu preview
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
                     fetchChatMenu();
                 }
             } catch (e) {
@@ -321,15 +459,13 @@
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 const newMenu = doc.querySelector('.flex.flex-col.gap-2.overflow-x-auto');
-                if (newMenu && chatMenu) {
-                    chatMenu.innerHTML = newMenu.innerHTML;
-                }
+                if (newMenu && chatMenu) chatMenu.innerHTML = newMenu.innerHTML;
             } catch (e) {
                 console.error('Error fetching chat menu', e);
             }
         }
 
-        // Auto-refresh every 2s
+        // Auto-refresh messages and chat menu every 2 seconds
         setInterval(fetchMessages, 2000);
     </script>
 

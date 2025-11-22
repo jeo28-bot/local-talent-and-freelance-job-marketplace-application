@@ -10,7 +10,13 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['sender_id', 'receiver_id', 'content'];
+    protected $fillable = [
+        'sender_id',
+        'receiver_id',
+        'content',
+        'file',
+        'file_type',
+    ];
 
     public function sender()
     {

@@ -14,10 +14,18 @@
             {{-- Notification List --}}
             @forelse ($notifications as $note)
                     @php
+                        // applicant → used for job application notifications
                         $applicantId = $note->data['applicant_id'] ?? null;
-                        $applicant = $applicantId ? \App\Models\User::find($applicantId) : null;
-                        $applicationId = $note->data['application_id'] ?? null;
+
+                        // employee → used for payout notifications
+                        $employeeId = $note->data['employee_id'] ?? null;
+
+                        // Decide which user to display
+                        $userId = $applicantId ?: $employeeId;
+
+                        $userData = $userId ? \App\Models\User::find($userId) : null;
                     @endphp
+
                 <div id="notification-{{ $note->id }}" class="relative">
                         <a href="{{ route('client.notification.open', $note->id) }}"
                         class="flex bg-white p-4 cursor-pointer hover:bg-gray-100 max-sm:p-2 rounded-xl mb-4 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -29,9 +37,9 @@
 
                             <div class="flex items-start w-full">
                                 <div class="flex-shrink-0 border-2 border-gray-300 rounded-full">
-                                    <img src="{{ $applicant && $applicant->profile_pic 
-                                            ? asset('storage/' . $applicant->profile_pic) 
-                                            : asset('assets/defaultUserPic.png') }}" 
+                                    <img src="{{ $userData && $userData->profile_pic
+                                                ? asset('storage/' . $userData->profile_pic)
+                                                : asset('assets/defaultUserPic.png') }}" 
                                     class="w-12 h-12 rounded-full max-sm:w-8 max-sm:h-8">
                                 </div>
 

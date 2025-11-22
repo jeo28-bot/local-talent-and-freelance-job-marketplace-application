@@ -10,6 +10,7 @@ use App\Models\JobApplication;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BlockedUser;
 use App\Models\Notification;
+use App\Models\Transaction;
 
 class EmployeeController extends Controller
 {
@@ -134,6 +135,7 @@ class EmployeeController extends Controller
         if (!empty($search)) {
             $transactionsQuery->where(function ($q) use ($search) {
                 $q->where('job_title', 'like', "%{$search}%")
+                ->orWhere('id', 'like', "%{$search}%") // 🔥 Search by transaction ID
                 ->orWhereHas('client', function ($clientQuery) use ($search) {
                     $clientQuery->where('name', 'like', "%{$search}%");
                 })
@@ -163,7 +165,7 @@ class EmployeeController extends Controller
             'reference_no' => 'required|string',
         ]);
 
-        $transaction = \App\Models\Transaction::findOrFail($request->transaction_id);
+        $transaction = Transaction::findOrFail($request->transaction_id);
 
         $transaction->update([
             'payment_method' => $request->payment_method,
@@ -171,8 +173,22 @@ class EmployeeController extends Controller
             'status' => 'requested',
         ]);
 
+        // 🔥 Create notification
+        Notification::create([
+            'user_id' => $transaction->client_id,
+            'type'    => 'payout_request',
+            'title'   => 'Payout Request',
+            'body'    => 'An employee has requested a payout.',
+            'data'    => [
+                'employee_id' => auth()->id(),
+                'transaction_id' => $transaction->id,
+            ],
+            'is_read' => false,
+        ]);
+
         return redirect()->back()->with('success', 'Payout request submitted successfully.');
     }
+
     
     public function jobs()
     {
@@ -212,18 +228,29 @@ class EmployeeController extends Controller
         // Mark as read
         $notification->update(['is_read' => true]);
 
-        // Get the application ID from data
-        $noteData = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
+        // Decode data
+        $noteData = is_array($notification->data)
+            ? $notification->data
+            : json_decode($notification->data, true);
+
+        // 1️⃣ Check if this is a job application notification
         $applicationId = $noteData['application_id'] ?? null;
 
-        // Redirect to applied page with search query
         if ($applicationId) {
             return redirect()->route('employee.applied', ['q' => $applicationId]);
         }
 
-        // Fallback: redirect to notifications page
+        // 2️⃣ NEW FLOW: Payment completed → redirect to completed transactions
+        $transactionId = $noteData['transaction_id'] ?? null;
+
+        if ($notification->type === 'payment_completed' && $transactionId) {
+            return redirect()->route('employee.transactions.completed', ['q' => $transactionId]);
+        }
+
+        // 3️⃣ Fallback
         return redirect()->back();
     }
+
     public function deleteNotification($id)
     {
         $notification = \App\Models\Notification::where('id', $id)
@@ -249,12 +276,12 @@ class EmployeeController extends Controller
    public function notifications()
     {
         $notifications = \App\Models\Notification::where('user_id', auth()->id())
-            ->where('type', 'job_status')
             ->orderBy('created_at', 'desc')
             ->paginate(5);
 
         return view('employee.notifications', compact('notifications'));
     }
+
     
 
     public function profile()
@@ -284,30 +311,30 @@ class EmployeeController extends Controller
 
     // save function
     public function saved(Request $request)
-{
-    $search = $request->input('q');
+    {
+        $search = $request->input('q');
 
-    $savedJobsQuery = auth()->user()->savedJobs()
-        ->when($search, function ($query, $search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('job_title', 'LIKE', "%{$search}%")
-                  ->orWhere('job_location', 'LIKE', "%{$search}%")
-                  ->orWhere('job_type', 'LIKE', "%{$search}%")
-                  ->orWhere('job_pay', 'LIKE', "%{$search}%")
-                  ->orWhere('salary_release', 'LIKE', "%{$search}%")
-                  ->orWhere('short_description', 'LIKE', "%{$search}%")
-                  ->orWhere('skills_required', 'LIKE', "%{$search}%")
-                  ->orWhere('status', 'LIKE', "%{$search}%")
-                  ->orWhereHas('client', function ($clientQuery) use ($search) {
-                      $clientQuery->where('name', 'LIKE', "%{$search}%");
-                  });
+        $savedJobsQuery = auth()->user()->savedJobs()
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('job_title', 'LIKE', "%{$search}%")
+                    ->orWhere('job_location', 'LIKE', "%{$search}%")
+                    ->orWhere('job_type', 'LIKE', "%{$search}%")
+                    ->orWhere('job_pay', 'LIKE', "%{$search}%")
+                    ->orWhere('salary_release', 'LIKE', "%{$search}%")
+                    ->orWhere('short_description', 'LIKE', "%{$search}%")
+                    ->orWhere('skills_required', 'LIKE', "%{$search}%")
+                    ->orWhere('status', 'LIKE', "%{$search}%")
+                    ->orWhereHas('client', function ($clientQuery) use ($search) {
+                        $clientQuery->where('name', 'LIKE', "%{$search}%");
+                    });
+                });
             });
-        });
 
-    $savedJobs = $savedJobsQuery->paginate(3)->withQueryString();
+        $savedJobs = $savedJobsQuery->paginate(3)->withQueryString();
 
-    return view('employee.saved', compact('savedJobs', 'search'));
-}
+        return view('employee.saved', compact('savedJobs', 'search'));
+    }
 
 
     public function saveJob($id)
@@ -417,7 +444,11 @@ class EmployeeController extends Controller
     }
     
 
-
+    // video call
+    public function videoCall()
+    {
+        return view('employee.video-call');
+    }
 
 
 

@@ -9,10 +9,28 @@
         
         {{-- pending earnings cards --}}
         <div class="xl:w-6xl mx-auto px-5 max-sm:px-3 mb-10 pb-10">
-            <div>
-                <h1 class="sub_title sm:text-xl">Pending Payment</h1>
-                <p class="home_p_font mb-5 text-sm">You can request a payout for your pending earnings once you have completed a job.</p>
+            <div class="flex items-center justify-between max-lg:flex-col max-lg:gap-2 max-xl:items-start max-xl:mb-4 mb-5">
+                <div>
+                    <h1 class="sub_title sm:text-xl">Pending Payouts</h1>
+                    <p class="home_p_font text-sm">Check your pending payouts in here.</p>
+                </div>
+
+                {{-- search input div --}}
+                <div class="ml-auto max-lg:w-sm max-sm:w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 absolute mt-2 max-sm:mt-2 ml-2 max-sm:size-5 max-sm:ml-1.5">
+                    <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                    </svg>
+                    {{-- search inputs --}}
+                    <form action="{{ route('client.transactions.pending') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font max-sm:text-sm flex items-center">
+                            <input type="text" name="q" value="{{ request('q') }}" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm pr-20 w-sm max-lg:w-full" placeholder="Search job title, user, status, id">
+                        <button type="submit" class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-77 max-sm:right-9 absolute ">Search</button>
+                    </form>
+
+                </div>
+
+
             </div>
+            
 
             
                 @if ($transactions->count() > 0)
@@ -80,7 +98,7 @@
                                 <h2 class="home_p_font text-sm text-gray-500 mb-2">
                                     Date: {{ $transaction->created_at->format('M d, Y') }}
                                 </h2>
-                                <h2 class="home_p_font text-sm text-gray-500 mb-4">
+                                <h2 class="home_p_font text-sm text-gray-500 mb-2">
                                     Status: 
                                     @if ($transaction->status === 'pending')
                                         <span class="text-orange-500 font-semibold">Pending</span>
@@ -91,6 +109,9 @@
                                     @elseif ($transaction->status === 'completed')
                                         <span class="text-gray-600 font-semibold">Completed</span>
                                     @endif
+                                </h2>
+                                <h2 class="home_p_font text-sm text-gray-500 mb-4">
+                                    Transaction ID: {{ $transaction->id }}
                                 </h2>
                             </div>
 
@@ -234,13 +255,7 @@
         </div>
     </div>
 
-    @if (session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                alert("✅ {{ session('success') }}");
-            });
-        </script>
-    @endif
+
 
 
     <script>
@@ -286,9 +301,7 @@
                 },
                 body: formData,
             });
-
             if (response.ok) {
-                alert("✅ Payment marked as paid successfully!");
                 modal.classList.add('hidden');
                 location.reload(); // optional — refresh the list
             } else {
