@@ -5,20 +5,61 @@
 @section('content')
     @include('components.nav_employee')
     
-     <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
+     <section class="w-full min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
 
         <div class="xl:w-6xl mx-auto px-5 max-sm:px-3 mb-10 bg-gray-300 shadow-lg rounded-xl p-6">
-            <h1 class="sub_title sm:text-xl">Video Calling <span class="text-blue-500">{{ $receiverUser->name }}</span></h1>
-            <p class="home_p_font mb-5 text-sm">This is where your video calls will take place.</p>
-            
-            {{-- container video call --}}
-            <div class="w-full h-[500px] bg-black rounded-lg flex items-center justify-center shadow-lg">
-                <video id="localVideo" autoplay muted class="w-1/2 h-full rounded-l-lg"></video>
-                <video id="remoteVideo" autoplay class="w-1/2 h-full rounded-r-lg"></video>
+            {{-- title and back button parent div --}}
+            <div class="flex justify-between items-center">
+                {{-- title and p --}}
+                <div>
+                    <h1 class="sub_title sm:text-xl">Video Calling <span class="text-blue-500">({{ $callerName ?? 'Unknown Caller' }})</span></h1>
+                    <p class="home_p_font mb-5 text-sm">This is where your video calls will take place.</p>
+                </div>
+                {{-- back button --}}
+                <a href="{{route('employee.messages')}}" class="p-2 bg-gray-200 rounded-full hover:bg-gray-100 cursor-pointer shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"></path>
+                    </svg>
+                </a>
             </div>
+
+            
+             {{-- container video call --}}
+            <div class="container mx-auto ">
+                <h2 class="text-xl font-bold mb-4 p_font">Joining Room: <span class="font-semibold text-blue-500!">{{ $roomName }}</span></h2>
+
+                <!-- Jitsi container -->
+                <div id="jitsi-container" style="width: 100%; height: 600px; background: #000;"></div>
+            </div>
+
+            <!-- Load Jitsi external API -->
+            <script src="https://meet.jit.si/external_api.js"></script>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const domain = "meet.jit.si";
+                const options = {
+                    roomName: "{{ $roomName }}",
+                    width: "100%",
+                    height: 600,
+                    parentNode: document.getElementById('jitsi-container'),
+                    interfaceConfigOverwrite: {
+                        SHOW_JITSI_WATERMARK: false,
+                        SHOW_WATERMARK_FOR_GUESTS: false,
+                    }
+                };
+
+                const api = new JitsiMeetExternalAPI(domain, options);
+
+                // Optional: listen to events
+                api.addListener('videoConferenceJoined', () => {
+                    console.log('You joined the Jitsi room!');
+                });
+            });
+            </script>
         
             {{-- buttons --}}
-            <div class="mt-5 flex flex-row items-center gap-4 justify-center">
+            <div class="mt-5 flex flex-row items-center gap-4 justify-center hidden">
                 {{-- mic button --}}
                 <button class="p-2 bg-[#1e2939] text-white rounded-full hover:bg-[#374151] cursor-pointer ">
                     {{-- open mic icon --}}
@@ -54,61 +95,7 @@
         
     </section>
 
-    
-    @php
-        $me = auth()->id();
-        $other = $receiverUser->id;
-        $roomId = $me < $other ? $me . '-' . $other : $other . '-' . $me;
-    @endphp
-
-    <script>
-    const roomId = @json($roomId);
-    console.log('roomId:', roomId);
-    connection.openOrJoin(roomId);
-</script>
-
-
-
-    <script src="https://cdn.webrtc-experiment.com/RTCMultiConnection.js"></script>
-<script src="https://cdn.webrtc-experiment.com/socket.io.js"></script>
-
-<script>
-    var connection = new RTCMultiConnection();
-
-    // use a known-working public signaling server
-    connection.socketURL = 'https://rtc-signaling.multiconnection.org:443/';
-
-    connection.session = { audio: true, video: true };
-
-    connection.sdpConstraints.mandatory = {
-        OfferToReceiveAudio: true,
-        OfferToReceiveVideo: true
-    };
-
-    connection.onstream = function(event) {
-        if (event.type === "local") {
-            document.getElementById("localVideo").srcObject = event.stream;
-        }
-        if (event.type === "remote") {
-            document.getElementById("remoteVideo").srcObject = event.stream;
-        }
-    };
-
-    // roomId must be passed by controller or computed earlier in Blade
-    const roomId = @json($roomId);
-
-    console.log('Attempting openOrJoin for room:', roomId);
-
-    connection.openOrJoin(roomId);
-
-    // debug helpers
-    connection.onSocketError = function(error) {
-        console.error('Socket error:', error);
-    };
-    connection.onMediaError = function(error) {
-        console.error('Media error:', error);
-    };
-</script>
+ 
 
     
 

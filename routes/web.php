@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Transaction;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\VideoCallController;
 
 
 Route::get('/', function () {
@@ -304,3 +305,10 @@ Route::post('/video-call/signal', function (Illuminate\Http\Request $request) {
     broadcast(new App\Events\VideoCallSignal($request->signal, auth()->id(), $request->to));
     return ['status' => 'ok'];
 });
+
+
+Route::post('/start-call', [CallController::class, 'startCall']);
+
+
+Route::post('/video-call/start', [VideoCallController::class, 'start']);
+Route::get('/video-call/join/{roomName}', [VideoCallController::class, 'join']);

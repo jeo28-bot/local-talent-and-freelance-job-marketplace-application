@@ -1,35 +1,47 @@
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
+    console.log('Video call JS loaded');
 
-window.Pusher = Pusher;
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.video_call_btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                let receiverId = btn.dataset.userId;
 
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    wsHost: import.meta.env.VITE_PUSHER_HOST,
-    wsPort: import.meta.env.VITE_PUSHER_PORT,
-    forceTLS: false,
-    disableStats: true,
-});
+                let callerId = btn.dataset.callerId;
+                let callerName = encodeURIComponent(btn.dataset.callerName);
 
-const userId = document.querySelector('meta[name="user-id"]').content;
+                let response = await fetch('/video-call/start', {
+                    method: 'POST',
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ receiver_id: receiverId })
+                });
 
-// Listen for incoming video call signals
-window.Echo.private(`video-call.${userId}`)
-    .listen('VideoCallSignal', (e) => {
-        console.log('Incoming signal:', e);
-        // handle WebRTC offer/answer/ice here
+                let data = await response.json();
+
+                window.location.href = `/video-call/join/${data.roomName}?caller_id=${callerId}&caller_name=${callerName}`;
+            });
+        });
     });
 
-// Send a signal
-async function sendSignal(signal, to) {
-    await fetch('/video-call/signal', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        },
-        body: JSON.stringify({ signal, to }),
-    });
-}
+
+    Echo.private(`user.${USER_ID}`)
+        .listen('.incoming-call', (e) => {
+            document.getElementById('incomingCallModal').classList.remove('hidden');
+
+            window.incomingRoom = e.roomName;
+            window.callerId = e.callerId;
+
+            document.getElementById('callerName').innerText =
+                `User #${e.callerId} is calling you...`;
+        });
+
+    document.getElementById('acceptCallBtn').onclick = () => {
+        window.location.href = `/video-call/join/${window.incomingRoom}`;
+    };
+
+    document.getElementById('rejectCallBtn').onclick = () => {
+        document.getElementById('incomingCallModal').classList.add('hidden');
+    };
+
+

@@ -35,7 +35,10 @@
     
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/js/video-call.js'])
 
+    
   
 
 </body>

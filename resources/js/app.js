@@ -1,4 +1,14 @@
 
+import Echo from "laravel-echo";
+window.Pusher = require("pusher-js");
+
+window.Echo = new Echo({
+    broadcaster: "pusher",
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+});
+
 
 document.querySelectorAll("#faq-container details").forEach((detail) => {
     detail.addEventListener("toggle", function () {
@@ -63,6 +73,7 @@ close_report_modal.addEventListener('click', ()=>{
   console.log('report job clicked');
   report_modal.classList.add('hidden')
 })
+
 
 
 

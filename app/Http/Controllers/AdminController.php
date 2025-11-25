@@ -29,13 +29,15 @@ class AdminController extends Controller
             $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
+
                 // Search within JobApplication table
-                $q->where('full_name', 'like', "%{$search}%")
+                $q->where('id', 'like', "%{$search}%")      // ← added this
+                ->orWhere('full_name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('phone_num', 'like', "%{$search}%")
                 ->orWhere('status', 'like', "%{$search}%");
             })
-            // Search related user (the one who posted the job)
+            // Search related user
             ->orWhereHas('user', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%");
@@ -50,6 +52,7 @@ class AdminController extends Controller
 
         return view('admin.applications', compact('applications'));
     }
+
      public function jobs() {
 
         return view('admin.jobs');

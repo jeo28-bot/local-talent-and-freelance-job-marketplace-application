@@ -101,6 +101,31 @@
 
     </section>
 
+    <script>
+      Echo.private(`user.{{ auth()->id() }}`)
+      .listenForWhisper('incoming-call', e => {
+          // show modal
+          const modal = document.getElementById('incomingCallModal');
+          const callerNameEl = document.getElementById('callerName');
+          callerNameEl.textContent = `${e.caller_name} is calling you`;
+          modal.classList.remove('hidden');
+
+          document.getElementById('acceptCallBtn').onclick = () => {
+              modal.classList.add('hidden');
+              window.location.href = `/video-call/join/${e.roomName}`;
+          };
+
+          document.getElementById('declineCallBtn').onclick = () => {
+              modal.classList.add('hidden');
+          };
+      });
+
+    </script>
+
+    {{-- modal section --}}
+    @include('components.incoming-call')
+
+    {{-- footer section --}}
 
     @include('components.footer_employee')
 @endsection

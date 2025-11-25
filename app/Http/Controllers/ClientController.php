@@ -10,6 +10,7 @@ use App\Models\JobApplication;
 use App\Models\BlockedUser;
 use App\Models\User;
 use App\Models\Notification;
+use App\Events\IncomingCallEvent;
 
 
 class ClientController extends Controller
@@ -279,6 +280,17 @@ class ClientController extends Controller
 
         return view('client.video-call', compact('receiverUser', 'roomId'));
     }
+
+    public function startCall(Request $request)
+    {
+        $caller = auth()->user();
+        $receiverId = $request->receiver_id;
+
+        event(new IncomingCallEvent($receiverId, $caller));
+
+        return response()->json(['status' => 'calling']);
+    }
+
 
 }
 

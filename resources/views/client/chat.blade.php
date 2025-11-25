@@ -79,8 +79,9 @@
                         {{-- ellipse for block and report dropdown --}}
                         <div class="relative ml-auto">
                             {{-- video call --}}
-                           <button data-user-id="{{ $receiver->id }}" 
-                                    data-role="{{ $rolePrefix }}" 
+                           <button  data-user-id="{{ $receiver->id }}"
+                                    data-caller-id="{{ auth()->id() }}"
+                                    data-caller-name="{{ auth()->user()->name }}"
                                     class="video_call_btn p-1 rounded-lg cursor-pointer hover:bg-gray-300 ml-auto">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
@@ -246,45 +247,9 @@
         </div>
      </section>
 
-    {{-- modal section --}}
-
-    @include('components.incoming-call')
-
     
     {{-- script section --}}
-
-    {{-- video call click redirect JS --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-        axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        const videoCallBtns = document.querySelectorAll('.video_call_btn');
-
-        videoCallBtns.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const receiverId = btn.getAttribute('data-user-id');
-                const role = btn.getAttribute('data-role');
-
-                if(receiverId && role) {
-                    try {
-                        await axios.post('/video-call/signal', {
-                            signal: 'incoming-call',
-                            to: receiverId
-                        });
-
-                        window.location.href = `/${role}/video-call/${receiverId}`;
-                    } catch (err) {
-                        console.error(err);
-                        alert('Failed to initiate call.');
-                    }
-                }
-            });
-        });
-    });
-
-    </script>
-
-
+   
 
 
     {{-- reload if new message js --}}
