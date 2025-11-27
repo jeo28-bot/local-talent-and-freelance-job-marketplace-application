@@ -130,12 +130,22 @@
 
                         @php
                             $previousDate = null;
+                            function makeLinksClickable($text) {
+                                // Convert URLs → links
+                                return preg_replace(
+                                    '/(https?:\/\/[^\s]+)/',
+                                    '<a href="$1" target="_blank" class="text-blue-700 underline font-semibold hover:text-blue-900">$1</a>',
+                                    e($text)
+                                );
+                            }
                         @endphp
 
                         @foreach ($messages as $message)
 
                             @php
                                 $currentDate = $message->created_at->toDateString();
+                                $hasLink = $message->content && preg_match('/https?:\/\/[^\s]+/', $message->content);
+                                $bubbleHighlight = $hasLink ? 'ring-2 ring-blue-400' : '';
                             @endphp
 
                             {{-- 🔥 DATE HEADER --}}
@@ -165,7 +175,7 @@
 
                                 {{-- 📝 TEXT MESSAGE --}}
                                 @if ($message->content)
-                                    <p>{{ $message->content }}</p>
+                                    <p>{!! makeLinksClickable($message->content) !!}</p>
                                 @endif
 
                                 {{-- 🖼 IMAGE PREVIEW --}}
@@ -398,7 +408,13 @@
 
                         // 📝 Text
                         if (msg.content) {
-                            bubbleContent += `<p>${msg.content}</p>`;
+                            const urlRegex = /(https?:\/\/[^\s]+)/g;
+                            const linkedText = msg.content.replace(urlRegex, (url) => {
+                                const shortUrl = url.length > 50 ? url.substring(0, 50) + "..." : url;
+                                return `<a href="${url}" target="_blank" class="text-blue-600 underline break-all font-semibold">${shortUrl}</a>`;
+                            });
+
+                            bubbleContent += `<p>${linkedText}</p>`;
                         }
 
                         // 🖼 Image preview

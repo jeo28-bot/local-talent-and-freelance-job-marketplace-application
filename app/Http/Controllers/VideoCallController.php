@@ -34,6 +34,12 @@ class VideoCallController extends Controller
 
         return view("$folder.video-call", compact('roomName', 'callerId', 'callerName'));
     }
+    public function sendIncomingCall(Request $request, $receiverId)
+    {
+        $data = $request->only(['callerId', 'callerName', 'roomName']);
+        event(new IncomingCallEvent($receiverId, $data));
+        return response()->json(['status' => 'ok']);
+    }
 
     
 }

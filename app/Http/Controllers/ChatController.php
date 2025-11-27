@@ -80,6 +80,9 @@ class ChatController extends Controller
             'content'      => $request->content,
             'file'         => null,
             'file_type'    => null,
+
+            // ADD THIS ↓↓↓
+            'is_vc' => $request->input('is_vc'),
         ];
 
         // ✔ If file exists
@@ -90,14 +93,12 @@ class ChatController extends Controller
 
             $data['file'] = $path;
 
-            // classify file type
             if (str_contains($mimeType, 'image')) {
                 $data['file_type'] = 'image';
             } else {
                 $data['file_type'] = 'file';
             }
 
-            // If sending a file, clear text content (optional)
             if (!$request->content) {
                 $data['content'] = null;
             }
@@ -117,6 +118,9 @@ class ChatController extends Controller
 
         return redirect()->route('client.chat', ['name' => $receiver->name]);
     }
+
+    
+
 
 
 
@@ -516,6 +520,29 @@ class ChatController extends Controller
             ->exists();
     }
 
+
+    // Return unread VC messages for the logged-in user
+    public function unreadVC() {
+        $msgs = Message::where('receiver_id', auth()->id())
+                        ->whereNotNull('is_vc')
+                        ->where('seen', false) // use your existing column
+                        ->with('sender')
+                        ->get()
+                        ->map(fn($m) => [
+                            'id' => $m->id,
+                            'sender_name' => $m->sender->name,
+                            'content' => $m->content
+                        ]);
+        return response()->json($msgs);
+    }
+
+    // Mark VC as read
+    public function markRead($id) {
+        $msg = Message::findOrFail($id);
+        $msg->seen = true;  // use your column
+        $msg->save();
+        return response()->json(['status' => 'ok']);
+    }
 
 
 }

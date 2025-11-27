@@ -312,3 +312,9 @@ Route::post('/start-call', [CallController::class, 'startCall']);
 
 Route::post('/video-call/start', [VideoCallController::class, 'start']);
 Route::get('/video-call/join/{roomName}', [VideoCallController::class, 'join']);
+Route::post('/send-incoming-call/{receiverId}', [CallController::class, 'sendIncomingCall']);
+
+Route::get('/chat/unread-vc', [ChatController::class, 'unreadVC']);
+Route::post('/chat/mark-vc-read/{id}', [ChatController::class, 'markRead']);
+
+

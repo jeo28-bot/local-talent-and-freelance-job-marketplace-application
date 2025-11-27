@@ -16,7 +16,9 @@ class Message extends Model
         'content',
         'file',
         'file_type',
+        'is_vc', // <-- ADD THIS
     ];
+
 
     public function sender()
     {

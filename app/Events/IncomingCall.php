@@ -3,28 +3,21 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class IncomingCall implements ShouldBroadcastNow
+class IncomingCall implements ShouldBroadcast
 {
-    public $callerId;
-    public $receiverId;
-    public $roomName;
+    public $data;
+    private $receiverId;
 
-    public function __construct($callerId, $receiverId, $roomName)
+    public function __construct($receiverId, $data)
     {
-        $this->callerId = $callerId;
         $this->receiverId = $receiverId;
-        $this->roomName = $roomName;
+        $this->data = $data;
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('user.' . $this->receiverId);
-    }
-
-    public function broadcastAs()
-    {
-        return 'incoming-call';
+        return new Channel('chat-channel-'.$this->receiverId);
     }
 }

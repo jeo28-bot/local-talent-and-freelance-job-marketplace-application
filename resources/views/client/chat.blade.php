@@ -118,7 +118,18 @@
                     {{-- chat messages --}}
                     <div id="chatContainer" class="p-4 h-130 overflow-y-auto flex flex-col gap-4 bg-gray-100 p_font">
 
-                        @php $previousDate = null; @endphp
+                        @php 
+                            $previousDate = null; 
+                            
+                            function makeLinksClickable($text) {
+                                // Convert URLs → links
+                                return preg_replace(
+                                    '/(https?:\/\/[^\s]+)/',
+                                    '<a href="$1" target="_blank" class="text-blue-700 underline font-semibold hover:text-blue-900">$1</a>',
+                                    e($text)
+                                );
+                            }
+                        @endphp
 
                         @foreach ($messages as $message)
 
@@ -128,7 +139,10 @@
                                 $bubbleClass = $isSender
                                     ? 'bg-blue-300 ml-auto'
                                     : 'bg-gray-300';
+                                $hasLink = $message->content && preg_match('/https?:\/\/[^\s]+/', $message->content);
+                                $bubbleHighlight = $hasLink ? 'ring-2 ring-blue-400' : '';
                             @endphp
+                            
 
                             {{-- 🔥 DATE HEADER --}}
                             @if ($currentDate !== $previousDate)
@@ -141,11 +155,12 @@
                             @endif
 
                             {{-- 🔥 MESSAGE BUBBLE (text + image + files) --}}
-                            <div class="p-2 rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm break-words {{ $bubbleClass }}">
+                           <div class="p-2 rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm break-words {{ $bubbleClass }} {{ $bubbleHighlight }}">
+
 
                                 {{-- 📝 TEXT --}}
                                 @if ($message->content)
-                                    <p>{{ $message->content }}</p>
+                                    <p>{!! makeLinksClickable($message->content) !!}</p>
                                 @endif
 
                                 {{-- 🖼 IMAGE PREVIEW --}}
@@ -247,8 +262,78 @@
         </div>
      </section>
 
-    
+
     {{-- script section --}}
+    
+
+
+    {{-- Incoming Video Call Modal --}}
+    <div id="incomingCallModal" class="hidden fixed inset-0 modal_bg flex items-center justify-center z-50 p_font max-sm:p-4">
+        <div class="bg-white rounded-lg p-6 w-96 text-center flex flex-col items-center shadow-lg">
+            <h2 class="text-lg font-bold mb-4">Incoming Call</h2>
+            <img src="{{ $receiver->profile_pic ? asset('storage/' . $receiver->profile_pic) : asset('assets/defaultUserPic.png') }}" alt="" class="border-2 border-gray-200 rounded-full w-20 h-20">
+            <p id="callerName" class="mb-6">Client...</p>
+            <div class="flex justify-around gap-2">
+                <button id="acceptCallBtn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Accept</button>
+                <button id="declineCallBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Decline</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    setInterval(async () => {
+        try {
+            let res = await fetch('/chat/unread-vc');
+            let data = await res.json();
+
+            if (data.length) {
+                let msg = data[0]; // take first unseen VC
+
+                const modal = document.getElementById('incomingCallModal');
+                const callerNameEl = document.getElementById('callerName');
+                const acceptBtn = document.getElementById('acceptCallBtn');
+                const declineBtn = document.getElementById('declineCallBtn');
+
+                // Show modal
+                modal.classList.remove('hidden');
+
+                // Set caller name
+                callerNameEl.textContent = msg.sender_name;
+
+                // Accept call → go to VC link
+            acceptBtn.onclick = () => {
+                    // Find the URL in the string
+                    const urlMatch = msg.content.match(/https?:\/\/[^\s]+/);
+                    if (urlMatch) {
+                        window.location.href = urlMatch[0]; // redirect to actual VC link
+                    } else {
+                        console.error('No valid VC link found!');
+                    }
+                };
+
+                // Decline call → hide modal & mark as seen
+                declineBtn.onclick = async () => {
+                    modal.classList.add('hidden');
+
+                    await fetch(`/chat/mark-vc-read/${msg.id}`, {
+                        method: 'POST',
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    });
+                };
+            }
+        } catch(e) {
+            console.error('Error fetching unread VC:', e);
+        }
+    }, 3000); // check every 3 sec
+    </script>
+
+
+
+
+
    
 
 
@@ -300,7 +385,13 @@
 
                         // 📝 Text
                         if (msg.content) {
-                            bubbleContent += `<p>${msg.content}</p>`;
+                            const urlRegex = /(https?:\/\/[^\s]+)/g;
+                            const linkedText = msg.content.replace(urlRegex, (url) => {
+                                const shortUrl = url.length > 50 ? url.substring(0, 50) + "..." : url;
+                                return `<a href="${url}" target="_blank" class="text-blue-600 underline break-all font-semibold">${shortUrl}</a>`;
+                            });
+
+                            bubbleContent += `<p>${linkedText}</p>`;
                         }
 
                         // 🖼 Image preview
