@@ -15,7 +15,7 @@
             <div id="recentChatsContainer" data-page="{{ $chatUsers->currentPage() }}" class="gap-5 flex flex-col mb-10">
                 @foreach ($chatUsers as $chat)
                     <a href="{{ route('employee.chat', ['name' => $chat['user']->name]) }}" 
-                        class="p_font flex items-center gap-3 bg-white py-3 px-5 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative">
+                        class="p_font flex items-center gap-3 bg-white py-3 px-5 max-sm:px-2 max-sm:py-2 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative max-sm:gap-2">
                         
                         {{-- Optional: new message indicator --}}
                         {{-- <div class="p-1.5 rounded-full bg-red-500 absolute -ml-3"></div> --}}
@@ -24,20 +24,20 @@
                             ? asset('storage/' . $chat['user']->profile_pic)
                             : asset('assets/defaultUserPic.png') }}" 
                             alt="{{ $chat['user']->name }}" 
-                            class="h-12 w-12 rounded-full border-2 border-gray-400">
+                            class="h-12 w-12 rounded-full border-2 border-gray-400 max-sm:h-10 max-sm:w-10">
 
-                        <div class="flex flex-col">
-                            <h1 class="font-semibold text-blue-500">{{ $chat['user']->name }}</h1>
-                            <p class="text-gray-500 text-sm truncate w-[200px]">{{ $chat['last_message'] }}</p>
+
+                        <div class="w-full flex items-center gap-3 max-sm:flex-col max-sm:items-start">
+                            <div class="flex flex-col">
+                                <h1 class="font-semibold text-blue-500">{{ $chat['user']->name }}</h1>
+                                <p class="text-gray-500 text-sm truncate w-[200px]">{{ $chat['last_message'] }}</p>
+                            </div>
+
+                            <div class="ml-auto text-xs text-gray-400">
+                                {{ $chat['time'] }}
+                            </div>
                         </div>
-
-                        <div class="ml-auto text-xs text-gray-400">
-                            {{ $chat['time'] }}
-                        </div>
-                    </a>
-
-                 
-                    
+                    </a> 
                 @endforeach
             </div>
           
@@ -70,6 +70,10 @@
         
      </section>
 
+     {{-- modal section --}}
+
+     {{-- script section --}}
+
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const messagesContainer = document.querySelector('#recentChatsContainer');
@@ -101,18 +105,19 @@
                 paginatedChats.forEach(chat => {
                     const chatItem = `
                         <a href="/employee/chat/${chat.name}" 
-                            class="p_font flex items-center gap-3 bg-white py-3 px-5 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative">
+                            class="p_font flex items-center gap-3 bg-white py-3 px-5 max-sm:px-2 max-sm:py-2 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative max-sm:gap-2">
 
                             ${chat.has_unseen 
                                 ? '<div class="absolute left-1 top-1 h-3 w-3 rounded-full bg-red-500"></div>'
                                 : ''}
-
-                            <img src="${chat.profile_pic}" alt="${chat.name}" class="h-12 w-12 rounded-full border-2 border-gray-400">
-                            <div class="flex flex-col">
-                                <h1 class="font-semibold text-blue-500">${chat.name}</h1>
-                                <p class="text-gray-500 text-sm truncate w-[200px]">${chat.latest_message ?? 'No messages yet'}</p>
+                                 <img src="${chat.profile_pic}" alt="${chat.name}" class="h-12 w-12 rounded-full border-2 border-gray-400 max-sm:h-10 max-sm:w-10">
+                            <div class="w-full flex items-center gap-3 max-sm:flex-col max-sm:items-start">
+                                <div class="flex flex-col">
+                                    <h1 class="font-semibold text-blue-500">${chat.name}</h1>
+                                    <p class="text-gray-500 text-sm truncate w-[200px]">${chat.latest_message ?? 'No messages yet'}</p>
+                                </div>
+                                <div class="ml-auto text-xs text-gray-400">${chat.time ?? ''}</div>
                             </div>
-                            <div class="ml-auto text-xs text-gray-400">${chat.time ?? ''}</div>
                         </a>
                     `;
                     messagesContainer.insertAdjacentHTML('beforeend', chatItem);

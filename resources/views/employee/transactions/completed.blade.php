@@ -185,6 +185,7 @@
     </section>
 
     {{-- modals --}}
+    
 
     {{-- view details modal --}}
     <div id="transactionModal" class="report_modal fixed top-0 left-0 w-full h-full z-50 hidden max-sm:px-6 bg-black/50 flex justify-center items-start overflow-y-auto py-10">

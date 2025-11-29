@@ -1,59 +1,72 @@
     console.log('Video call JS loaded');
 
    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.video_call_btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
+    document.querySelectorAll('.video_call_btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
 
-                let receiverId = btn.dataset.userId;
-                let callerId = btn.dataset.callerId;
-                let callerName = encodeURIComponent(btn.dataset.callerName);
+            let receiverId = btn.dataset.userId;
+            let callerId = btn.dataset.callerId;
+            let callerName = encodeURIComponent(btn.dataset.callerName);
 
-                // Extract role + chatName from URL
-                let parts = window.location.pathname.split('/'); 
-                // Example: ['', 'employee', 'chat', 'john_doe']
-                let role = parts[1];       // employee OR client OR admin
-                let chatName = parts[3];   // john_doe
+            // Extract role + chatName from URL
+            let parts = window.location.pathname.split('/');
+            let role = parts[1];
+            let chatName = parts[3];
+            let sendURL = `/${role}/chat/${chatName}/send`;
 
-                // Build correct send URL
-                let sendURL = `/${role}/chat/${chatName}/send`;
-
-                // 1. Start the video call
-                let response = await fetch('/video-call/start', {
-                    method: 'POST',
-                    headers: { 
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({ receiver_id: receiverId })
-                });
-
-                let data = await response.json();
-
-                // Build video call room link
-                let roomLink = `${window.location.origin}/video-call/join/${data.roomName}?caller_id=${callerId}&caller_name=${callerName}`;
-
-                // 2. Send chat message with video call link
-                await fetch(sendURL, {
-                    method: 'POST',
-                    headers: { 
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        receiver_id: receiverId,
-                        content: `📞 Incoming Video Call — Join here: ${roomLink}`,
-                        is_vc: 1 // <--- ADD THIS ONLY
-                    })
-                });
-
-
-
-
-                // 3. Redirect caller to video call
-                window.location.href = roomLink;
+            // 1️⃣ Check if user is online
+            let statusResponse = await fetch('/check-user-status', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ user_id: receiverId })
             });
+
+            let statusData = await statusResponse.json();
+
+            console.log("USER STATUS CHECK →", statusData);
+
+            if (statusData.status !== "online") {
+                alert("❌ The user is currently offline.");
+                return; // STOP EVERYTHING
+            }
+
+            // 2️⃣ Start the video call
+            let response = await fetch('/video-call/start', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ receiver_id: receiverId })
+            });
+
+            let data = await response.json();
+
+            let roomLink = `${window.location.origin}/video-call/join/${data.roomName}?caller_id=${callerId}&caller_name=${callerName}`;
+
+            // 3️⃣ Send chat message with video call link
+            await fetch(sendURL, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    receiver_id: receiverId,
+                    content: `📞 Incoming Video Call — Join here: ${roomLink}`,
+                    is_vc: 1
+                })
+            });
+
+            // 4️⃣ Redirect caller to video call
+            window.location.href = roomLink;
         });
     });
+});
+
 
     
 

@@ -43,23 +43,25 @@
                                     alt="{{ $chatUser->name }}" 
                                     class="h-12 w-12 rounded-full border-2 border-gray-400 max-sm:h-10 max-sm:w-10">
 
-                                <div class="flex flex-col">
-                                    <h1 class="font-semibold text-blue-500 max-sm:text-sm">{{ $chatUser->name }}</h1>
-                                    <p class="text-gray-500 text-sm truncate w-[200px]">
-                                        @if($latestMessage)
-                                            {{ $latestMessage->sender_id == $admin->id ? 'You: ' : '' }}
-                                            {{ $latestMessage->content }}
-                                        @else
-                                            No messages yet
-                                        @endif
-                                    </p>
-                                </div>
-
-                                @if($latestMessage)
-                                    <div class="ml-auto text-xs text-gray-400">
-                                        {{ $latestMessage->created_at->diffForHumans() }}
+                                <div class="flex max-sm:flex-col w-full items-center max-sm:items-baseline">
+                                    <div class="flex flex-col">
+                                        <h1 class="font-semibold text-blue-500 max-sm:text-sm">{{ $chatUser->name }}</h1>
+                                        <p class="text-gray-500 text-sm truncate w-[200px]">
+                                            @if($latestMessage)
+                                                {{ $latestMessage->sender_id == $admin->id ? 'You: ' : '' }}
+                                                {{ $latestMessage->content }}
+                                            @else
+                                                No messages yet
+                                            @endif
+                                        </p>
                                     </div>
-                                @endif
+
+                                    @if($latestMessage)
+                                        <div class="ml-auto text-xs text-gray-400 ">
+                                            {{ $latestMessage->created_at->diffForHumans() }}
+                                        </div>
+                                    @endif
+                                </div>
                             </a>
                         @empty
                             {{-- no messages yet --}}
@@ -141,23 +143,26 @@
                 messagesContainer.innerHTML = '';
                 paginated.forEach(chat => {
                     const chatHTML = `
-                        <a href="/admin/chat/${chat.name}" 
-                            class="p_font flex items-center gap-3 bg-white py-3 px-5 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative">
+                        <a href="/admin/chat/${chat.name}"
+                            class="chat-item p_font flex items-center gap-3 bg-white py-3 px-5 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 max-sm:px-3 ">
 
                             ${chat.has_unseen 
-                                ? '<div class="absolute left-1 top-1 h-3 w-3 rounded-full bg-red-500"></div>' 
+                                ? '<div class="h-3 w-3 max-sm:h-2 max-sm:w-2 rounded-full bg-red-500"></div>' 
                                 : ''}
 
                             <img src="${chat.profile_pic}" 
                                 alt="${chat.name}" 
-                                class="h-12 w-12 rounded-full border-2 border-gray-400">
+                                class="h-12 w-12 rounded-full border-2 border-gray-400 max-sm:h-10 max-sm:w-10">
 
-                            <div class="flex flex-col">
-                                <h1 class="font-semibold text-blue-500">${chat.name}</h1>
-                                <p class="text-gray-500 text-sm truncate w-[200px]">${chat.sender_label}${chat.latest_message}</p>
+                            <div class="flex max-sm:flex-col w-full items-center max-sm:items-baseline">
+                                <div class="flex flex-col">
+                                    <h1 class="font-semibold text-blue-500 max-sm:text-sm">${chat.name}</h1>
+                                    <p class="text-gray-500 text-sm truncate w-[200px]">${chat.sender_label}${chat.latest_message}</p>
 
-                            </div>
-                            <div class="ml-auto text-xs text-gray-400">${chat.time}</div>
+                                </div>
+                                <div class="ml-auto text-xs text-gray-400">${chat.time}</div>
+                            </div
+
                         </a>
                     `;
                     messagesContainer.insertAdjacentHTML('beforeend', chatHTML);
@@ -167,8 +172,13 @@
             }
         }
 
+        
+
         // Refresh every 3 seconds
         setInterval(fetchRecentChats, 3000);
+
+        // 🔹 Initial fetch
+        fetchRecentChats(currentPage);
     });
     </script>
 

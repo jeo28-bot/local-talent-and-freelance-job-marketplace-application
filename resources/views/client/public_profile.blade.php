@@ -29,7 +29,21 @@
         {{-- content --}}
         <div class="lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between">
-            <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
+            <div class="flex items-center">
+                <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
+                {{-- User status indicator --}}
+                    @php
+                        $status = trim(strtolower($user->status)); // make sure it's normalized
+                    @endphp
+
+                    <span class="relative group p-1.5 rounded-full ml-2 {{ $status === 'online' ? 'bg-green-400' : 'bg-gray-400' }}">
+                        <span class="absolute bottom-full mt-2 hidden group-hover:block 
+                                    px-2 py-1 text-xs text-white bg-[#1e2939] rounded 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-200 p_font">
+                            {{ ucfirst($status) }} {{-- Will show Online or Offline --}}
+                        </span>
+                    </span>
+            </div>
 
             <img 
                 src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : asset('assets/defaultUserPic.png') }}" 

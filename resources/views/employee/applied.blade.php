@@ -186,6 +186,7 @@
 
 
     {{-- modals --}}
+    
     {{-- view applied modal --}}
         <div id="view_applied_modal" class="modal_bg fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
             <div class="sm:w-2xl mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 rounded-xl shadow-sm">

@@ -201,6 +201,9 @@
         
      </section>
 
+     {{-- modal section --}}
+     
+
            
 @include('components.footer_employee')
     

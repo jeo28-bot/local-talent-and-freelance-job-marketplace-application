@@ -30,16 +30,44 @@
 
         <main class="">
             @yield('content')
+
+
+             
         </main>
     </div>
+
+    {{-- for pinging online --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = document.querySelector('meta[name="csrf-token"]').content;
+
+        console.log("CSRF Token:", token); // 👈 SEE TOKEN HERE
+
+        setInterval(async () => {
+            console.log("Sending keep-online ping..."); // 👈 check if interval runs
+            await fetch('/keep-online', {
+                    method: 'POST',
+                    credentials: 'same-origin',  // <-- THIS is required for auth
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+        }, 5000); // every 30 seconds
+    });
+    </script>
+
+
     
+
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
+
     @vite(['resources/js/video-call.js'])
 
     
   
-
+    @include('components.incoming-call')
 </body>
 </html>

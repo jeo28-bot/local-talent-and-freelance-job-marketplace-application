@@ -52,7 +52,7 @@
                                         ? asset('storage/' . $chatUser->profile_pic) 
                                         : asset('assets/defaultUserPic.png') }}" 
                                     alt="{{ $chatUser->name }}" class="w-10 h-10 rounded-full inline-block mr-2 border-2 border-gray-400">
-
+                               
                                 <div>
                                     <h2 class="font-bold text-gray-800 p_font ">{{ $chatUser->name }}</h2>
                                     <p class="text-gray-600 text-sm truncate w-[150px] p_font">
@@ -76,6 +76,20 @@
                         <img src="{{ $receiver->profile_pic ? asset('storage/' . $receiver->profile_pic) : asset('assets/defaultUserPic.png') }}" alt="" class="w-10 h-10 rounded-full inline-block mr-2 border-2 border-gray-400">
 
                         <a href="{{ route('employee.public_profile', ['name' => urlencode($receiver->name)]) }}" class="text-2xl font-bold! p_font  text-blue-500 hover:underline cursor-pointer">{{ $receiver->name }}</a>
+                       {{-- User status indicator --}}
+                        @php
+                            $status = trim(strtolower($receiver->status)); // make sure it's normalized
+                        @endphp
+
+                        <span class="relative group p-1.5 rounded-full ml-2 {{ $status === 'online' ? 'bg-green-400' : 'bg-gray-400' }}">
+                            <span class="absolute bottom-full mt-2 hidden group-hover:block 
+                                        px-2 py-1 text-xs text-white bg-[#1e2939] rounded 
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200 p_font">
+                                {{ ucfirst($status) }} {{-- Will show Online or Offline --}}
+                            </span>
+                        </span>
+
+
                         {{-- ellipse for block and report dropdown --}}
                         <div class="relative ml-auto">
                             {{-- video call --}}
@@ -261,69 +275,6 @@
      </section>
 
     {{-- modal section --}}
-
-    {{-- Incoming Video Call Modal --}}
-    <div id="incomingCallModal" class="hidden fixed inset-0 modal_bg flex items-center justify-center z-50 p_font">
-        <div class="bg-white rounded-lg p-6 w-96 text-center flex flex-col items-center shadow-lg">
-            <h2 class="text-lg font-bold mb-4">Incoming Call</h2>
-            <img src="{{ $receiver->profile_pic ? asset('storage/' . $receiver->profile_pic) : asset('assets/defaultUserPic.png') }}" alt="" class="border-2 border-gray-200 rounded-full w-20 h-20">
-            <p id="callerName" class="mb-6">Client...</p>
-            <div class="flex justify-around gap-2">
-                <button id="acceptCallBtn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Accept</button>
-                <button id="declineCallBtn" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Decline</button>
-            </div>
-        </div>
-    </div>
-
-
-    <script>
-    setInterval(async () => {
-        try {
-            let res = await fetch('/chat/unread-vc');
-            let data = await res.json();
-
-            if (data.length) {
-                let msg = data[0]; // take first unseen VC
-
-                const modal = document.getElementById('incomingCallModal');
-                const callerNameEl = document.getElementById('callerName');
-                const acceptBtn = document.getElementById('acceptCallBtn');
-                const declineBtn = document.getElementById('declineCallBtn');
-
-                // Show modal
-                modal.classList.remove('hidden');
-
-                // Set caller name
-                callerNameEl.textContent = msg.sender_name;
-
-                // Accept call → go to VC link
-            acceptBtn.onclick = () => {
-                    // Find the URL in the string
-                    const urlMatch = msg.content.match(/https?:\/\/[^\s]+/);
-                    if (urlMatch) {
-                        window.location.href = urlMatch[0]; // redirect to actual VC link
-                    } else {
-                        console.error('No valid VC link found!');
-                    }
-                };
-
-                // Decline call → hide modal & mark as seen
-                declineBtn.onclick = async () => {
-                    modal.classList.add('hidden');
-
-                    await fetch(`/chat/mark-vc-read/${msg.id}`, {
-                        method: 'POST',
-                        headers: {
-                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-                };
-            }
-        } catch(e) {
-            console.error('Error fetching unread VC:', e);
-        }
-    }, 3000); // check every 3 sec
-    </script>
 
 
 

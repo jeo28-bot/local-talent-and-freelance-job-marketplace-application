@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                                 <h4 class="job_posting_company text-[#78818D] mb-2 max-sm:text-xs">
-                                    {{ $post->short_description }}
+                                    {{ $post->short_description }} <br> <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}" class="text-blue-500 hover:text-blue-300 text-sm">See more...</a>
                                 </h4>
                             <div class="div_control flex justify-between max-sm:flex-col flex-col">
                                 <div class="div_control max-sm:w-full max-sm:mb-3">
@@ -313,6 +313,8 @@
       
         </div>
     </section>
+
+    {{-- modal section --}}
 
 
        @include('components.footer_employee')

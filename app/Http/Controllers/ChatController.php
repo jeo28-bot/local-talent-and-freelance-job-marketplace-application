@@ -524,17 +524,22 @@ class ChatController extends Controller
     // Return unread VC messages for the logged-in user
     public function unreadVC() {
         $msgs = Message::where('receiver_id', auth()->id())
-                        ->whereNotNull('is_vc')
-                        ->where('seen', false) // use your existing column
-                        ->with('sender')
-                        ->get()
-                        ->map(fn($m) => [
-                            'id' => $m->id,
-                            'sender_name' => $m->sender->name,
-                            'content' => $m->content
-                        ]);
+                    ->whereNotNull('is_vc')
+                    ->where('seen', false)
+                    ->with('sender')
+                    ->get()
+                    ->map(fn($m) => [
+                        'id' => $m->id,
+                        'sender_name' => $m->sender->name,
+                        'sender_profile' => $m->sender->profile_pic 
+                            ? asset('storage/' . $m->sender->profile_pic)
+                            : asset('assets/defaultUserPic.png'),
+                        'content' => $m->content
+                    ]);
+
         return response()->json($msgs);
     }
+
 
     // Mark VC as read
     public function markRead($id) {

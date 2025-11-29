@@ -352,6 +352,7 @@
      </section>
 
      {{-- modal section --}}
+     
 
     {{-- block modal warning --}}
     <div id="block_user" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">

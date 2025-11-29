@@ -92,3 +92,5 @@ const viewButtons = document.querySelectorAll(".view_applicant_button");
         }
     });
 
+
+    

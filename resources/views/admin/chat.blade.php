@@ -85,6 +85,19 @@
                         <img src="{{ $receiver->profile_pic ? asset('storage/' . $receiver->profile_pic) : asset('assets/defaultUserPic.png') }}" alt="" class="w-10 h-10 rounded-full inline-block mr-2 border-2 border-gray-400">
 
                         <a href="" class="text-2xl font-bold! p_font  text-blue-500 hover:underline cursor-pointer max-sm:text-lg">{{ $receiver->name }}</a>
+                        {{-- User status indicator --}}
+                        @php
+                            $status = trim(strtolower($receiver->status)); // make sure it's normalized
+                        @endphp
+
+                        <span class=" group p-1.5 rounded-full ml-2 {{ $status === 'online' ? 'bg-green-400' : 'bg-gray-400' }}">
+                            <span class="absolute bottom-full mt-2 hidden group-hover:block 
+                                        px-2 py-1 text-xs text-white bg-[#1e2939] rounded 
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200 p_font">
+                                {{ ucfirst($status) }} {{-- Will show Online or Offline --}}
+                            </span>
+                        </span>
+
                          <!-- Ellipse for block and report dropdown -->
                         <div class="ml-auto" id="chat_options_wrapper">
                             {{-- video call --}}

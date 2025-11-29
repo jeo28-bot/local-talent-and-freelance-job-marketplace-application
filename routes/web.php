@@ -13,6 +13,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Transaction;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VideoCallController;
+use App\Http\Controllers\UserController;
 
 
 Route::get('/', function () {
@@ -317,4 +318,10 @@ Route::post('/send-incoming-call/{receiverId}', [CallController::class, 'sendInc
 Route::get('/chat/unread-vc', [ChatController::class, 'unreadVC']);
 Route::post('/chat/mark-vc-read/{id}', [ChatController::class, 'markRead']);
 
+Route::get('/user-status/{id}', [UserController::class, 'status']);
+
+
+
+Route::post('/keep-online', [UserController::class, 'keepOnline'])->middleware('auth');
+Route::post('/check-user-status', [UserController::class, 'check']);
 

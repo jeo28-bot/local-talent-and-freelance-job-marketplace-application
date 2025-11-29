@@ -417,6 +417,8 @@
                     
                 </div>
             </div>
+
+            {{-- modal section --}}
             
             {{-- logout modal warning --}} 
             <div id="logout_warning_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center hidden">

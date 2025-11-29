@@ -108,6 +108,7 @@
 
 
     {{-- modals section--}}
+    @include('components.incoming-call')
 
     {{-- post a job modal --}}
     <div class="modal_bg post_job_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 px-10 hidden">
