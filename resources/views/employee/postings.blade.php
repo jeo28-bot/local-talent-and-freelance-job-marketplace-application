@@ -65,7 +65,7 @@
                 
                     {{-- Job cards --}}
                     @foreach($posts as $post)
-                        {{--  job posted cards --}}
+                    {{--  job posted cards --}}
                     <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-5">
                             <div class="div_control mb-2 flex flex-row items-center justify-between">
                                 <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}"
@@ -300,14 +300,14 @@
 
            
 
-         {{-- pagination for job posted --}}
-            <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2 hidden">
-                <h3 class="home_p_font text-sm max-sm:text-xs ">Showing 1 to 3 of 10 results</h3>
-                <div class="flex ml-auto gap-2 max-sm:ml-0">
-                    <button class="cursor-pointer job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-3 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Previous</button>
-                    <button class="cursor-pointer job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</button>
-                </div>
+        {{-- pagination for job posted --}}
+        <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2 hidden">
+            <h3 class="home_p_font text-sm max-sm:text-xs ">Showing 1 to 3 of 10 results</h3>
+            <div class="flex ml-auto gap-2 max-sm:ml-0">
+                <button class="cursor-pointer job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-3 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Previous</button>
+                <button class="cursor-pointer job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</button>
             </div>
+        </div>
 
       
       

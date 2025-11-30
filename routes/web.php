@@ -14,11 +14,17 @@ use App\Http\Controllers\Transaction;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VideoCallController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PublicController;
 
 
 Route::get('/', function () {
     return view('index');
 });
+
+Route::get('/public_job_postings', [PublicController::class, 'publicPostings'])
+    ->name('public.job.postings');
+
+
 
 Auth::routes();
 
@@ -324,4 +330,5 @@ Route::get('/user-status/{id}', [UserController::class, 'status']);
 
 Route::post('/keep-online', [UserController::class, 'keepOnline'])->middleware('auth');
 Route::post('/check-user-status', [UserController::class, 'check']);
+Route::post('/set-offline', [UserController::class, 'setOffline'])->middleware('auth');
 

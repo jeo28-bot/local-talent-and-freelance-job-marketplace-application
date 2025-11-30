@@ -4,48 +4,48 @@
 
 @section('content')
 
-    <header class="text-gray-400 body-font">
-    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <a href="#" class="flex title-font font-medium items-center text-white mb-4 md:mb-0">
-        <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 ">
+  <header class="text-gray-400 body-font">
+    <div class="container mx-auto flex flex-wrap p-5 items-center max-sm:p-3">
+        <a href="#" class="flex title-font font-medium items-center text-white">
+          <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-70 max-lg:w-50 max-sm:w-40">
         </a>
         
-        <div class="md:ml-auto flex flex-wrap gap-5 items-center text-base justify-center ">
-        <a href="{{ route('login') }}" class="cursor-pointer button_font inline-flex items-center bg-transparent border-2 py-2 px-5 focus:outline-none hover:bg-gray-700 rounded-lg text-white mt-4 md:mt-0">Login
-        </a>
-        <a href="{{ route('register') }}" class="cursor-pointer button_font inline-flex items-center py-2 px-5 bg-blue-500 hover:bg-blue-400 focus-visible:outline-blue-500 border-2 focus:outline-none rounded-lg text-white mt-4 md:mt-0 border-transparent">Sign Up
-        </a>
+        <div class="ml-auto flex flex-wrap gap-5 items-center text-base justify-center max-lg:gap-3">
+          <a href="{{ route('login') }}" class="cursor-pointer button_font inline-flex items-center bg-transparent border-2 py-2 px-5 focus:outline-none hover:bg-gray-700 rounded-lg text-white md:mt-0 max-lg:px-3 max-lg:text-sm max-sm:px-2 max-sm:text-xs">Login
+          </a>
+          <a href="{{ route('register') }}" class="cursor-pointer button_font inline-flex items-center py-2 px-5 bg-blue-500 hover:bg-blue-400 focus-visible:outline-blue-500 border-2 focus:outline-none rounded-lg text-white md:mt-0 border-transparent max-lg:px-3 max-lg:text-sm max-sm:px-2 max-sm:text-xs">Sign Up
+          </a>
         </div>
 
     </div>
-    </header>
+  </header>
 
     {{-- hero section --}}
     <section class="">
-    <div class="container mx-auto flex px-5 py-15 md:flex-row flex-col items-center mb-20">
-        <div class="lg:flex-grow md:w-1/2  md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
-        <h1 class="hero_title max-lg:text-4xl! sm:text-5xl text-3xl mb-4 font-medium text-white leading-18 max-[1280px]:leading-none">
-        <span class="relative">
-            <span class="relative z-10">Jasaan’s First Local</span>
-            <span class="absolute inset-0 w-[200px] bg-blue-400 h-3 bottom-1 mt-11 z-0 max-lg:mt-8 max-lg:h-2"></span>
-        </span>
-        <br class="hidden lg:inline-block">
-        Freelance Marketplace
-        </h1>
+      <div class="container mx-auto flex px-5 py-15 md:flex-row flex-col items-center mb-20">
+          <div class="lg:flex-grow md:w-1/2  md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center">
+          <h1 class="hero_title max-lg:text-4xl! sm:text-5xl text-3xl mb-4 font-medium text-white leading-18 max-[1280px]:leading-none">
+          <span class="relative">
+              <span class="relative z-10">Jasaan’s First Local</span>
+              <span class="absolute inset-0 w-[200px] bg-blue-400 h-3 bottom-1 mt-11 z-0 max-lg:mt-8 max-lg:h-2"></span>
+          </span>
+          <br class="hidden lg:inline-block">
+          Freelance Marketplace
+          </h1>
 
-        <p class="mb-8 leading-10 p_font text-gray-300 lg:text-xl max-lg:leading-8">Discover and hire skilled local talent—from makeup artistry to photography—through a secure and accessible platform made for Jasaan’s growing community.</p>
+          <p class="mb-8 leading-10 p_font text-gray-300 lg:text-xl max-lg:leading-8">Discover and hire skilled local talent—from makeup artistry to photography—through a secure and accessible platform made for Jasaan’s growing community.</p>
 
-        <div class="flex justify-center gap-5 max-lg:flex max-lg:gap-2">
-        <a href="{{ route('register') }}" class="cursor-pointer button_font inline-flex items-center bg-transparent border-2 py-3 px-5 focus:outline-none hover:bg-gray-700 rounded-xl text-white mt-4 md:mt-0 max-lg:text-sm max-lg:px-2 max-lg:py-2">Hire Local Talent
-        </a>
-        <a href="{{ route('register') }}" class="cursor-pointer button_font inline-flex items-center py-3 px-5 bg-blue-500 hover:bg-blue-400 focus-visible:outline-blue-500 border-2 focus:outline-none rounded-xl text-white mt-4 md:mt-0 border-transparent max-lg:text-sm max-lg:px-2 max-lg:py-2">Offer Your Service
-        </a>
-        </div>
-        </div>
-        <div class="w-full md:w-1/2">
-        <img class="object-cover object-center rounded" alt="hero" src="{{asset('assets/hero_image.png')}}">
-        </div>
-    </div>
+          <div class="flex justify-center gap-5 max-lg:flex max-lg:gap-2">
+          <a href="{{ url('/public_job_postings') }}" class="cursor-pointer button_font inline-flex items-center bg-transparent border-2 py-3 px-5 focus:outline-none hover:bg-gray-700 rounded-xl text-white mt-4 md:mt-0 max-lg:text-sm max-lg:px-2 max-lg:py-2">See Job Offers
+          </a>
+          <a href="{{ route('register') }}" class="cursor-pointer button_font inline-flex items-center py-3 px-5 bg-blue-500 hover:bg-blue-400 focus-visible:outline-blue-500 border-2 focus:outline-none rounded-xl text-white mt-4 md:mt-0 border-transparent max-lg:text-sm max-lg:px-2 max-lg:py-2">Offer Your Service
+          </a>
+          </div>
+          </div>
+          <div class="w-full md:w-1/2">
+          <img class="object-cover object-center rounded" alt="hero" src="{{asset('assets/hero_image.png')}}">
+          </div>
+      </div>
     </section>
 
 

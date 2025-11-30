@@ -36,26 +36,118 @@
         </main>
     </div>
 
-    {{-- for pinging online --}}
-    <script>
+    {{-- <script>
     document.addEventListener('DOMContentLoaded', () => {
         const token = document.querySelector('meta[name="csrf-token"]').content;
 
-        console.log("CSRF Token:", token); // 👈 SEE TOKEN HERE
+        let lastActivity = Date.now();
+        let offlineTimeout = null;
 
+        const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        activityEvents.forEach(event => {
+            document.addEventListener(event, () => {
+                lastActivity = Date.now();
+
+                // If the user was offline timer running, cancel it
+                if (offlineTimeout) clearTimeout(offlineTimeout);
+
+                // Set new timer to mark offline after 30s inactivity
+                offlineTimeout = setTimeout(async () => {
+                    console.log("User inactive >30s, setting offline");
+                    await fetch('/set-offline', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                }, 30000); // 30s inactivity
+            });
+        });
+
+        // Ping backend every 5s if user is active
         setInterval(async () => {
-            console.log("Sending keep-online ping..."); // 👈 check if interval runs
+            const secondsInactive = (Date.now() - lastActivity) / 1000;
+            if (secondsInactive > 30) return; // skip ping if inactive
+
+            console.log("Sending keep-online ping...");
             await fetch('/keep-online', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Content-Type': 'application/json'
+                }
+            });
+        }, 5000);
+    });
+    </script> --}}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('click', () => {
+            lastActivity = Date.now();
+        });
+
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfMeta) {
+            console.warn("No CSRF token found, skipping online/offline script");
+            return;
+        }
+        const token = csrfMeta.content;
+
+
+        let lastActivity = Date.now();
+        let offlineTimeout = null;
+
+        const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        activityEvents.forEach(event => {
+            document.addEventListener(event, () => {
+                lastActivity = Date.now();
+
+                if (offlineTimeout) clearTimeout(offlineTimeout);
+
+                // Set to offline after 10 seconds
+                offlineTimeout = setTimeout(async () => {
+                    console.log("CALLING /set-offline...");
+                    console.log("User inactive >10s, setting offline");
+                    await fetch('/set-offline', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': token,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                }, 10000); // 10 seconds DEBUG
+            });
+        });
+
+        // Ping backend every 5 seconds if user active
+        setInterval(async () => {
+            const secondsInactive = (Date.now() - lastActivity) / 1000;
+
+            if (secondsInactive <= 10) {
+                console.log("Sending keep-online ping...");
+                await fetch('/keep-online', {
                     method: 'POST',
-                    credentials: 'same-origin',  // <-- THIS is required for auth
+                    credentials: 'same-origin',
                     headers: {
                         'X-CSRF-TOKEN': token,
                         'Content-Type': 'application/json'
                     }
                 });
-        }, 5000); // every 30 seconds
+            } else {
+                console.log("Inactive >10s, not pinging");
+            }
+        }, 5000);
+
     });
     </script>
+
+
+
 
 
     

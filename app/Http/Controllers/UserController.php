@@ -23,14 +23,18 @@ class UserController extends Controller
     {
         $user = $request->user();
 
-        $user->update(['status' => 'online']);
+        $user->update([
+            'last_seen' => now(),
+            'status' => 'online', // optional
+        ]);
 
-        \Log::info("KEEP ONLINE TRIGGERED FOR USER: " . $user->id . " STATUS: " . $user->status);
+        \Log::info("KEEP ONLINE TRIGGERED FOR USER: " . $user->id . " LAST SEEN: " . $user->last_seen);
 
         return response()->json(['status' => 'ok']);
     }
 
-   public function check(Request $request)
+
+    public function check(Request $request)
     {
         $user = User::find($request->user_id);
 
@@ -38,12 +42,34 @@ class UserController extends Controller
             return response()->json(['status' => 'offline']);
         }
 
+       $isOnline = $user->last_seen && $user->last_seen->gt(now()->subSeconds(10));
+
+
         return response()->json([
             'db_raw' => $user->status,
-            'trimmed' => trim(strtolower($user->status)),
-            'status' => trim(strtolower($user->status)) === 'online' ? 'online' : 'offline'
+            'last_seen' => $user->last_seen,
+            'status' => $isOnline ? 'online' : 'offline'
         ]);
     }
+
+   public function setOffline(Request $request)
+    {
+        \Log::info("SET OFFLINE TRIGGERED");
+
+        $user = $request->user();
+
+        if ($user) {
+            $user->update([
+                'status' => 'offline',
+            ]);
+
+            \Log::info("USER SET OFFLINE: " . $user->id);
+        }
+
+        return response()->json(['status' => 'ok']);
+    }
+
+
 
 
 
