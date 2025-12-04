@@ -57,6 +57,10 @@ class AdminController extends Controller
 
         return view('admin.jobs');
     }
+    public function announcements() {
+
+        return view('admin.announcements');
+    }
     public function transactions(Request $request)
     {
         $query = \App\Models\Transaction::with(['employee', 'client']);
@@ -676,63 +680,63 @@ class AdminController extends Controller
         return response()->json(['unreadCount' => $unreadCount]);
     }
     public function fetchAdminMessages()
-{
-    $admin = auth()->user();
+    {
+        $admin = auth()->user();
 
-    $chatUsers = \App\Models\User::where('id', '!=', $admin->id)
-        ->where(function ($q) use ($admin) {
-            $q->whereHas('messagesSent', function ($query) use ($admin) {
-                    $query->where('receiver_id', $admin->id);
-                })
-            ->orWhereHas('messagesReceived', function ($query) use ($admin) {
-                    $query->where('sender_id', $admin->id);
-                });
-        })
-        ->get()
-        ->sortByDesc(function ($user) use ($admin) {
-            return \App\Models\Message::where(function ($q) use ($admin, $user) {
-                    $q->where('sender_id', $admin->id)
-                        ->where('receiver_id', $user->id);
-                })
-                ->orWhere(function ($q) use ($admin, $user) {
-                    $q->where('sender_id', $user->id)
-                        ->where('receiver_id', $admin->id);
-                })
-                ->latest('created_at')
-                ->value('created_at');
-        })
-        ->map(function ($user) use ($admin) {
-            $latestMessage = \App\Models\Message::where(function ($q) use ($admin, $user) {
-                    $q->where('sender_id', $admin->id)
-                        ->where('receiver_id', $user->id);
-                })
-                ->orWhere(function ($q) use ($admin, $user) {
-                    $q->where('sender_id', $user->id)
-                        ->where('receiver_id', $admin->id);
-                })
-                ->latest('created_at')
-                ->first();
+        $chatUsers = \App\Models\User::where('id', '!=', $admin->id)
+            ->where(function ($q) use ($admin) {
+                $q->whereHas('messagesSent', function ($query) use ($admin) {
+                        $query->where('receiver_id', $admin->id);
+                    })
+                ->orWhereHas('messagesReceived', function ($query) use ($admin) {
+                        $query->where('sender_id', $admin->id);
+                    });
+            })
+            ->get()
+            ->sortByDesc(function ($user) use ($admin) {
+                return \App\Models\Message::where(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $admin->id)
+                            ->where('receiver_id', $user->id);
+                    })
+                    ->orWhere(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $user->id)
+                            ->where('receiver_id', $admin->id);
+                    })
+                    ->latest('created_at')
+                    ->value('created_at');
+            })
+            ->map(function ($user) use ($admin) {
+                $latestMessage = \App\Models\Message::where(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $admin->id)
+                            ->where('receiver_id', $user->id);
+                    })
+                    ->orWhere(function ($q) use ($admin, $user) {
+                        $q->where('sender_id', $user->id)
+                            ->where('receiver_id', $admin->id);
+                    })
+                    ->latest('created_at')
+                    ->first();
 
-            $hasUnseen = \App\Models\Message::where('sender_id', $user->id)
-                ->where('receiver_id', $admin->id)
-                ->where('seen', false)
-                ->exists();
+                $hasUnseen = \App\Models\Message::where('sender_id', $user->id)
+                    ->where('receiver_id', $admin->id)
+                    ->where('seen', false)
+                    ->exists();
 
-            return [
-                'name' => $user->name,
-                'profile_pic' => $user->profile_pic 
-                    ? asset('storage/' . $user->profile_pic) 
-                    : asset('assets/defaultUserPic.png'),
-                'latest_message' => $latestMessage?->content ?? 'No messages yet',
-                'sender_label' => $latestMessage && $latestMessage->sender_id == $admin->id ? 'You: ' : '',
-                'time' => $latestMessage?->created_at?->diffForHumans() ?? '',
-                'has_unseen' => $hasUnseen,
-            ];
-        })
-        ->values();
+                return [
+                    'name' => $user->name,
+                    'profile_pic' => $user->profile_pic 
+                        ? asset('storage/' . $user->profile_pic) 
+                        : asset('assets/defaultUserPic.png'),
+                    'latest_message' => $latestMessage?->content ?? 'No messages yet',
+                    'sender_label' => $latestMessage && $latestMessage->sender_id == $admin->id ? 'You: ' : '',
+                    'time' => $latestMessage?->created_at?->diffForHumans() ?? '',
+                    'has_unseen' => $hasUnseen,
+                ];
+            })
+            ->values();
 
-    return response()->json($chatUsers);
-}
+        return response()->json($chatUsers);
+    }
 
     
 

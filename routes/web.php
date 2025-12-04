@@ -34,6 +34,7 @@ Auth::routes();
 Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/admin/jobs', [AdminController::class, 'jobs'])->name('admin.jobs');
+    Route::get('/admin/announcements', [AdminController::class, 'announcements'])->name('admin.announcements');
     Route::get('/admin/applications', [AdminController::class, 'applications'])->name('admin.applications');
     Route::get('/admin/jobs/{title}', [AdminController::class, 'showJob'])
     ->name('admin.jobs.show');
@@ -103,7 +104,7 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin/reports/export', [AdminController::class, 'exportReports'])->name('admin.reports.export');
     Route::delete('/admin/reports/{id}', [AdminController::class, 'destroyReport'])->name('admin.reports.destroy');
     
-
+    
 });
 
 Route::middleware(['auth', 'user_type:employee'])->group(function () {

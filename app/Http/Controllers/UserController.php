@@ -33,7 +33,6 @@ class UserController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
-
     public function check(Request $request)
     {
         $user = User::find($request->user_id);
@@ -42,8 +41,7 @@ class UserController extends Controller
             return response()->json(['status' => 'offline']);
         }
 
-       $isOnline = $user->last_seen && $user->last_seen->gt(now()->subSeconds(10));
-
+        $isOnline = $user->last_seen && $user->last_seen->gt(now()->subSeconds(15));
 
         return response()->json([
             'db_raw' => $user->status,

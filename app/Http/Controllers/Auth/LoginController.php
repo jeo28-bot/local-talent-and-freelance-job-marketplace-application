@@ -57,7 +57,19 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         $user->update(['status' => 'online']);
+
+        switch ($user->user_type) {
+            case 'admin':
+                return redirect('/admin');
+            case 'employee':
+                return redirect('/employee');
+            case 'client':
+                return redirect('/client');
+            default:
+                return redirect('/');
+        }
     }
+
     public function logout(Request $request)
     {
         $user = auth()->user();

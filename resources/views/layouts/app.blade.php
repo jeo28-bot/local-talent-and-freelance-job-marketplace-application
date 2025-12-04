@@ -86,32 +86,24 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        document.addEventListener('click', () => {
-            lastActivity = Date.now();
-        });
-
-        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-        if (!csrfMeta) {
-            console.warn("No CSRF token found, skipping online/offline script");
-            return;
-        }
-        const token = csrfMeta.content;
-
 
         let lastActivity = Date.now();
         let offlineTimeout = null;
 
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfMeta) return;
+        const token = csrfMeta.content;
+
         const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+
         activityEvents.forEach(event => {
             document.addEventListener(event, () => {
                 lastActivity = Date.now();
 
                 if (offlineTimeout) clearTimeout(offlineTimeout);
 
-                // Set to offline after 10 seconds
+                // Set to offline after 15 seconds
                 offlineTimeout = setTimeout(async () => {
-                    console.log("CALLING /set-offline...");
-                    console.log("User inactive >10s, setting offline");
                     await fetch('/set-offline', {
                         method: 'POST',
                         credentials: 'same-origin',
@@ -120,16 +112,15 @@
                             'Content-Type': 'application/json'
                         }
                     });
-                }, 10000); // 10 seconds DEBUG
+                }, 15000); // 15 seconds
             });
         });
 
-        // Ping backend every 5 seconds if user active
+        // Ping backend every 5 seconds if active
         setInterval(async () => {
             const secondsInactive = (Date.now() - lastActivity) / 1000;
 
-            if (secondsInactive <= 10) {
-                console.log("Sending keep-online ping...");
+            if (secondsInactive <= 15) {
                 await fetch('/keep-online', {
                     method: 'POST',
                     credentials: 'same-origin',
@@ -138,13 +129,12 @@
                         'Content-Type': 'application/json'
                     }
                 });
-            } else {
-                console.log("Inactive >10s, not pinging");
             }
         }, 5000);
 
     });
     </script>
+
 
 
 
