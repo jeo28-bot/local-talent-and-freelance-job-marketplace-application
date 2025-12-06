@@ -107,8 +107,8 @@
                                asd
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm flex max-xl:flex-col text-center gap-1">
-                                <button class="view_button bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 mb-1">
-                                    View
+                                <button class="view_button bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-yellow-400 cursor-pointer hover:opacity-80 mb-1">
+                                    Edit
                                 </button>
                                 <button class="delete_button bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-red-400 cursor-pointer hover:opacity-80 mb-1" data-id="">
                                     Delete
@@ -194,7 +194,7 @@
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${createdAtStr}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${updatedAtStr}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm flex flex-col text-center gap-1">
-                                            <button class="view_button bg-[#1e2939] px-5 py-2 rounded button_font text-sm text-green-400 hover:opacity-80 cursor-pointer hover:opacity-70" data-id="${item.id}">View</button>
+                                            <button class="edit_button bg-[#1e2939] px-5 py-2 rounded button_font text-sm text-yellow-400 hover:opacity-80 cursor-pointer hover:opacity-70" data-id="${item.id}">Edit</button>
                                             <button class="delete_button bg-[#1e2939] px-5 py-2 rounded button_font text-sm text-red-400 hover:opacity-80 cursor-pointer hover:opacity-70" data-id="${item.id}">Delete</button>
                                         </td>
                                     </tr>
