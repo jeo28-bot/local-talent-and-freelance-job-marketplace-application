@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\HistoryLog;
-use App\Models\User;
 use Carbon\Carbon;
 
 
@@ -59,52 +58,31 @@ class LoginController extends Controller
     }
 
     protected function authenticated(Request $request, $user)
-{
-    // Set user online for active accounts
-    $user->update(['status' => 'online']);
-
-    // Create login history record
-    HistoryLog::create([
-        'user_id'   => $user->id,
-        'user_type' => $user->user_type,
-        'details'   => 'Logged in around ' . Carbon::now()->format('g:i A - F d, Y'),
-    ]);
-
-    // Redirect based on role
-    switch ($user->user_type) {
-        case 'admin':
-            return redirect('/admin');
-        case 'employee':
-            return redirect('/employee');
-        case 'client':
-            return redirect('/client');
-        default:
-            return redirect('/');
-    }
-}
-
-
-    protected function attemptLogin(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        // Set user online
+        $user->update(['status' => 'online']);
 
-        // HARD BLOCK — if suspended, stop login entirely
-        if ($user && $user->status === 'suspended') {
-            session()->flash('suspended', true);
-            return false;
+        // Only log login if user is not suspended
+        if ($user->status !== 'suspended') {
+            HistoryLog::create([
+                'user_id'   => $user->id,
+                'user_type' => $user->user_type,
+                'details'   => 'Logged in around ' . Carbon::now()->format('g:i A - F d, Y'),
+            ]);
         }
 
-        // Otherwise perform normal login
-        return $this->guard()->attempt(
-            [
-                $this->username() => $request->email,
-                'password'        => $request->password
-            ],
-            $request->boolean('remember')
-        );
+        // Redirect based on role
+        switch ($user->user_type) {
+            case 'admin':
+                return redirect('/admin');
+            case 'employee':
+                return redirect('/employee');
+            case 'client':
+                return redirect('/client');
+            default:
+                return redirect('/');
+        }
     }
-
-    
 
 
 

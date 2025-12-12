@@ -25,9 +25,9 @@
                         </svg>
                     </div>
                     {{-- parent divv for location, job category --}}
-                    <div class="flex  justify-between mb-5 max-sm:flex-col max-sm:gap-3 max-sm:mb-3">
+                    <div class="flex  justify-between mb-5 max-sm:flex-col max-sm:gap-3 max-sm:mb-3 bg-white">
                         {{-- div control for location and job cat --}}
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-1 ">
                             {{-- for location --}}
                             <div class="flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-[#78818D] max-sm:size-5">
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                     {{--short job description --}}
-                    <h4 class="job_posting_company text-[#78818D] text-1lg mb-2 max-sm:text-xs">
+                    <h4 class="job_posting_company text-[#78818D] text-1lg mb-2 max-sm:text-xs ">
                         {{$job->short_description}}
                     </h4>
                     {{-- parent div for skills, posted time, and apply button --}}
@@ -90,7 +90,7 @@
                              </h4>
                         </div>
                         {{-- apply button --}}
-                        <a id="quick_apply_button" class="lg:w-2xl sm:w-lg cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center">
+                        <a id="quick_apply_button" class="lg:w-2xl w-lg max-lg:w-full cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center">
                         Quick Apply
                         </a>
                     </div>
@@ -98,13 +98,13 @@
                 </div>
 
                 {{-- job description div --}}
-                <div class="py-5 px-10 max-sm:px-6 max-sm:py-3 border-t-2 border-b-2 border-gray-200">
+                <div class="py-5 px-10 max-sm:px-6 max-sm:py-3 border-t-2 border-b-2 border-gray-200 bg-white">
                     <h1 class="job_posting_title text-xl max-sm:text-lg mb-3 max-sm:mb-1">Job Description</h1>
                     <p class="home_p_font text-lg max-sm:text-sm">{{$job->full_description}}</p>
                 </div>
                 
                 {{-- report button --}}
-                <div class="py-5 px-10 max-sm:px-6 max-sm:py-3">
+                <div class="py-5 px-10 max-sm:px-6 max-sm:py-3 bg-white">
                     <button id="report_job" class="cursor-pointer job_posting_button bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center flex gap-3 max-sm:gap-2 items-center">
                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-4 text-white">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" />

@@ -214,9 +214,12 @@
                                     </a>
                                 @endif
 
-                                {{-- 🕒 TIME --}}
+                                {{-- 🕒 TIMESTAMP --}}
+                                @php
+                                    $time = $message->created_at->timezone('Asia/Manila')->format('g:i a');
+                                @endphp
                                 <span class="text-gray-500 text-xs block text-right mt-1">
-                                    {{ $message->created_at->format('g:i a') }}
+                                    {{ $time }}
                                 </span>
 
                             </div>

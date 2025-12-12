@@ -143,7 +143,7 @@
                         @foreach ($messages as $message)
 
                             @php
-                                $currentDate = $message->created_at->toDateString();
+                                $currentDate = $message->created_at->timezone(config('app.timezone'))->toDateString();
                                 $hasLink = $message->content && preg_match('/https?:\/\/[^\s]+/', $message->content);
                                 $bubbleHighlight = $hasLink ? 'ring-2 ring-blue-400' : '';
                             @endphp
@@ -152,11 +152,12 @@
                             @if ($currentDate !== $previousDate)
                                 <div class="flex justify-center my-2">
                                     <span class="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
-                                        {{ $message->created_at->format('F j, Y') }}
+                                        {{ $message->created_at->timezone(config('app.timezone'))->format('F j, Y') }}
                                     </span>
                                 </div>
                                 @php $previousDate = $currentDate; @endphp
                             @endif
+
 
 
                             {{-- Determine bubble alignment --}}
@@ -210,9 +211,15 @@
                                 @endif
 
                                 {{-- 🕒 TIMESTAMP --}}
+                                @php
+                                    $time = $message->created_at->timezone('Asia/Manila')->format('g:i a');
+                                @endphp
                                 <span class="text-gray-500 text-xs block text-right mt-1">
-                                    {{ $message->created_at->format('g:i a') }}
+                                    {{ $time }}
                                 </span>
+
+
+
 
                             </div>
 
