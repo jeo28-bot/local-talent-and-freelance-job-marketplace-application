@@ -97,10 +97,10 @@
                             {{ $log->details }}
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
-                            {{ \Carbon\Carbon::parse($log->created_at)->format('m-d-Y h:i A') }}
+                            {{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y - h:i A') }}
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
-                            {{ \Carbon\Carbon::parse($log->created_at)->format('m-d-Y h:i A') }}
+                            {{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y - h:i A') }}
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                             <form action="{{ route('admin.history_log.destroy_log', $log->id) }}" method="POST" class="delete-log-form">

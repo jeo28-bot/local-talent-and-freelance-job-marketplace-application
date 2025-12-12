@@ -62,14 +62,12 @@ class LoginController extends Controller
         // Set user online
         $user->update(['status' => 'online']);
 
-        // Only log login if user is not suspended
-        if ($user->status !== 'suspended') {
-            HistoryLog::create([
-                'user_id'   => $user->id,
-                'user_type' => $user->user_type,
-                'details'   => 'Logged in around ' . Carbon::now()->format('g:i A - F d, Y'),
-            ]);
-        }
+        // Create login history record
+        HistoryLog::create([
+            'user_id'   => $user->id,
+            'user_type' => $user->user_type,
+            'details'   => 'Logged in around ' . Carbon::now()->format('g:i A - F d, Y'),
+        ]);
 
         // Redirect based on role
         switch ($user->user_type) {
@@ -83,7 +81,6 @@ class LoginController extends Controller
                 return redirect('/');
         }
     }
-
 
 
     public function logout(Request $request)

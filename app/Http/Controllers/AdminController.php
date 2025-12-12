@@ -27,17 +27,25 @@ class AdminController extends Controller
     {
         $query = JobApplication::with(['user', 'job'])->orderBy('created_at', 'desc');
 
-        if ($request->filled('search')) {
-            $search = $request->input('search');
+        $search = $request->input('search'); // define $search upfront, even if null
 
+        if ($search) {
             $query->where(function ($q) use ($search) {
 
                 // Search within JobApplication table
-                $q->where('id', 'like', "%{$search}%")      // ← added this
+                $q->where('id', 'like', "%{$search}%")
                 ->orWhere('full_name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('phone_num', 'like', "%{$search}%")
                 ->orWhere('status', 'like', "%{$search}%");
+
+                // Try to parse search as a date
+                try {
+                    $date = \Carbon\Carbon::parse($search)->toDateString(); // converts to YYYY-MM-DD
+                    $q->orWhereDate('created_at', $date);
+                } catch (\Exception $e) {
+                    // Not a valid date, ignore
+                }
             })
             // Search related user
             ->orWhereHas('user', function ($q) use ($search) {
@@ -50,10 +58,11 @@ class AdminController extends Controller
             });
         }
 
-        $applications = $query->paginate(10);
+        $applications = $query->paginate(10)->appends(['search' => $search]); // keep search term for pagination
 
         return view('admin.applications', compact('applications'));
     }
+
 
      public function jobs() {
 
@@ -71,35 +80,44 @@ class AdminController extends Controller
 
         return view('admin.announcements', compact('announcements', 'search'));
     }
-    public function transactions(Request $request)
+   public function transactions(Request $request)
     {
         $query = \App\Models\Transaction::with(['employee', 'client']);
 
-        if ($request->filled('search')) {
-            $search = $request->search;
+        $search = $request->input('search'); // define upfront
 
+        if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('id', 'like', str_replace('2025', '', $search)) // ✅ handle "2025xxx" format
-                    ->orWhereHas('employee', function ($sub) use ($search) {
-                        $sub->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('client', function ($sub) use ($search) {
-                        $sub->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhere('job_title', 'like', "%{$search}%")
-                    ->orWhere('amount', 'like', "%{$search}%")
-                    ->orWhere('status', 'like', "%{$search}%")
-                    ->orWhere('payment_method', 'like', "%{$search}%")
-                    ->orWhere('reference_no', 'like', "%{$search}%")
-                    ->orWhere('transaction_ref_no', 'like', "%{$search}%");
+                // Search numeric or string fields
+                $q->where('id', 'like', str_replace('2025', '', $search)) // keep your existing "2025xxx" logic
+                ->orWhere('job_title', 'like', "%{$search}%")
+                ->orWhere('amount', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhere('payment_method', 'like', "%{$search}%")
+                ->orWhere('reference_no', 'like', "%{$search}%")
+                ->orWhere('transaction_ref_no', 'like', "%{$search}%")
+                ->orWhereHas('employee', function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('client', function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%");
+                });
+
+                // Try parsing search as a date for payment_date
+                try {
+                    $date = \Carbon\Carbon::parse($search)->toDateString(); // YYYY-MM-DD
+                    $q->orWhereDate('payment_date', $date);
+                } catch (\Exception $e) {
+                    // Not a valid date, ignore
+                }
             });
         }
 
-        $transactions = $query->latest()->paginate(10);
-        $transactions->appends(['search' => $request->search]);
+        $transactions = $query->latest()->paginate(10)->appends(['search' => $search]);
 
         return view('admin.transactions', compact('transactions'));
     }
+
 
     public function updateTransactionStatus(Request $request, $id)
     {
@@ -131,14 +149,18 @@ class AdminController extends Controller
                     ->orWhere('details', 'like', "%{$search}%")
                     ->orWhereHas('user', function($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%");
-                    });
+                    })
+                    // Search by date and time formatted like your Blade display
+                    ->orWhereRaw("DATE_FORMAT(created_at, '%b %d, %Y - %h:%i %p') LIKE ?", ["%{$search}%"]);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->withQueryString(); // keeps search query in pagination links
+            ->withQueryString();
 
         return view('admin.history_log', compact('historyLogs'));
     }
+
+
 
     public function destroy_log($id)
     {
@@ -179,17 +201,25 @@ class AdminController extends Controller
                 ->orWhere('job_pay', 'LIKE', "%{$search}%")
                 ->orWhere('salary_release', 'LIKE', "%{$search}%")
                 ->orWhere('status', 'LIKE', "%{$search}%")
-                ->orWhereDate('created_at', $search)
                 ->orWhereHas('client', function ($clientQuery) use ($search) {
                     $clientQuery->where('name', 'LIKE', "%{$search}%");
                 });
+
+                // Try to parse search as a date
+                try {
+                    $date = \Carbon\Carbon::parse($search)->toDateString(); // YYYY-MM-DD
+                    $q->orWhereDate('created_at', $date);
+                } catch (\Exception $e) {
+                    // Not a date, ignore
+                }
             });
         }
 
-        $jobPosts = $query->paginate(10)->appends(['search' => $search]); // keep search term when paginating
+        $jobPosts = $query->paginate(10)->appends(['search' => $search]);
 
         return view('admin.job_post', compact('jobPosts'));
     }
+
     public function updateJobStatus(Request $request, $id)
     {
         $job = \App\Models\JobPost::findOrFail($id);
@@ -205,20 +235,30 @@ class AdminController extends Controller
     {
         $query = User::query();
 
-        if ($search = $request->input('search')) {
+    if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
                 ->orWhere('email', 'LIKE', "%{$search}%")
                 ->orWhere('phoneNum', 'LIKE', "%{$search}%")
                 ->orWhere('user_type', 'LIKE', "%{$search}%")
                 ->orWhere('status', 'LIKE', "%{$search}%");
+
+                // Try to parse search as date
+                try {
+                    $date = \Carbon\Carbon::parse($search)->toDateString(); // YYYY-MM-DD
+                    $q->orWhereDate('created_at', $date);
+                } catch (\Exception $e) {
+                    // Not a date, skip
+                }
             });
         }
 
-        $users = $query->orderBy('id', 'desc')->paginate(10);
+
+        $users = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.users', compact('users'));
     }
+
      public function profile() {
 
         return view('admin.profile');
@@ -396,9 +436,10 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc');
 
         if ($search) {
-        $query->where(function ($q) use ($search) {
-            $q->where('message', 'LIKE', "%{$search}%")
-                ->orWhere('id', 'LIKE', "%{$search}%") // ✅ ADD THIS LINE
+            $query->where(function ($q) use ($search) {
+                // Text & numeric search
+                $q->where('message', 'LIKE', "%{$search}%")
+                ->orWhere('id', 'LIKE', "%{$search}%")
                 ->orWhere('reportable_id', 'LIKE', "%{$search}%")
                 ->orWhere('reportable_type', 'LIKE', "%{$search}%")
                 ->orWhereHas('reporter', function ($r) use ($search) {
@@ -415,14 +456,24 @@ class AdminController extends Controller
                         }
                     }
                 );
-        });
-    }
 
+                // Date search
+                try {
+                    $date = \Carbon\Carbon::parse($search)->toDateString(); // YYYY-MM-DD
+                    $q->orWhereDate('created_at', $date);
+                } catch (\Exception $e) {
+                    // Ignore if not a valid date
+                }
+            });
+        }
 
         $reports = $query->paginate(10)->appends(['search' => $search]);
 
         return view('admin.reports', compact('reports'));
     }
+
+
+
     public function destroyReport($id)
     {
         $report = Report::findOrFail($id);
