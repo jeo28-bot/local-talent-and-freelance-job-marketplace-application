@@ -168,7 +168,7 @@
             <div id="users_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2 mt-4">
                 {{-- Showing x to y of z results --}}
                 <h3 class="home_p_font text-sm max-sm:text-xs">
-                    Showing {{ $reports->firstItem() ?? 0 }} to {{ $reports->lastItem() ?? 0 }} of {{ $reports->total() }} results
+                     {{ $reports->firstItem() ?? 0 }} to {{ $reports->lastItem() ?? 0 }} of {{ $reports->total() }} results
                 </h3>
 
                 <div class="flex ml-auto gap-2 max-sm:ml-0">

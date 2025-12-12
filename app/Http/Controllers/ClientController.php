@@ -10,7 +10,9 @@ use App\Models\JobApplication;
 use App\Models\BlockedUser;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Announcement;
 use App\Events\IncomingCallEvent;
+use Carbon\Carbon;
 
 
 class ClientController extends Controller
@@ -33,11 +35,24 @@ class ClientController extends Controller
     }
     public function notifications()
     {
-        $notifications = \App\Models\Notification::where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(5); // <-- only 5 per page
+        $user = auth()->user();
 
-        return view('client.notifications', compact('notifications'));
+        $today = Carbon::today(); // only date, no time
+
+        $announcements = \App\Models\Announcement::where('status', 'active')
+            ->where(function($q) {
+                $q->where('audience', 'client')
+                ->orWhere('audience', 'all');
+            })
+            ->whereDate('release_date', $today)  // compare only the date part
+            ->orderBy('release_date', 'desc')
+            ->get();
+
+        $notifications = \App\Models\Notification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        return view('client.notifications', compact('notifications', 'announcements'));
     }
 
     public function openNotification($id)
@@ -77,6 +92,17 @@ class ClientController extends Controller
 
         return redirect()->back()->with('success', 'Notification deleted.');
     }
+    public function checkNewNotifications(Request $request)
+    {
+        $userId = auth()->id();
+
+        // Check if there are unread notifications for this user
+        $hasNew = \App\Models\Notification::where('user_id', $userId)
+                                        ->where('is_read', false)
+                                        ->exists();
+
+        return response()->json(['has_new' => $hasNew]);
+    }
 
 
 
@@ -84,7 +110,15 @@ class ClientController extends Controller
 
     public function profile()
     {
-        return view('client.profile');
+        $user = Auth::user();
+
+        // Get blocked users by this employee
+        $blockedUsers = BlockedUser::where('user_id', $user->id)
+            ->with('blocked') // eager load blocked user info
+            ->orderBy('blocked_at', 'desc')
+            ->get();
+
+        return view('client.profile', compact('blockedUsers'));
     }
     public function applicants()
     {
@@ -135,39 +169,73 @@ class ClientController extends Controller
         $query = \App\Models\Transaction::where('client_id', $user->id)
             ->whereIn('status', ['pending', 'paid', 'requested']); // only relevant statuses
 
-        // 🔎 Search filter
+        // --- SEARCH HANDLING ---
         if ($request->filled('q')) {
-            $q = $request->q;
+            $search = $request->q;
 
-            $query->where(function ($subQuery) use ($q) {
-                $subQuery->where('job_title', 'like', "%$q%")
-                        ->orWhere('status', 'like', "%$q%")
-                        ->orWhere('id', $q) // exact match for transaction id
-                        ->orWhereHas('employee', function ($employeeQuery) use ($q) {
-                            $employeeQuery->where('name', 'like', "%$q%");
-                        });
+            $query->where(function ($q) use ($search) {
+                $q->where('job_title', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%")
+                ->orWhere('payment_method', 'like', "%$search%")
+                ->orWhere('reference_no', 'like', "%$search%")
+                ->orWhere('transaction_ref_no', 'like', "%$search%");
+
+                // Cast numeric values
+                $q->orWhereRaw("CAST(amount AS CHAR) LIKE ?", ["%$search%"]);
+                $q->orWhereRaw("CAST(job_id AS CHAR) LIKE ?", ["%$search%"]);
+                $q->orWhereRaw("CAST(id AS CHAR) LIKE ?", ["%$search%"]);
+                $q->orWhereRaw("CAST(transaction_ref_no AS CHAR) LIKE ?", ["%$search%"]);
+
+                // Search employee name
+                $q->orWhereHas('employee', function ($emp) use ($search) {
+                    $emp->where('name', 'like', "%$search%");
+                });
             });
         }
 
-        // 🆕 Sort newest first
         $transactions = $query->latest()->paginate(3);
 
         return view('client.transactions.pending', compact('transactions'));
     }
 
 
-    public function completedTransactions()
+
+    public function completedTransactions(Request $request)
     {
         $user = auth()->user();
 
-        // Only show completed transactions
-        $transactions = \App\Models\Transaction::where('client_id', $user->id)
-            ->where('status', 'completed')
-            ->latest()
-            ->paginate(3);
+        $query = \App\Models\Transaction::where('client_id', $user->id)
+            ->where('status', 'completed');
+
+        // --- SEARCH HANDLING ---
+        if ($request->filled('q')) {
+            $search = $request->q;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('job_title', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('payment_method', 'like', "%$search%")
+                    ->orWhere('reference_no', 'like', "%$search%")
+                    ->orWhere('transaction_ref_no', 'like', "%$search%");
+
+                // Cast numeric values
+                $q->orWhereRaw("CAST(amount AS CHAR) LIKE ?", ["%$search%"]);
+                $q->orWhereRaw("CAST(job_id AS CHAR) LIKE ?", ["%$search%"]);
+                $q->orWhereRaw("CAST(id AS CHAR) LIKE ?", ["%$search%"]);
+                $q->orWhereRaw("CAST(transaction_ref_no AS CHAR) LIKE ?", ["%$search%"]);
+
+                // Search employee name
+                $q->orWhereHas('employee', function ($emp) use ($search) {
+                    $emp->where('name', 'like', "%$search%");
+                });
+            });
+        }
+
+        $transactions = $query->latest()->paginate(3);
 
         return view('client.transactions.completed', compact('transactions'));
     }
+
     public function destroyTransaction($id)
     {
         $transaction = \App\Models\Transaction::findOrFail($id);

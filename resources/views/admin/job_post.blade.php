@@ -187,7 +187,7 @@
             @if ($jobPosts->total() > 10)
                 <div id="users_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2 mt-4">
                     <h3 class="home_p_font text-sm max-sm:text-xs">
-                        Showing {{ $jobPosts->firstItem() ?? 0 }} to {{ $jobPosts->lastItem() ?? 0 }} of {{ $jobPosts->total() ?? 0 }} results
+                         {{ $jobPosts->firstItem() ?? 0 }} to {{ $jobPosts->lastItem() ?? 0 }} of {{ $jobPosts->total() ?? 0 }} results
                     </h3>
 
                     <div class="flex ml-auto gap-2 max-sm:ml-0">

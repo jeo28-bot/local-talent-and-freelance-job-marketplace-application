@@ -42,6 +42,8 @@
                                 @enderror
                             </div>
                         </div>
+                        {{-- suspended alert --}}
+                        <h1 class="p_font text-red-400 text-center mb-5 -mt-2 hidden">Your account is suspended. Check back later or send a mail!</h1>
 
                         <div class="row mb-7">
                             <div class="flex items-center justify-between">

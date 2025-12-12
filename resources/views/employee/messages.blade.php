@@ -15,7 +15,7 @@
             <div id="recentChatsContainer" data-page="{{ $chatUsers->currentPage() }}" class="gap-5 flex flex-col mb-10">
                 @foreach ($chatUsers as $chat)
                     <a href="{{ route('employee.chat', ['name' => $chat['user']->name]) }}" 
-                        class="p_font flex items-center gap-3 bg-white py-3 px-5 max-sm:px-2 max-sm:py-2 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative max-sm:gap-2">
+                        class="p_font flex items-center gap-3 bg-white py-3 px-5 max-sm:px-2 max-sm:py-2 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 max-sm:gap-2 relative">
                         
                         {{-- Optional: new message indicator --}}
                         {{-- <div class="p-1.5 rounded-full bg-red-500 absolute -ml-3"></div> --}}
@@ -44,7 +44,7 @@
         {{-- Custom Pagination --}}
         <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
             <h3 class="home_p_font text-sm max-sm:text-xs">
-                Showing {{ $chatUsers->firstItem() }} to {{ $chatUsers->lastItem() }} of {{ $chatUsers->total() }} results
+                 {{ $chatUsers->firstItem() }} to {{ $chatUsers->lastItem() }} of {{ $chatUsers->total() }} results
             </h3>
 
             <div class="flex ml-auto gap-2 max-sm:ml-0">
@@ -105,7 +105,7 @@
                 paginatedChats.forEach(chat => {
                     const chatItem = `
                         <a href="/employee/chat/${chat.name}" 
-                            class="p_font flex items-center gap-3 bg-white py-3 px-5 max-sm:px-2 max-sm:py-2 shadow-md rounded-lg cursor-pointer hover:bg-gray-100 relative max-sm:gap-2">
+                            class="p_font flex items-center gap-3 bg-white py-3 px-5 max-sm:px-2 max-sm:py-2 shadow-md rounded-lg cursor-pointer hover:bg-gray-100  max-sm:gap-2 relative">
 
                             ${chat.has_unseen 
                                 ? '<div class="absolute left-1 top-1 h-3 w-3 rounded-full bg-red-500"></div>'

@@ -7,12 +7,16 @@
 
     {{-- applying content container --}}
     <section class="px-15 py-10 max-sm:px-7 max-sm:py-6 w-full parent_container mb-20">
-        <div class=" bg-white rounded-xl shadow-lg xl:w-6xl mx-auto">
+        <div class="  rounded-xl shadow-lg xl:w-6xl mx-auto">
+            <div class="flex">
+         <h1 class="p_font font-semibold! p-2 rounded-lg bg-red-200 text-blue-600 mb-2 max-sm:text-sm">Employee Preview</h1>
+         </div>
             <div class="cover_color h-30 bg-[#1E2939] rounded-t-xl max-sm:h-20"></div>
                 {{-- div control for the applying content --}}
-                <div class="px-10 content_control pt-10 pb-5 max-sm:px-6">
+                <div class="px-10 content_control pt-10 pb-5 max-sm:px-6 bg-white">
+                   
                     {{-- for company profile --}}
-                    <img src="{{asset('assets/sampleCompany.png')}}" alt="" class="border-2 rounded-xl border-gray-300 w-20 -mt-20 mb-5 max-sm:w-15 max-sm:-mt-16">
+                    <img src="{{asset('assets/corporate.jpg')}}" alt="" class="border-2 rounded-xl border-gray-300 w-20 h-20 -mt-20 mb-5 max-sm:w-15 max-sm:h-15 max-sm:-mt-16">
                     {{-- div for job title and save icon --}}
                     <div class="div_control mb-2 flex flex-row items-center justify-between">
                         <h1 class="job_posting_title text-2xl max-sm:text-xl">{{$job->job_title}}</h1>
@@ -120,32 +124,34 @@
         <div class="sm:w-2xl mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
             {{-- modal sub title and close button --}}
             <div class="flex justify-between items-center mb-2">
-                <h3 class="sub_title_font max-sm:text-sm">Enter contact details to apply for this job</h3>
+                <h3 class="sub_title_font max-sm:text-sm">Send your message to apply</h3>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_quick_apply" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </div>
              <form action="" class="w-full bg-white p-3 rounded-lg shadow-sm ">
-                <div class="input_control flex flex-col mb-3">
-                    <label for="fullName" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Name *</label>
-                    <input type="text" id="fullName" placeholder="Enter your full name here" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm">
-                </div>
-                <div class="input_control flex flex-col mb-3">
-                    <label for="email" class=" mb-1 home_p_font text-black! max-sm:text-sm">Your Email *</label>
-                    <input type="text" id="email" placeholder="Enter your email here" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm">
-                </div>
+                <span class="hidden">
+                    <div class="input_control flex flex-col mb-3">
+                        <label for="fullName" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Name *</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name here" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200 cursor-default" readonly value="{{ auth()->user()->name }}">
+                    </div>
+                    <div class="input_control flex flex-col mb-3">
+                        <label for="email" class=" mb-1 home_p_font text-black! max-sm:text-sm">Your Email *</label>
+                        <input type="text" id="email" placeholder="Enter your email here" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200 cursor-default" readonly value="{{ auth()->user()->email }}">
+                    </div>
+                    <div class="input_control flex flex-col mb-3 w-full">
+                        <label for="phoneNum" class=" mb-1 home_p_font text-black! max-sm:text-sm">Your Phone Number *</label>
+                        <input type="text" id="phoneNum" placeholder="+63" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200 cursor-default" readonly value="{{ auth()->user()->phoneNum }}">
+                    </div>
+                </span>
                 <div class="input_control flex flex-col mb-3 w-full">
-                    <label for="phoneNum" class=" mb-1 home_p_font text-black! max-sm:text-sm">Your Phone Number *</label>
-                    <input type="text" id="phoneNum" placeholder="+63" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm">
-                </div>
-                <div class="input_control flex flex-col mb-3 w-full">
-                    <label for="message" class=" mb-1 home_p_font text-black! max-sm:text-sm">Message <span class="text-gray-400">(optional)</span></label>
+                    <label for="message" class=" mb-1 home_p_font text-black! max-sm:text-sm">Message <span class="text-red-400">*</span></label>
                     <textarea id="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"></textarea>
                     
                 </div>
                 
                 <div class="flex">
-                <input type="submit" value="Submit & Apply" class=" cursor-pointer bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                <input type="submit" value="Submit & Apply" class="p_font cursor-pointer bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
                 </div>
              </form>
        </div>
@@ -164,8 +170,8 @@
             </div>
              <form action="" class="w-full bg-white p-3 rounded-lg shadow-sm ">
                 <div class="input_control flex flex-col mb-3">
-                   <h1 class="p_font max-sm:text-sm">Job Title</h1>
-                   <h3 class="home_p_font max-sm:text-sm">Company Name</h3>
+                   <h1 class="p_font max-sm:text-sm">{{ $job->job_title}}</h1>
+                   <h3 class="home_p_font max-sm:text-sm">{{ $job->client->name }}</h3>
                 </div>
                 
                 <div class="input_control flex flex-col mb-3 w-full">

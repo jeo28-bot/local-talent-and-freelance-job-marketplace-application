@@ -104,7 +104,13 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin/reports/export', [AdminController::class, 'exportReports'])->name('admin.reports.export');
     Route::delete('/admin/reports/{id}', [AdminController::class, 'destroyReport'])->name('admin.reports.destroy');
     
-    
+    Route::get('/admin/history_log', [AdminController::class, 'history_log'])->name('admin.history_log');
+    Route::delete('/admin/history-log/{id}', [AdminController::class, 'destroy_log'])
+    ->name('admin.history_log.destroy_log');
+   // routes/web.php
+    Route::get('/admin/history-log/export', [AdminController::class, 'exportLogs'])->name('admin.history_log.export');
+
+
 });
 
 Route::middleware(['auth', 'user_type:employee'])->group(function () {
@@ -167,6 +173,7 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee/video-call', [EmployeeController::class, 'videoCall'])->name('employee.video-call');
     // video call route with receiver ID
     Route::get('/employee/video-call/{receiver}', [EmployeeController::class, 'videoCall'])->name('employee.video-call');
+    Route::get('/employee/check-new-notifications', [EmployeeController::class, 'checkNewNotifications']);
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
@@ -237,6 +244,7 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client/video-call', [ClientController::class, 'videoCall'])->name('client.video-call');
     // video call route with receiver ID
     Route::get('/client/video-call/{receiver}', [ClientController::class, 'videoCall'])->name('client.video-call');
+    Route::get('/client/check-new-notifications', [ClientController::class, 'checkNewNotifications']);
 
 });
 

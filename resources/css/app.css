@@ -126,3 +126,7 @@ label[for="message"],
     color: #1299f1;
     background: #364153;
 }
+
+.hex_color {
+    background: #ffffffc4;
+}

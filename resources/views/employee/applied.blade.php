@@ -11,7 +11,7 @@
         <div class="xl:w-6xl  mx-auto px-5 max-sm:px-2 mb-10 w-full max-lg:px-0 ">
             <div class="flex items-center justify-between max-lg:flex-col max-lg:gap-2 max-xl:items-start max-xl:mb-4 mb-5">
                 <div>
-                    <h1 class="sub_title sm:text-xl">Applicants</h1>
+                    <h1 class="sub_title sm:text-xl">Job Applied</h1>
                     <p class="home_p_font text-sm">Manage and review your applied job postings.</p>
                 </div>
 
@@ -21,15 +21,12 @@
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
                     {{-- search inputs --}}
-                    <form action="{{ route('employee.applied') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font max-sm:text-sm flex items-center">
+                    <form action="{{ route('employee.applied') }}" method="GET" class="bg-white max-sm:w-full shadow-sm rounded-lg w-sm p_font max-sm:text-sm flex items-center">
                             {{-- input 1 job title, skills, company --}}
-                            <input type="text" name="q" value="{{ request('q') }}"  value="" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm pr-20 w-sm max-lg:w-full" placeholder="Search job title, users, status">
+                            <input type="text" name="q" value="{{ request('q') }}"  value="" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm w-sm max-lg:w-full" placeholder="Search job title, users, status">
                             
-                            
-                    
-                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-77 max-sm:right-9 absolute ">Search</button>
+                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2 mr-2">Search</button>
                     </form>
-
                 </div>
 
 
@@ -44,7 +41,7 @@
                         <tr class="bg-gray-300">
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm"></th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Application ID</th>
-                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">User Name</th>
+                            {{-- <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">User Name</th> --}}
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Full Name</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Job Title</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm">Application Date</th>
@@ -63,13 +60,15 @@
                                 <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
                                     {{ '2025'.$application->id }}
                                 </td>
-                                <td class="px-4 py-2 p_font max-lg:text-sm">
+                                {{-- <td class="px-4 py-2 p_font max-lg:text-sm">
                                     <a href="{{ route('employee.public_profile', $application->user->name) }}" class="hover:underline text-blue-700 hover:text-blue-400">
                                         {{ $application->user ? $application->user->name : 'N/A' }}
                                     </a>
-                                </td>
-                                <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
-                                    {{ $application->full_name ? $application->full_name : 'N/A' }}
+                                </td> --}}
+                                <td class="px-4 py-2 p_font max-lg:text-sm capitalize">
+                                    <a href="{{ route('employee.public_profile', $application->user->name) }}" class="hover:underline text-blue-700 hover:text-blue-400">
+                                        {{ $application->full_name ? $application->full_name : 'N/A' }}
+                                    </a>    
                                 </td>
                                 <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
                                     @if ($application->job)
@@ -158,7 +157,7 @@
         @if ($applications->total() > 10)
             <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
                 <h3 class="home_p_font text-sm max-sm:text-xs">
-                    Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
+                    {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
                 </h3>
 
                 <div class="flex ml-auto gap-2 max-sm:ml-0">
@@ -200,18 +199,20 @@
                     </svg>
                 </div>
                 <form class="w-full bg-white p-3 rounded-lg shadow-sm">
-                    <div class="input_control flex flex-col mb-3">
-                        <label for="modalFullName" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Name *</label>
-                        <input type="text" id="modalFullName" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled>
-                    </div>
-                    <div class="input_control flex flex-col mb-3">
-                        <label for="modalEmail" class="mb-1 home_p_font text-black! max-sm:text-sm">Your Email *</label>
-                        <input type="email" id="modalEmail" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled>
-                    </div>
-                    <div class="input_control flex flex-col mb-3">
-                        <label for="modalPhoneNum" class="mb-1 home_p_font text-black! max-sm:text-sm">Your Phone Number *</label>
-                        <input type="number" id="modalPhoneNum" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled>
-                    </div>
+                    <span class="hidden">
+                        <div class="input_control flex flex-col mb-3">
+                            <label for="modalFullName" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Name *</label>
+                            <input type="text" id="modalFullName" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled>
+                        </div>
+                        <div class="input_control flex flex-col mb-3">
+                            <label for="modalEmail" class="mb-1 home_p_font text-black! max-sm:text-sm">Your Email *</label>
+                            <input type="email" id="modalEmail" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled>
+                        </div>
+                        <div class="input_control flex flex-col mb-3">
+                            <label for="modalPhoneNum" class="mb-1 home_p_font text-black! max-sm:text-sm">Your Phone Number *</label>
+                            <input type="number" id="modalPhoneNum" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled>
+                        </div>
+                    </span>
                     <div class="input_control flex flex-col mb-3">
                         <label for="modalMessage" class="mb-1 home_p_font text-black! max-sm:text-sm">Message</label>
                         <textarea id="modalMessage" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled></textarea>

@@ -14,6 +14,8 @@ use App\Models\JobApplication;
 use Illuminate\Support\Facades\Response;
 use App\Models\Message;
 use App\Models\Report;
+use App\Models\HistoryLog;
+use Illuminate\Support\Facades\Http;
 
 class AdminController extends Controller
 {
@@ -57,9 +59,17 @@ class AdminController extends Controller
 
         return view('admin.jobs');
     }
-    public function announcements() {
+    public function announcements(Request $request)
+    {
+        $search = $request->query('search', '');
 
-        return view('admin.announcements');
+        // Call Express API
+        $url = 'http://127.0.0.1:3001/api/announcements';
+        $response = Http::get($url, ['search' => $search]);
+
+        $announcements = $response->ok() ? $response->json() : [];
+
+        return view('admin.announcements', compact('announcements', 'search'));
     }
     public function transactions(Request $request)
     {
@@ -110,6 +120,34 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Transaction deleted successfully!');
     }
+   public function history_log(Request $request)
+    {
+        $search = $request->input('search');
+
+        $historyLogs = \App\Models\HistoryLog::with('user')
+            ->when($search, function($query, $search) {
+                $query->where('user_id', 'like', "%{$search}%")
+                    ->orWhere('user_type', 'like', "%{$search}%")
+                    ->orWhere('details', 'like', "%{$search}%")
+                    ->orWhereHas('user', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString(); // keeps search query in pagination links
+
+        return view('admin.history_log', compact('historyLogs'));
+    }
+
+    public function destroy_log($id)
+    {
+        $log = \App\Models\HistoryLog::findOrFail($id);
+        $log->delete();
+
+        return redirect()->back()->with('success', 'History log deleted successfully.');
+    }
+
 
 
 
@@ -1167,7 +1205,56 @@ class AdminController extends Controller
 
         return $response;
     }
+
+      // hustory log export
+    public function exportLogs(Request $request)
+    {
+        $search = $request->input('search');
+
+        $logs = HistoryLog::query()
+            ->when($search, function($q) use ($search) {
+                $q->where('details', 'like', "%{$search}%")
+                ->orWhereHas('user', function($q2) use ($search) {
+                    $q2->where('name', 'like', "%{$search}%");
+                })
+                ->orWhere('user_type', 'like', "%{$search}%")
+                ->orWhere('user_id', 'like', "%{$search}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->get(); // get all filtered logs
+
+        $filename = 'history_logs_' . now()->format('Ymd_His') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}",
+        ];
+
+        $columns = ['ID', 'User ID', 'Username', 'User Type', 'Details', 'Created At', 'Updated At'];
+
+        $callback = function() use ($logs, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($logs as $log) {
+                fputcsv($file, [
+                    $log->id,
+                    $log->user_id,
+                    $log->user?->name ?? 'Deleted User',
+                    ucfirst($log->user_type),
+                    $log->details,
+                    $log->created_at->format('m-d-Y h:i A'),
+                    $log->updated_at->format('m-d-Y h:i A'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
 }
 
-
+  
 

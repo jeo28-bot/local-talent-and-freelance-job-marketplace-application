@@ -125,8 +125,8 @@
                         <div class="p-2 flex flex-col">
                             {{-- buttons --}}
                             <h1 class="p_font mb-2">User Management</h1>
-                            <button class="bg-blue-400 p-2 rounded-lg p_font cursor-pointer hover:bg-blue-500 mb-3 text-white">Manage Employees</button>
-                            <button class="bg-red-400 p-2 rounded-lg p_font cursor-pointer hover:bg-red-500 mb- text-white">Manage Clients</button>
+                            <a href="{{ route('admin.users', ['search' => 'employee']) }}" class="bg-blue-400 p-2 rounded-lg p_font cursor-pointer hover:bg-blue-500 mb-3 text-white text-center">Manage Employees</a>
+                            <a href="{{ route('admin.users', ['search' => 'client']) }}" class="bg-red-400 p-2 rounded-lg p_font cursor-pointer hover:bg-red-500 mb-3 text-white text-center">Manage Clients</a>
                         
                         </div>
 
@@ -134,7 +134,7 @@
                         <div class="p-2 flex flex-col">
                             {{-- buttons --}}
                             <h1 class="p_font mb-2">Job Management</h1>
-                            <button class="bg-orange-400 p-2 rounded-lg p_font cursor-pointer hover:bg-orange-500 mb-3 text-white">Manage Job Posts</button>
+                            <a href="{{ route('admin.job_post') }}" class="bg-orange-400 p-2 rounded-lg p_font cursor-pointer hover:bg-orange-500 mb-3 text-white text-center">Manage Job Posts</a>
                             
                         </div>
 
@@ -142,8 +142,8 @@
                         <div class="p-2 flex flex-col">
                             {{-- buttons --}}
                             <h1 class="p_font mb-2">Support Management</h1>
-                            <button class="bg-[#1e2939] p-2 rounded-lg p_font cursor-pointer hover:bg-[#3b4759] mb-3 text-white">View All Chats </button>
-                            <button class="bg-[#1e2939] p-2 rounded-lg p_font cursor-pointer hover:bg-[#3b4759] mb-3 text-white">View All Reports </button>
+                            <a href="{{ route('admin.messages') }}" class="bg-[#1e2939] p-2 rounded-lg p_font cursor-pointer hover:bg-[#3b4759] mb-3 text-white text-center">View All Chats </a>
+                            <a href="{{ route('admin.reports') }}" class="bg-[#1e2939] p-2 rounded-lg p_font cursor-pointer hover:bg-[#3b4759] mb-3 text-white text-center">View All Reports </a>
                             
                         </div>
 

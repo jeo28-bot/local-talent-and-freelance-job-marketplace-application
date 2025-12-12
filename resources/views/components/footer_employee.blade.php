@@ -8,7 +8,7 @@
     <a class="flex title-font font-medium items-center md:justify-start justify-center text-white">
       <img src="{{asset('assets/logoNoBg.png')}}" alt="logo" class="w-60 max-lg:w-40">
     </a>
-    <p class="text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-800 sm:py-2 sm:mt-0 mt-4">© 2025 Freelanco PH
+    <p class="text-sm text-gray-400 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-800 sm:py-2 sm:mt-0 mt-4 p_font">© 2025 Freelanco PH
     </p>
     <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
       <a class="text-gray-400">

@@ -41,19 +41,57 @@
                         </div>
 
                         <div class="row mb-3 max-sm:mb-2">
-                            <label for="phoneNum" class="text-white max-sm:text-sm p_font"> {{ __('Phone Number') }}<span class="text-red-400"> *</span></label>
+                            <label for="phoneNum" class="text-white max-sm:text-sm p_font">
+                                {{ __('Phone Number') }}<span class="text-red-400"> *</span>
+                            </label>
 
-                            <div class="mt-2">
-                                <input id="phoneNum" type="phoneNum" class="mb-2 poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('phoneNum') is-invalid @enderror" name="phoneNum" value="{{ old('phoneNum') }}" required autocomplete="phoneNum">
+                            <div class="mt-2 flex gap-2">
+                                
+                                <!-- Readonly prefix -->
+                                <input 
+                                    type="text" 
+                                    value="+63" 
+                                    class="p-2 w-20 text-white border-2 rounded-lg bg-gray-700 cursor-not-allowed" 
+                                    readonly
+                                >
 
-                                @error('phoneNum')
-                                    <span class="invalid-feedback text-red-400 p_font font-light mt-5" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <!-- User input -->
+                                <input 
+                                    id="phoneNumInput"
+                                    type="text"
+                                    class="p-2 flex-1 text-white border-2 rounded-lg form-control @error('phoneNum') is-invalid @enderror"
+                                    placeholder="9XXXXXXXXX"
+                                    maxlength="10"
+                                    required
+                                >
+
+                                <!-- Hidden real phoneNum (final value) -->
+                                <input 
+                                    type="hidden" 
+                                    id="phoneNum" 
+                                    name="phoneNum"
+                                >
                             </div>
+
+                            @error('phoneNum')
+                                <span class="invalid-feedback text-red-400 p_font font-light mt-1" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
-                        
+
+                        <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const real = document.getElementById("phoneNum");
+                            const input = document.getElementById("phoneNumInput");
+
+                            // On form submit → combine +63 + input
+                            input.form.addEventListener("submit", function () {
+                                real.value = "+63" + input.value;
+                            });
+                        });
+                        </script>
+                                            
 
                         <div class="row mb-3 max-sm:mb-2">
                             <label for="password" class="text-white max-sm:text-sm">{{ __('Password') }}<span class="text-red-400"> *</span></label>

@@ -168,7 +168,7 @@
             @if ($applications->total() > 10)
                 <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
                     <h3 class="home_p_font text-sm max-sm:text-xs">
-                        Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
+                         {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
                     </h3>
 
                     <div class="flex ml-auto gap-2 max-sm:ml-0">

@@ -10,7 +10,7 @@
          <img src="{{asset('assets/logoNoBg.png')}}" alt="logo image" class="w-65 max-xl:w-50 max-sm:w-40">
         </a>
 
-        <div class=" flex ml-10 gap-5 max-lg:hidden">
+        <div class=" flex ml-10 gap-5 max-lg:hidden max-xl:gap-2 max-xl:ml-5">
           <a href="{{ auth()->user()->user_type === 'client' ? route('client.index') : route('employee.index') }}" 
               class="pages_nav a_font px-2 py-8 
                   {{ request()->routeIs(auth()->user()->user_type === 'client' ? 'client.index' : 'employee.index') ? 'selected_nav' : '' }}">
@@ -60,12 +60,85 @@
           <div id="newChatIndicator" class="p-1 bg-red-500 absolute rounded-full -mt-6 hidden">
           </div>
         </a>
-        <a id="notifIcon" href="{{ route('employee.notifications') }}" class="pages_nav">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
-            <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z" clip-rule="evenodd" />
-          </svg>
-          
-        </a>
+        {{-- notifcation control --}}
+        <div class="relative">
+          <a id="notifIcon" href="{{ route('employee.notifications') }}" class="pages_nav">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
+              <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z" clip-rule="evenodd" />
+            </svg>
+            {{-- new notif indecator --}}
+            <div id="newChatNotif" class="p-1 bg-red-500 absolute rounded-full -mt-6 hidden">
+            </div>
+          </a>
+          {{-- notification dropdown --}}
+          <div class="p-2 rounded-lg shadow-lg absolute bg-gray-200 mt-5 w-[300px] max-sm:w-[200px] right-0 text-black border-2 border-gray-300 hidden">
+            {{-- notifications --}}
+            <h1 class="p_font">Notifications</h1>
+
+            
+            {{-- ANNOUNCEMENTS --}}
+            <div class="relative announcement-item">
+                    <div class="flex bg-white p-2 cursor-pointer hover:bg-gray-100 max-sm:p-2 rounded-xl mb-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-2 border-red-300">
+
+                        <div class="p-1 max-sm:p-1 bg-red-500 absolute rounded-full -mt-1 -ml-1 max-sm:-mt-1 max-sm:-ml-1"></div>
+
+                        <div class="flex items-start w-full">
+                            <div class="flex-shrink-0 border-2 border-gray-300 rounded-full">
+                                <img src="{{ asset('assets/megaphone.png') }}"
+                                    class="w-8 h-8 rounded-full max-sm:w-6 max-sm:h-6">
+                            </div>
+
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-800 p_font text-sm">
+                                    New Job Postings Available!
+                                </h3>
+
+                                <p class="text-gray-600 mt-1 home_p_font text-sm max-sm:text-xs max-sm:pr-4">
+                                     New job postings are available! Check them out now.  
+                                </p>
+
+                                <span class="text-xs text-gray-500 mt-2 block home_p_font">
+                                    2 hours ago
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="hover:bg-gray-200 p-1 rounded-full absolute top-1 right-1">
+                        📌
+                    </button>
+                </div>
+          </div>
+        </div>
+
+        {{-- new notif indicator --}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+              const notifDot = document.getElementById('newChatNotif');
+
+              async function checkNewNotifications() {
+                  try {
+                      let response = await fetch('/employee/check-new-notifications');
+                      let data = await response.json();
+
+                      if (data.has_new) {
+                          notifDot.classList.remove('hidden'); // show red dot
+                      } else {
+                          notifDot.classList.add('hidden'); // hide red dot
+                      }
+                  } catch (error) {
+                      console.error('Error checking notifications:', error);
+                  }
+              }
+
+              // Check immediately
+              checkNewNotifications();
+
+              // Poll every 5 seconds
+              setInterval(checkNewNotifications, 5000);
+          });
+        </script>
+        
 
           {{-- <a href="{{route('employee.profile')}}" class="pages_nav max-lg:hidden">
             <img src="{{ Auth::user()->profile_pic ? asset('storage/' . Auth::user()->profile_pic) : asset('assets/defaultUserPic.png') }}"  alt="profile image" class="w-10 h-10 rounded-full border-2 border-gray-400 ">
@@ -81,7 +154,7 @@
               <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
             </svg>
             {{-- dropdown items --}}
-            <div id="dropdown_items" class="hidden py-2 px-3 bg-gray-900 absolute shadow-sm right-5 top-20 max-sm:top-20 text-gray-400 p_font rounded-lg w-60 max-sm:w-50 ">
+            <div id="dropdown_items" class="hidden py-2 px-3 bg-gray-900 absolute shadow-sm right-5 top-20 max-sm:top-20 text-gray-400 p_font rounded-lg w-60 max-sm:w-50 z-50">
                 <h1 class="text-sm">{{ Auth::user()->name }}</h1>
                 <h3 class="text-xs mb-2">{{ Auth::user()->email }}</h3>
                 {{-- links --}}

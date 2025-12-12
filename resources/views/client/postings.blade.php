@@ -181,7 +181,7 @@
             @if ($posts->total() > 3)
                 <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
                     <h3 class="home_p_font text-sm max-sm:text-xs">
-                        Showing {{ $posts->firstItem() ?? 0 }} to {{ $posts->lastItem() ?? 0 }} of {{ $posts->total() ?? 0 }} results
+                         {{ $posts->firstItem() ?? 0 }} to {{ $posts->lastItem() ?? 0 }} of {{ $posts->total() ?? 0 }} results
                     </h3>
 
                     <div class="flex ml-auto gap-2 max-sm:ml-0">
@@ -245,18 +245,18 @@
                 <div class="input_control flex max-sm:flex-col gap-3 mb-3">
                     <div class="input_group flex flex-col w-full">
                         <label for="job_title" class="mb-1 home_p_font text-black! max-sm:text-sm">Job Title <span class="text-red-500">*</span></label>
-                        <input type="text" id="job_title" name="job_title" placeholder="Enter specific job title" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <input type="text" id="job_title" name="job_title" placeholder="Enter specific job title" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                     <div class="input_group flex flex-col w-full">
                         <label for="job_location" class="mb-1 home_p_font text-black! max-sm:text-sm">Location <span class="home_p_font">(address)</span> <span class="text-red-500">*</span></label>
-                        <input type="text" id="job_location" name="job_location" placeholder="Enter complete job location" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <input type="text" id="job_location" name="job_location" placeholder="Enter complete job location" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                 </div>
 
                 <div class="input_control flex max-sm:flex-col gap-3 mb-3">
                     <div class="input_group flex flex-col w-full">
                         <label for="job_type" class="mb-1 home_p_font text-black! max-sm:text-sm">Job Type <span class="text-red-500">*</span></label>  
-                        <select name="job_type" id="job_type" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" raequired>
+                        <select name="job_type" id="job_type" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
                             <option value="" disabled selected>Select job type</option>
                             <option value="part-time">part-time</option>
                             <option value="contractual">contractual</option>
@@ -268,15 +268,15 @@
                         
                     </div>
                     <div class="input_group flex flex-col w-full">
-                        <label for="job_pay" class="mb-1 home_p_font text-black! max-sm:text-sm">Pay <span class="text-red-500">*</span></label>
-                        <input type="number" id="job_pay" name="job_pay" placeholder="₱0.00" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <label for="job_pay" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary<span class="text-red-500">*</span></label>
+                        <input type="number" id="job_pay" name="job_pay" placeholder="₱0.00" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
                     <div class="input_group flex flex-col w-full">
                         <label for="salary_release" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary Release <span class="text-red-500">*</span></label>
-                        <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" raequired>
+                        <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
                             <option value="" disabled selected>Select salary release</option>
                             <option value="weekly">weekly</option>
                             <option value="bi-weekly">bi-weekly</option>
@@ -287,22 +287,22 @@
                         
                     </div>
                     <div class="input_group flex flex-col w-full">
-                        <label for="skills_required" class="mb-1 home_p_font text-black! max-sm:text-sm">Skills Raequired <span class="text-red-500">*</span> <br><span class="home_p_font text-xs">Separate skills using comma (,)</span></label>
-                        <input type="text" id="skills_required" name="skills_required" placeholder="e.g. VA, HR, Data Entry" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <label for="skills_required" class="mb-1 home_p_font text-black! max-sm:text-sm">Skills required <span class="text-red-500">*</span> <br><span class="home_p_font text-xs">Separate skills using comma (,)</span></label>
+                        <input type="text" id="skills_required" name="skills_required" placeholder="e.g. VA, HR, Data Entry" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
                     <div class="input_group flex flex-col w-full">
                         <label for="short_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Short Job Description <span class="text-red-500">*</span></label>
-                        <textarea id="short_description" name="short_description" rows="2" placeholder="Provide a short job summary that will appear on the job card." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired></textarea>
+                        <textarea id="short_description" name="short_description" rows="2" placeholder="Provide a short job summary that will appear on the job card." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
                     </div>
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
                     <div class="input_group flex flex-col w-full">
                         <label for="full_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Job Description <span class="text-red-500">*</span></label>
-                        <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired></textarea>
+                        <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
                     </div>
                 </div>
                 
@@ -333,18 +333,18 @@
                 <div class="input_control flex max-sm:flex-col gap-3 mb-3">
                     <div class="input_group flex flex-col w-full">
                         <label for="job_title" class="mb-1 home_p_font text-black! max-sm:text-sm">Job Title <span class="text-red-500">*</span></label>
-                        <input type="text" id="job_title" name="job_title" placeholder="Enter specific job title" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <input type="text" id="job_title" name="job_title" placeholder="Enter specific job title" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                     <div class="input_group flex flex-col w-full">
                         <label for="job_location" class="mb-1 home_p_font text-black! max-sm:text-sm">Location <span class="home_p_font">(address)</span> <span class="text-red-500">*</span></label>
-                        <input type="text" id="job_location" name="job_location" placeholder="Enter complete job location" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <input type="text" id="job_location" name="job_location" placeholder="Enter complete job location" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                 </div>
 
                 <div class="input_control flex max-sm:flex-col gap-3 mb-3">
                     <div class="input_group flex flex-col w-full">
                         <label for="job_type" class="mb-1 home_p_font text-black! max-sm:text-sm">Job Type <span class="text-red-500">*</span></label>  
-                        <select name="job_type" id="job_type" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" raequired>
+                        <select name="job_type" id="job_type" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
                             <option value="" disabled selected>Select job type</option>
                             <option value="part-time">part-time</option>
                             <option value="contractual">contractual</option>
@@ -356,15 +356,15 @@
                         
                     </div>
                     <div class="input_group flex flex-col w-full">
-                        <label for="job_pay" class="mb-1 home_p_font text-black! max-sm:text-sm">Pay <span class="text-red-500">*</span></label>
-                        <input type="number" id="job_pay" name="job_pay" placeholder="₱0.00" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <label for="job_pay" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary <span class="text-red-500">*</span></label>
+                        <input type="number" id="job_pay" name="job_pay" placeholder="₱0.00" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
                     <div class="input_group flex flex-col w-full">
                         <label for="salary_release" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary Release <span class="text-red-500">*</span></label>
-                        <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" raequired>
+                        <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
                             <option value="" disabled selected>Select salary release</option>
                             <option value="weekly">weekly</option>
                             <option value="bi-weekly">bi-weekly</option>
@@ -375,22 +375,22 @@
                         
                     </div>
                     <div class="input_group flex flex-col w-full">
-                        <label for="skills_required" class="mb-1 home_p_font text-black! max-sm:text-sm">Skills Raequired <span class="text-red-500">*</span> <br><span class="home_p_font text-xs">Separate skills using comma (,)</span></label>
-                        <input type="text" id="skills_required" name="skills_required" placeholder="e.g. VA, HR, Data Entry" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired>
+                        <label for="skills_required" class="mb-1 home_p_font text-black! max-sm:text-sm">Skills required <span class="text-red-500">*</span> <br><span class="home_p_font text-xs">Separate skills using comma (,)</span></label>
+                        <input type="text" id="skills_required" name="skills_required" placeholder="e.g. VA, HR, Data Entry" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
                     </div>
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
                     <div class="input_group flex flex-col w-full">
                         <label for="short_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Short Job Description <span class="text-red-500">*</span></label>
-                        <textarea id="short_description" name="short_description" rows="2" placeholder="Provide a short job summary that will appear on the job card." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired></textarea>
+                        <textarea id="short_description" name="short_description" rows="2" placeholder="Provide a short job summary that will appear on the job card." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
                     </div>
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
                     <div class="input_group flex flex-col w-full">
                         <label for="full_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Job Description <span class="text-red-500">*</span></label>
-                        <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" raequired></textarea>
+                        <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
                     </div>
                 </div>
                 

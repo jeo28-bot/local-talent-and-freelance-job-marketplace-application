@@ -56,10 +56,40 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
             <path fill-rule="evenodd" d="M5.25 9a6.75 6.75 0 0 1 13.5 0v.75c0 2.123.8 4.057 2.118 5.52a.75.75 0 0 1-.297 1.206c-1.544.57-3.16.99-4.831 1.243a3.75 3.75 0 1 1-7.48 0 24.585 24.585 0 0 1-4.831-1.244.75.75 0 0 1-.298-1.205A8.217 8.217 0 0 0 5.25 9.75V9Zm4.502 8.9a2.25 2.25 0 1 0 4.496 0 25.057 25.057 0 0 1-4.496 0Z" clip-rule="evenodd" />
           </svg>
-          {{-- new notification indecator --}}
-          <div id="newNotificationIndicator" class="p-1 bg-red-500 absolute rounded-full -mt-6 ml-1 max-sm:-mt-5.5 max-sm:ml-0.5 hidden">
+          {{-- new notif indecator --}}
+          <div id="newChatNotif" class="p-1 bg-red-500 absolute rounded-full -mt-6 hidden">
           </div>
         </a>
+
+         {{-- new notif indicator --}}
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+              const notifDot = document.getElementById('newChatNotif');
+
+              async function checkNewNotifications() {
+                  try {
+                      let response = await fetch('/client/check-new-notifications');
+                      let data = await response.json();
+
+                      if (data.has_new) {
+                          notifDot.classList.remove('hidden'); // show red dot
+                      } else {
+                          notifDot.classList.add('hidden'); // hide red dot
+                      }
+                  } catch (error) {
+                      console.error('Error checking notifications:', error);
+                  }
+              }
+
+              // Check immediately
+              checkNewNotifications();
+
+              // Poll every 5 seconds
+              setInterval(checkNewNotifications, 5000);
+          });
+        </script>
+
+
 
           {{-- profile clicked --}}
           <div id="hover_target" class="flex items-center gap-2 max-lg:hidden">
@@ -71,7 +101,7 @@
               <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd"></path>
             </svg>
             {{-- dropdown items --}}
-            <div id="dropdown_items" class="hidden py-2 px-3 bg-gray-900 absolute shadow-sm right-5 top-20 max-sm:top-20 text-gray-400 p_font rounded-lg w-60 max-sm:w-50 ">
+            <div id="dropdown_items" class="hidden py-2 px-3 bg-gray-900 absolute shadow-sm right-5 top-20 max-sm:top-20 text-gray-400 p_font rounded-lg w-60 max-sm:w-50 z-50">
                 <h1 class="text-sm">{{ Auth::user()->name }}</h1>
                 <h3 class="text-xs mb-2">{{ Auth::user()->email }}</h3>
                 {{-- links --}}

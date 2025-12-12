@@ -21,14 +21,12 @@
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
                     {{-- search inputs --}}
-                    <form action="{{ route('client.transactions.pending') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font max-sm:text-sm flex items-center">
-                            <input type="text" name="q" value="{{ request('q') }}" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm pr-20 w-sm max-lg:w-full" placeholder="Search job title, user, status, id">
-                        <button type="submit" class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-77 max-sm:right-9 absolute ">Search</button>
+                    <form action="{{ route('client.transactions.pending') }}" method="GET" class="bg-white shadow-sm rounded-lg max-sm:w-full w-sm p_font max-sm:text-sm flex items-center">
+                            <input type="text" name="q" value="{{ request('q') }}" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm w-sm max-lg:w-full" placeholder="Search job title, user, status, id">
+                        <button type="submit" class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2 mr-2 ">Search</button>
                     </form>
 
                 </div>
-
-
             </div>
             
 
@@ -151,7 +149,7 @@
                 {{-- pagination for transactions --}}
                 <div class="xl:w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2 ">
                     <h3 class="home_p_font text-sm max-sm:text-xs ">
-                        Showing {{ $transactions->firstItem() ?? 0 }} to {{ $transactions->lastItem() ?? 0 }} of {{ $transactions->total() }} results
+                         {{ $transactions->firstItem() ?? 0 }} to {{ $transactions->lastItem() ?? 0 }} of {{ $transactions->total() }} results
                     </h3>
 
                     <div class="flex ml-auto gap-2 max-sm:ml-0">

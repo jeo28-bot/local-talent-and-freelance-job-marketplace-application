@@ -51,30 +51,98 @@
                         </div>
                     
 
-                    {{-- chat messages --}}
-                    <div id="chatContainer" class="p-4  h-140 overflow-y-auto flex flex-col gap-4 bg-gray-100 p_font">
+                     {{-- chat messages --}}
+                    <div id="chatContainer" class="p-4 h-130 overflow-y-auto flex flex-col gap-4 bg-gray-100 p_font">
+
+                        @php 
+                            $previousDate = null; 
+                            
+                            function makeLinksClickable($text) {
+                                // Convert URLs → links
+                                return preg_replace(
+                                    '/(https?:\/\/[^\s]+)/',
+                                    '<a href="$1" target="_blank" class="text-blue-700 underline font-semibold hover:text-blue-900">$1</a>',
+                                    e($text)
+                                );
+                            }
+                        @endphp
 
                         @foreach ($messages as $message)
-                            @if ($message->sender_id === $user->id)
-                                {{-- Message sent by the user --}}
-                                <p class="p-2 bg-blue-300 rounded-lg w-fit ml-auto max-w-120 break-words">
-                                    {{ $message->content }}
-                                    <br>
-                                    <span class="text-gray-500 text-xs block text-right">
-                                        {{ $message->created_at->format('g:ia') }}
+
+                            @php
+                                $currentDate = $message->created_at->toDateString();
+                                $isSender = $message->sender_id === Auth::id();
+                                $bubbleClass = $isSender
+                                    ? 'bg-blue-300 ml-auto'
+                                    : 'bg-gray-300';
+                                $hasLink = $message->content && preg_match('/https?:\/\/[^\s]+/', $message->content);
+                                $bubbleHighlight = $hasLink ? 'ring-2 ring-blue-400' : '';
+                            @endphp
+                            
+
+                            {{-- 🔥 DATE HEADER --}}
+                            @if ($currentDate !== $previousDate)
+                                <div class="flex justify-center my-2">
+                                    <span class="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
+                                        {{ $message->created_at->format('F j, Y') }}
                                     </span>
-                                </p>
-                            @else
-                                {{-- Message received by the user --}}
-                                <p class="p-2 bg-gray-300 rounded-lg w-fit max-w-120 break-words">
-                                    {{ $message->content }}
-                                    <br>
-                                    <span class="text-gray-500 text-xs block text-right">
-                                        {{ $message->created_at->format('g:ia') }}
-                                    </span>
-                                </p>
+                                </div>
+                                @php $previousDate = $currentDate; @endphp
                             @endif
+
+                            {{-- 🔥 MESSAGE BUBBLE (text + image + files) --}}
+                           <div class="p-2 rounded-lg w-fit max-w-120 max-lg:max-w-90 max-sm:max-w-70 max-sm:text-sm break-words {{ $bubbleClass }} {{ $bubbleHighlight }}">
+
+
+                                {{-- 📝 TEXT --}}
+                                @if ($message->content)
+                                    <p>{!! makeLinksClickable($message->content) !!}</p>
+                                @endif
+
+                                {{-- 🖼 IMAGE PREVIEW --}}
+                                @if ($message->file_type === 'image')
+                                    <div class="mt-2">
+                                        <img
+                                            src="{{ asset('storage/' . $message->file) }}"
+                                            class="rounded-lg max-w-60 max-h-60 border cursor-pointer hover:opacity-90"
+                                            onclick="window.open('{{ asset('storage/' . $message->file) }}', '_blank')"
+                                        />
+                                    </div>
+                                @endif
+
+                                {{-- 📄 FILE (PDF, DOCX, XLSX, ZIP, etc.) --}}
+                                @if ($message->file_type === 'file')
+                                    <a
+                                        href="{{ asset('storage/' . $message->file) }}"
+                                        download
+                                        class="flex items-center gap-2 p-2 mt-2 bg-white rounded-md shadow-sm hover:bg-gray-100 border"
+                                    >
+                                        {{-- File Icon --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke-width="1.5"
+                                            stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375H8.25m0
+                                                0L12 4.5m-3.75 4.125L12 12.75m0 0l3.75-4.125M12 
+                                                12.75l-3.75 4.125M12 12.75l3.75 4.125" />
+                                        </svg>
+
+                                        <span class="text-sm underline truncate max-w-40">
+                                            {{ basename($message->file) }}
+                                        </span>
+                                    </a>
+                                @endif
+
+                                {{-- 🕒 TIME --}}
+                                <span class="text-gray-500 text-xs block text-right mt-1">
+                                    {{ $message->created_at->format('g:i a') }}
+                                </span>
+
+                            </div>
+
                         @endforeach
+
+                    </div>
 
 
                     </div>

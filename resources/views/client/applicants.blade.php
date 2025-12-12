@@ -21,14 +21,14 @@
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
                     {{-- search inputs --}}
-                    <form action="{{ route('client.applicants') }}" method="GET" class="bg-white  shadow-sm rounded-lg max-xl:w-full p_font max-sm:text-sm flex items-center">
+                    <form action="{{ route('client.applicants') }}" method="GET" class="bg-white  shadow-sm rounded-lg w-sm max-lg:w-full p_font max-sm:text-sm flex items-center">
                             {{-- input 1 job title, skills, company --}}
                             <input type="text" name="q" 
-                            value="{{ request('q') }}"  value="" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm pr-20 w-sm max-lg:w-full" placeholder="Search job title, skills, company">
+                            value="{{ request('q') }}"  value="" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm w-sm max-lg:w-full" placeholder="Search job title, skills, company">
                             
                             
                     
-                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-77 max-sm:right-9 absolute ">Search</button>
+                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2 mr-2 ">Search</button>
                     </form>
 
                 </div>
@@ -54,8 +54,8 @@
                     <tr class="bg-gray-300">
                          <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Application ID</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">User Name</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Full Name</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Applicant Name</th>
+
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Application Date</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
@@ -74,13 +74,11 @@
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                             <a href="{{ route('client.public_profile', $application->user->name) }}" class="underline text-blue-700 hover:text-blue-400">
-                                {{ $application->user ? $application->user->name : $application->full_name }}
+                                {{ $application->full_name }}
                             </a>
 
                         </td>
-                        <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
-                                {{ $application->full_name }}
-                        </td>
+        
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                             @if ($application->job)
                                 <a href="{{ route('client.jobs.show', Str::slug($application->job->job_title)) }}" 
@@ -167,7 +165,7 @@
             @if ($applications->total() > 10)
                 <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
                     <h3 class="home_p_font text-sm max-sm:text-xs">
-                        Showing {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
+                         {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
                     </h3>
 
                     <div class="flex ml-auto gap-2 max-sm:ml-0">

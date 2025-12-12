@@ -12,6 +12,8 @@ use App\Models\BlockedUser;
 use App\Models\Notification;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Announcement;
+use Carbon\Carbon;
 
 class EmployeeController extends Controller
 {
@@ -274,13 +276,41 @@ class EmployeeController extends Controller
     {
         return view('employee.messages');
     }
-   public function notifications()
+    public function notifications()
     {
-        $notifications = \App\Models\Notification::where('user_id', auth()->id())
+        $user = auth()->user();
+
+        $today = Carbon::today(); // only date, no time
+
+        $announcements = \App\Models\Announcement::where('status', 'active')
+            ->where(function($q) {
+                $q->where('audience', 'employee')
+                ->orWhere('audience', 'all');
+            })
+            ->whereDate('release_date', $today)  // compare only the date part
+            ->orderBy('release_date', 'desc')
+            ->get();
+
+        $notifications = \App\Models\Notification::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->paginate(5);
 
-        return view('employee.notifications', compact('notifications'));
+        return view('employee.notifications', compact('notifications', 'announcements'));
+    }
+
+
+
+
+    public function checkNewNotifications(Request $request)
+    {
+        $userId = auth()->id();
+
+        // Check if there are unread notifications for this user
+        $hasNew = \App\Models\Notification::where('user_id', $userId)
+                                        ->where('is_read', false)
+                                        ->exists();
+
+        return response()->json(['has_new' => $hasNew]);
     }
 
     

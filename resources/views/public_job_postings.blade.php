@@ -143,8 +143,22 @@
                                                 {{ $post->status }}
                                             </span>
                                 </h4>
+
                             </div>
                         </div>
+
+                        {{-- button actions --}}
+                        <div class="flex gap-3 max-sm:flex-col max-sm:w-full max-lg:gap-2 ml-auto">
+                            <!-- edit details button -->
+                            <a 
+                            class="job_posting_button px-5 py-3 rounded-lg text-white text-center 
+                            {{ $post->status === 'open' ? 'bg-[#1E2939] hover:opacity-90 cursor-pointer' : 'bg-gray-400 opacity-60 cursor-not-allowed' }}">
+                            Apply Now
+                            </a>
+    
+                        </div>
+
+                        
 
                     </div>
 

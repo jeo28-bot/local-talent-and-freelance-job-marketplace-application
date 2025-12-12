@@ -92,23 +92,53 @@ app.post('/api/announcements', async (req, res) => {
 });
 
 app.get('/api/announcements', async (req, res) => {
-    try {
-        const connection = await mysql.createConnection(dbConfig);
+  const { search } = req.query;
+  let connection;
 
-        const [rows] = await connection.execute(`
-            SELECT id, title, audience, message, release_date, status, created_at, updated_at
-            FROM announcements
-            ORDER BY created_at DESC
-        `);
+  try {
+    connection = await mysql.createConnection(dbConfig);
 
-        await connection.end();
-        res.json(rows);
+    let query = "SELECT * FROM announcements";
+    let params = [];
 
-    } catch (error) {
-        console.error("Error fetching announcements:", error);
-        res.status(500).json({ error: "Database error" });
+    if (search) {
+      query += `
+        WHERE 
+          id LIKE ? OR
+          title LIKE ? OR 
+          audience LIKE ? OR 
+          message LIKE ? OR
+          status LIKE ? OR
+          DATE_FORMAT(release_date, '%b %d, %Y, %h:%i %p') LIKE ? OR
+          DATE_FORMAT(created_at, '%b %d, %Y, %h:%i %p') LIKE ? OR
+          DATE_FORMAT(updated_at, '%b %d, %Y, %h:%i %p') LIKE ?
+      `;
+
+      params = [
+        `%${search}%`,  // id (string match)
+        `%${search}%`,  // title
+        `%${search}%`,  // audience
+        `%${search}%`,  // message
+        `%${search}%`,  // status
+        `%${search}%`,  // formatted release date
+        `%${search}%`,  // formatted created_at
+        `%${search}%`   // formatted updated_at
+      ];
     }
+
+    query += " ORDER BY created_at DESC";
+
+    const [rows] = await connection.execute(query, params);
+    res.json(rows);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Database error" });
+  } finally {
+    if (connection) await connection.end();
+  }
 });
+
 
 app.delete('/api/announcements/:id', async (req, res) => {
     const { id } = req.params;
@@ -133,6 +163,126 @@ app.delete('/api/announcements/:id', async (req, res) => {
         if (connection) await connection.end();
     }
 });
+
+// // edit announcement
+// app.put("/api/announcements/:id", async (req, res) => {
+//     const id = parseInt(req.params.id);
+//     const { title, audience, message, release_date } = req.body;
+
+//     if (!title || !audience || !message) {
+//         return res.status(400).json({ success: false, error: "Title, audience, and message are required." });
+//     }
+
+//     let connection;
+//     try {
+//         connection = await mysql.createConnection(dbConfig);
+
+//         const [rows] = await connection.execute("SELECT * FROM announcements WHERE id = ?", [id]);
+//         if (rows.length === 0) return res.status(404).json({ success: false, error: "Announcement not found" });
+
+//         await connection.execute(
+//             `UPDATE announcements
+//              SET title = ?, audience = ?, message = ?, release_date = COALESCE(?, release_date), updated_at = NOW()
+//              WHERE id = ?`,
+//             [title, audience, message, release_date, id]
+//         );
+
+//         const [updatedRows] = await connection.execute("SELECT * FROM announcements WHERE id = ?", [id]);
+//         res.json({ success: true, announcement: updatedRows[0] });
+
+//     } catch (err) {
+//         console.error("Update error:", err);
+//         res.status(500).json({ success: false, error: "Database error" });
+//     } finally {
+//         if (connection) await connection.end();
+//     }
+// });
+
+
+// UPDATE ANNOUNCEMENT
+app.put('/api/announcements/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, audience, message, release_date, status } = req.body;
+
+    let connection;
+
+    try {
+        connection = await mysql.createConnection(dbConfig);
+
+        // Check if exists
+        const [rows] = await connection.execute(
+            "SELECT * FROM announcements WHERE id = ?",
+            [id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: "Announcement not found"
+            });
+        }
+
+        // -----------------------------
+        // UPDATE STATUS ONLY (from modal)
+        // -----------------------------
+        if (status && !title && !audience && !message) {
+
+            const validStatuses = ['active', 'inactive', 'draft'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({ success: false, error: "Invalid status" });
+            }
+
+            await connection.execute(
+                "UPDATE announcements SET status = ?, updated_at = NOW() WHERE id = ?",
+                [status, id]
+            );
+
+            return res.json({
+                success: true,
+                message: "Status updated successfully",
+                id,
+                status
+            });
+        }
+
+        // -----------------------------
+        // FULL UPDATE (title, audience, message, release_date)
+        // -----------------------------
+        if (!title || !audience || !message) {
+            return res.status(400).json({
+                success: false,
+                error: "Title, audience and message are required for full update."
+            });
+        }
+
+        await connection.execute(
+            `UPDATE announcements
+             SET title = ?, audience = ?, message = ?, 
+                 release_date = COALESCE(?, release_date), 
+                 updated_at = NOW()
+             WHERE id = ?`,
+            [title, audience, message, release_date, id]
+        );
+
+        const [updated] = await connection.execute(
+            "SELECT * FROM announcements WHERE id = ?",
+            [id]
+        );
+
+        return res.json({
+            success: true,
+            message: "Announcement updated successfully",
+            announcement: updated[0]
+        });
+
+    } catch (err) {
+        console.error("Update error:", err);
+        return res.status(500).json({ success: false, error: "Server error" });
+    } finally {
+        if (connection) await connection.end();
+    }
+});
+
 
 
 

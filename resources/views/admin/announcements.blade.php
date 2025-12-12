@@ -22,7 +22,7 @@
                         <input type="hidden" name="search" value="{{ request('search') }}">
                             {{-- export button --}}
                             <button type="submit" 
-                                class="p_font py-2 px-3 bg-[#1e2939] rounded-lg hover:opacity-70 cursor-pointer text-sm max-sm:text-xs text-green-400 flex items-center gap-2 shadow-lg">
+                                class="p_font py-2 px-3 bg-[#1e2939] rounded-lg hover:opacity-70 cursor-pointer text-sm max-sm:text-xs text-green-400 flex items-center gap-2 shadow-lg hidden">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round" 
@@ -42,7 +42,7 @@
                 </div>
 
                 {{-- search bar control --}}
-                <form action="{{ route('admin.reports') }}" method="GET" class="group">
+                <form id="searchForm" class="group">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.5" stroke="currentColor"
                         class="size-6 absolute mt-2.5 ml-2 text-gray-500 -z-1 group-hover:z-10 group-focus-within:z-10 max-sm:mt-2">
@@ -125,20 +125,35 @@
                         const nextBtn = document.querySelector("#users_pagination .next");
                         const showingText = document.querySelector("#users_pagination h3");
 
+                        const searchForm = document.getElementById('searchForm');
+                        const searchInput = searchForm.querySelector('input[name="search"]');
+
+                        searchForm.addEventListener('submit', (e) => {
+                            e.preventDefault(); // prevent full page reload
+                            const searchQuery = searchInput.value.trim();
+                            fetchAnnouncements(searchQuery); // fetch with search
+                        });
+
+                        async function fetchAnnouncements(search = "") {
+                            try {
+                                const res = await fetch(`http://127.0.0.1:3001/api/announcements?search=${encodeURIComponent(search)}`);
+                                data = await res.json();  // update global data array
+                                totalPages = Math.ceil(data.length / rowsPerPage);
+                                currentPage = 1;          // reset to first page
+                                renderPage(currentPage);
+                            } catch (err) {
+                                console.error("Fetch error:", err);
+                            }
+                        }
+
+
                         let data = [];
                         let currentPage = 1;
                         const rowsPerPage = 10;
                         let totalPages = 1;
 
                         // Fetch announcements
-                        fetch("http://127.0.0.1:3001/api/announcements")
-                            .then(res => res.json())
-                            .then(fetchedData => {
-                                data = fetchedData;
-                                totalPages = Math.ceil(data.length / rowsPerPage);
-                                renderPage(currentPage);
-                            })
-                            .catch(err => console.error("Fetch error:", err));
+                        fetchAnnouncements();
 
                         function renderPage(page) {
                             tbody.innerHTML = "";
@@ -174,35 +189,45 @@
                                     month: 'short', day: '2-digit', year: 'numeric',
                                     hour: 'numeric', minute: '2-digit', hour12: true
                                 });
-                                const statusColor = item.status.toLowerCase() === 'active'
-                                    ? 'bg-green-200 border-green-600 text-green-600'
-                                    : 'bg-yellow-200 border-yellow-600 text-yellow-600';
+                                const statusColor = item.status.toLowerCase() === 'active' 
+                                ? 'bg-green-200 border-green-600 text-green-600'
+                                : item.status.toLowerCase() === 'draft'
+                                    ? 'bg-yellow-200 border-yellow-600 text-yellow-600'
+                                    : 'bg-red-200 border-red-600 text-red-600';
 
                                 tbody.innerHTML += `
+
                                     <tr class="border-b-2 border-gray-300 py-2 hover:bg-gray-200">
                                         <td class="px-4 py-2 home_p_font max-lg:text-sm p_font">${start + index + 1}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm">${item.id}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${item.title}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${item.audience}</td>
-                                        <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${item.message}</td>
+                                        <td class="px-4 py-2 p_font max-lg:text-sm capitalize">" ${item.message.length > 20 ? item.message.substring(0, 20) + '...' : item.message} "</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${releaseDateStr}</td>
-                                        <td class="px-4 py-2 p_font max-lg:text-sm capitalize">
-                                            <span class="p-2 text-sm max-sm:text-xs font-semibold rounded-lg border-1 cursor-pointer ${statusColor} hover:opacity-60">
+                                        <td class="px-4 py-2 p_font max-lg:text-sm">
+                                            <button 
+                                                class="p-2 text-sm font-semibold rounded-lg border-1 cursor-pointer status-btn ${statusColor} hover:opacity-60 capitalize"
+                                                data-id="${item.id}"
+                                                data-status="${item.status}"
+                                            >
                                                 ${item.status}
-                                            </span>
+                                            </button>
                                         </td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${createdAtStr}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm capitalize">${updatedAtStr}</td>
                                         <td class="px-4 py-2 p_font max-lg:text-sm flex flex-col text-center gap-1">
-                                            <button class="edit_button bg-[#1e2939] px-5 py-2 rounded button_font text-sm text-yellow-400 hover:opacity-80 cursor-pointer hover:opacity-70" data-id="${item.id}">Edit</button>
+                                            <button class="edit_button bg-[#1e2939] px-5 py-2 rounded button_font text-sm text-yellow-400 hover:opacity-80 cursor-pointer hover:opacity-70"
+                                                data-json='${encodeURIComponent(JSON.stringify(item))}'
+                                            >Edit</button>
                                             <button class="delete_button bg-[#1e2939] px-5 py-2 rounded button_font text-sm text-red-400 hover:opacity-80 cursor-pointer hover:opacity-70" data-id="${item.id}">Delete</button>
                                         </td>
                                     </tr>
+
                                 `;
                             });
 
                             // Update showing text
-                            showingText.textContent = `Showing ${start + 1} to ${Math.min(end, data.length)} of ${data.length} results`;
+                            showingText.textContent = `${start + 1} to ${Math.min(end, data.length)} of ${data.length} results`;
 
                             // Update buttons
                             prevBtn.disabled = page === 1;
@@ -223,6 +248,7 @@
                                 renderPage(currentPage);
                             }
                         });
+                        
                     });
                     </script>  
                 </table>
@@ -252,7 +278,92 @@
 
     {{-- modal section --}}
 
-    {{-- announce modal --}}
+    {{-- status modal --}}
+    <div id="status_modal" class="modal_bg edit_job_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 px-10 hidden">
+        <div class="sm:w-xl max-h-[80vh] overflow-y-auto mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal header --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Announcement Status</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_status_modal" class="size-5 cursor-pointer hover:bg-red-400! rounded-sm max-sm:size-5 bg-gray-300!">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+
+            {{-- modal body --}}
+            <div class="px-5 py-3 bg-white shadow-sm rounded-lg">
+                <h1 class="p_font text-blue-500 mb-1">
+                    Current Status: <span class="uppercase status_text"></span>
+                </h1>
+                <p class="home_p_font mb-3">Click a button below to change the transaction status.</p>
+
+                <form id="status_form" action="" class="flex gap-2 max-sm:flex-col max-sm:w-full max-lg:gap-2">
+                    <button type="submit" name="status" value="inactive" class="px-4 py-2 border-1 border-red-600 capitalize text-sm bg-red-200 text-red-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">Incative</button>
+                    <button type="submit" name="status" value="draft" class="px-4 py-2 border-1 border-yellow-600 capitalize text-sm bg-yellow-200 text-yellow-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">draft</button>
+                    <button type="submit" name="status" value="active" class="px-4 py-2 border-1 border-green-600 capitalize text-sm bg-green-200 text-green-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">active</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // STATUS MODAL ELEMENTS
+    const statusModal = document.getElementById("status_modal");
+    const closeStatusModal = document.getElementById("close_status_modal");
+    const statusText = document.querySelector(".status_text");
+    const statusForm = document.getElementById("status_form");
+
+    let selectedAnnouncementId = null;
+
+    // OPEN STATUS MODAL
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("status-btn")) {
+            const status = e.target.dataset.status;
+            selectedAnnouncementId = e.target.dataset.id;
+
+            statusText.textContent = status;
+            statusForm.setAttribute("data-id", selectedAnnouncementId);
+
+            statusModal.classList.add("show");
+            statusModal.classList.remove("hidden");
+        }
+    });
+
+    // CLOSE STATUS MODAL
+    closeStatusModal.addEventListener("click", () => {
+        statusModal.classList.add("hidden");
+    });
+
+    // SUBMIT STATUS CHANGE
+    statusForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const newStatus = e.submitter?.value;
+        const announcementId = statusForm.getAttribute("data-id");
+
+        try {
+            const response = await fetch(`http://127.0.0.1:3001/api/announcements/${announcementId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) throw new Error(data.error || "Update failed");
+
+            // alert("Status updated successfully!");
+            statusModal.classList.add("hidden");
+            location.reload();
+            // Removed loadAnnouncements() because it doesn't exist
+
+        } catch (error) {
+            console.error(error);
+            alert(error.message || "Something went wrong updating the status.");
+        }
+    });
+    </script>
+
+    {{-- create announce modal --}}
     <div class="report_modal fixed top-0 left-0 w-full h-full z-50 max-lg:px-6 hidden">
       {{-- menu control --}}
         <div class="lg:w-2xl mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm ">
@@ -303,6 +414,57 @@
        </div>
     </div>
 
+    {{-- edit announce modal --}}
+    <div class="edit_modal modal_bg fixed top-0 left-0 w-full h-full z-50 max-lg:px-6 hidden">
+      {{-- menu control --}}
+        <div class="lg:w-2xl mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm ">
+            {{-- modal sub title and close button --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Edit your announcement below:</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_edit_modal" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+             <form action="" class="w-full bg-white p-3 rounded-lg shadow-sm max-h-110 overflow-auto">
+                {{-- title and type container --}}
+                <div class="input_control mb-3 gap-4 max-sm:flex-col max-sm:gap-2">
+                    <label class="p_font max-sm:text-sm" for="edit_announcement_title">Announcement title</label>
+                    <input type="text" id="edit_announcement_title" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm" placeholder="Your announcement title">
+                </div>
+                {{-- audience and posted time container --}}
+                <div class="input_control flex mb-3 gap-4 max-sm:flex-col max-sm:gap-2">
+                    <div class="w-full">
+                        <label class="p_font max-sm:text-sm" for="edit_announcement_audience">Audience</label>
+                        <input type="text" id="edit_announcement_audience" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm hidden">
+                        <select id="edit_announcement_audience_select" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm p_font">
+                            <option value="" selected disabled>--Select your audience--</option>
+                            <option value="client">Client</option>
+                            <option value="employee">Employee</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                    <div class="w-full">
+                        <label class="p_font max-sm:text-sm" for="release_date">Release Date</label>
+                        
+                        <input type="datetime-local" 
+                            id="edit_release_date" 
+                            name="edit_release_date"
+                            class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm p_font">
+                    </div>
+                </div>
+                
+                <div class="input_control flex flex-col mb-3 w-full">
+                    <label for="edit_message" class=" mb-1 p_font text-black! max-sm:text-sm">Message</label>
+                    <textarea id="edit_message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm" placeholder="Announcement message here" rows="5"></textarea> 
+                </div>
+                
+                <div class="flex">
+                <input type="submit" value="Update" class="cursor-pointer bg-[#1E2939] text-yellow-500 px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto p_font">
+                </div>
+             </form>
+       </div>
+    </div>
+
     {{-- delete modal warning --}}
     <div id="delete_announcement_modal" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
         <div class="px-5 py-3 bg-white rounded-xl -mt-20">
@@ -324,6 +486,90 @@
     </div>
 
     {{-- script section --}}
+
+    {{-- update mdoal JS --}}
+   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const editModal = document.querySelector(".edit_modal");
+        const form = editModal.querySelector("form");
+        const titleInput = document.getElementById("edit_announcement_title");
+        const audienceSelect = document.getElementById("edit_announcement_audience_select");
+        const releaseDateInput = document.getElementById("edit_release_date");
+        const messageInput = document.getElementById("edit_message");
+        const closeEditBtn = document.getElementById("close_edit_modal");
+
+        let currentItemId = null;
+
+        // Convert datetime-local to MySQL DATETIME
+        const formatDateForMySQL = dt => dt ? dt.replace("T", " ") + ":00" : null;
+
+        // Open modal
+        document.addEventListener("click", e => {
+            const btn = e.target.closest(".edit_button");
+            if (!btn) return;
+
+            const item = JSON.parse(decodeURIComponent(btn.dataset.json));
+            currentItemId = item.id;
+
+            titleInput.value = item.title || "";
+            audienceSelect.value = item.audience || "";
+            messageInput.value = item.message || "";
+
+            if (item.release_date) {
+                const date = new Date(item.release_date);
+                const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+                    .toISOString().slice(0,16);
+                releaseDateInput.value = local;
+            } else {
+                releaseDateInput.value = "";
+            }
+
+            editModal.classList.remove("hidden");
+        });
+
+        // Close modal
+        closeEditBtn.addEventListener("click", () => editModal.classList.add("hidden"));
+        editModal.addEventListener("click", e => { if(e.target === editModal) editModal.classList.add("hidden"); });
+
+        // Submit form
+        form.addEventListener("submit", async e => {
+            e.preventDefault();
+            if (!currentItemId) return;
+
+            const payload = {
+                title: titleInput.value.trim(),
+                audience: audienceSelect.value,
+                message: messageInput.value.trim(),
+                release_date: formatDateForMySQL(releaseDateInput.value)
+            };
+
+            try {
+                const res = await fetch(`http://127.0.0.1:3001/api/announcements/${currentItemId}`, {
+                    method: "PUT",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    console.error("Update error:", data);
+                    alert("Update failed: " + (data.error || "Unknown"));
+                    return;
+                }
+
+                editModal.classList.add("hidden");
+                location.reload();
+
+            } catch (err) {
+                console.error("Fetch error:", err);
+                alert("Failed to update announcement. See console.");
+            }
+        });
+    });
+    </script>
+
+
     
     {{-- announce modal JS --}}
     <script>

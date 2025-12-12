@@ -10,6 +10,48 @@
         <div class="xl:w-6xl mx-auto px-5 max-sm:px-3 mb-10">
             <h1 class="sub_title sm:text-xl">Notifications</h1>
             <p class="home_p_font mb-5 text-sm">All your chats with clients and companies are organized here.</p>
+
+            {{-- ANNOUNCEMENTS --}}
+            @foreach ($announcements as $ann)
+                <div id="announcement-{{ $ann->id }}" class="relative announcement-item "
+                    data-title="{{ $ann->title }}"
+                    data-message="{{ $ann->message }}"
+                    data-date="{{ $ann->release_date }}">
+                    <div class="flex bg-white p-4 cursor-pointer hover:bg-gray-100 max-sm:p-2 rounded-xl mb-4 shadow-sm hover:shadow-md transition-shadow duration-200 border-2 border-red-300">
+
+                        <div class="p-1.5 max-sm:p-1 bg-red-500 absolute rounded-full -mt-2 -ml-2 max-sm:-mt-1 max-sm:-ml-1"></div>
+
+                        <div class="flex items-start w-full">
+                            <div class="flex-shrink-0 border-2 border-gray-300 rounded-full">
+                                <img src="{{ asset('assets/megaphone.png') }}"
+                                    class="w-12 h-12 rounded-full max-sm:w-8 max-sm:h-8">
+                            </div>
+
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-gray-800 p_font max-sm:text-sm">
+                                    {{ $ann->title }}
+                                </h3>
+
+                                <p class="text-gray-600 mt-1 home_p_font text-sm max-sm:text-xs max-sm:pr-4">
+                                    {{ strlen($ann->message) > 100 ? substr($ann->message, 0, 100).'...' : $ann->message }}
+                                </p>
+
+                                <span class="text-xs text-gray-500 mt-2 block home_p_font">
+                                    {{ \Carbon\Carbon::parse($ann->release_date)->diffForHumans() }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="hover:bg-gray-200 p-1 rounded-full absolute top-4 right-4 ">
+                        📌
+                    </button>
+                </div>
+            @endforeach
+
+        
+
+
             
 
             {{-- job status notification --}}
@@ -68,12 +110,14 @@
             </div>
             @endforeach
 
+            
+
             {{-- Custom Pagination --}}
             @if ($notifications->total() > 0)
             <div id="notification_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
 
                 <h3 class="home_p_font text-sm max-sm:text-xs">
-                    Showing {{ $notifications->firstItem() }} to {{ $notifications->lastItem() }} of {{ $notifications->total() }} results
+                     {{ $notifications->firstItem() }} to {{ $notifications->lastItem() }} of {{ $notifications->total() }} results
                 </h3>
 
                 <div class="flex ml-auto gap-2 max-sm:ml-0">
@@ -126,6 +170,36 @@
 
      {{-- modal section --}}
 
+    {{-- announcement modal --}}
+    <div id="announcement_modal" class=" modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20 w-lg">
+            <h2 class="text-xl sub_title_font font-semibold mb-2 flex items-center gap-2 max-sm:text-sm text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535m0 0A23.74 23.74 0 0 0 18.795 3m.38 1.125a23.91 23.91 0 0 1 1.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 0 0 1.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 0 1 0 3.46"></path>
+                </svg>
+                Announcement!
+
+                <button class="ml-auto cursor-pointer p-1 rounded-lg hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-5 max-sm:size-4 " id="close_announcement_modal_top">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </h2>
+            <h3 class="p_font font-semibold! max-sm:text-sm text-lg mb-2">
+                System Update Scheduled (title)
+            </h3>
+            <p class="p_font text-gray-600 mb-2 max-sm:text-sm">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Illo distinctio repellendus velit fugiat, esse recusandae laborum ullam consequatur laboriosam rerum voluptatem maiores vitae expedita accusamus blanditiis autem rem ipsa pariatur. (messages)</p>
+            <h5 class="mb-4 home_p_font text-sm max-sm:text-xs">Dec 20, 2025(date)</h5>
+
+
+            <button type="button" id="close_announcement_modal_bottom"
+                class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex ml-auto">
+                Close
+            </button>
+
+        </div>
+    </div>
+
     {{-- delete modal warning --}}
     <div id="delete_job_warning" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
         <div class="px-5 py-3 bg-white rounded-xl -mt-20">
@@ -154,6 +228,40 @@
     </div>
 
     {{-- Script section --}}
+
+    {{-- announcement modal JS --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("announcement_modal");
+        const titleEl = modal.querySelector("h3");
+        const messageEl = modal.querySelector("p");
+        const dateEl = modal.querySelector("h5");
+
+        const closeBtns = [
+            document.getElementById("close_announcement_modal_top"),
+            document.getElementById("close_announcement_modal_bottom")
+        ];
+
+        document.querySelectorAll(".announcement-item").forEach(item => {
+            item.addEventListener("click", () => {
+                titleEl.textContent = item.dataset.title;
+                messageEl.textContent = item.dataset.message;
+                dateEl.textContent = new Date(item.dataset.date).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                });
+
+                modal.classList.remove("hidden");
+            });
+        });
+
+        closeBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                modal.classList.add("hidden");
+            });
+        });
+    });
+    </script>
+    
     {{-- delete notification --}}
     <script>
     document.addEventListener("DOMContentLoaded", () => {
