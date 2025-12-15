@@ -15,7 +15,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VideoCallController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PublicController;
-
+use App\Http\Controllers\RatingController;
 
 Route::get('/', function () {
     return view('index');
@@ -174,6 +174,12 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     // video call route with receiver ID
     Route::get('/employee/video-call/{receiver}', [EmployeeController::class, 'videoCall'])->name('employee.video-call');
     Route::get('/employee/check-new-notifications', [EmployeeController::class, 'checkNewNotifications']);
+
+    // ratings and reviews route for employee
+    Route::get('employee/ratings/{username}', [EmployeeController::class, 'showRatings'])
+    ->name('employee.ratings');
+
+
 });
 
 Route::middleware(['auth', 'user_type:client'])->group(function () {
@@ -246,6 +252,9 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client/video-call/{receiver}', [ClientController::class, 'videoCall'])->name('client.video-call');
     Route::get('/client/check-new-notifications', [ClientController::class, 'checkNewNotifications']);
 
+    // ratings and reviews route for client
+    Route::get('client/ratings/{username}', [ClientController::class, 'showRatings'])
+    ->name('client.ratings');
 });
 
 Route::post('/report', [ReportController::class, 'store'])->name('reports.store');
@@ -341,3 +350,9 @@ Route::post('/keep-online', [UserController::class, 'keepOnline'])->middleware('
 Route::post('/check-user-status', [UserController::class, 'check']);
 Route::post('/set-offline', [UserController::class, 'setOffline'])->middleware('auth');
 
+
+// ratings and reviews routes
+Route::post('/users/{user}/reviews', [RatingController::class, 'store'])
+    ->middleware('auth')
+    ->name('reviews.store');
+Route::put('/reviews/{id}', [RatingController::class, 'update'])->name('reviews.update');

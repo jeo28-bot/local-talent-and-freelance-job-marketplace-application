@@ -16,13 +16,41 @@ use App\Models\Message;
 use App\Models\Report;
 use App\Models\HistoryLog;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    public function index() {
+    public function index()
+    {
+        // Count employees/freelancers
+        $employeeCount = User::whereIn('user_type', ['employee', 'freelancer'])->count();
 
-        return view('admin.index');
+        // Count clients/companies
+        $clientCount = User::where('user_type', 'client')->count();
+
+        // Total jobs
+        $totalJobs = JobPost::count();
+
+        // Jobs grouped by month (current year)
+        $jobsByMonth = JobPost::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as total')
+            )
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->pluck('total', 'month'); // key: month number, value: count
+
+        // Ensure all months exist (fill 0 if no jobs)
+        $monthlyJobs = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $monthlyJobs[$i] = $jobsByMonth[$i] ?? 0;
+        }
+
+        return view('admin.index', compact('employeeCount', 'clientCount', 'totalJobs', 'monthlyJobs'));
     }
+
     public function applications(Request $request)
     {
         $query = JobApplication::with(['user', 'job'])->orderBy('created_at', 'desc');
@@ -283,22 +311,17 @@ class AdminController extends Controller
     {
         $user = User::where('name', $name)->firstOrFail();
 
-         // Handle suspend toggle
+        // Handle suspend toggle
         if ($request->has('toggle_suspend')) {
-            // normalize status (make lowercase to avoid mismatch)
-            $currentStatus = strtolower($user->status ?? 'offline');
-
-            if ($currentStatus === 'suspended') {
-                $user->status = 'offline'; // back to default
-            } else {
-                $user->status = 'suspended'; // suspend user
-            }
-
+            $user->suspended = ! $user->suspended; // toggle true/false
             $user->save();
 
-            return back()->with('success', 'User status updated successfully!');
+            return back()->with(
+                'success',
+                $user->suspended ? 'User has been suspended.' : 'User has been unsuspended.'
+            );
         }
-        
+
         $request->validate([
             'username' => 'required|string|max:255',
             'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
@@ -306,14 +329,17 @@ class AdminController extends Controller
             'address'  => 'nullable|string|max:255',
         ]);
 
-        $user->name     = $request->username;
-        $user->email    = $request->email;
-        $user->phoneNum = $request->phoneNum;
-        $user->address  = $request->address;
-        $user->save();
+        $user->update([
+            'name'     => $request->username,
+            'email'    => $request->email,
+            'phoneNum' => $request->phoneNum,
+            'address'  => $request->address,
+        ]);
 
         return back()->with('success', 'User details updated successfully!');
     }
+
+
     public function update_profile_picture(Request $request, $name)
     {
         $user = User::where('name', $name)->firstOrFail();

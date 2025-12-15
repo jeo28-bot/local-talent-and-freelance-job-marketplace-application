@@ -87,6 +87,31 @@ class User extends Authenticatable
     {
         return $this->hasMany(BlockedUser::class, 'user_id');
     }
+    
+    
 
+    public function isProfileComplete($hasFileUploads, $hasImageUploads)
+    {
+        return
+            $this->profile_pic &&
+            !empty($this->about_details) &&
+            ($this->user_type === 'client' || $this->skills) &&
+            $hasFileUploads &&
+            $hasImageUploads;
+    }
+
+    public function receivedRatings()
+    {
+        return $this->hasMany(\App\Models\Rating::class, 'reviewed_user_id');
+    }
+
+    public function givenRatings()
+    {
+        return $this->hasMany(\App\Models\Rating::class, 'reviewer_id');
+    }
+
+    protected $casts = [
+    'suspended' => 'boolean',
+    ];
 
 }

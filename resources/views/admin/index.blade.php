@@ -16,88 +16,79 @@
 
             {{-- cards --}}
             {{-- card section 1 --}}
-             <div class="flex gap-5 mb-10 max-sm:flex-col">
+             <div class="flex gap-5 mb-10 max-xl:flex-col">
                     {{-- card 1 and 2 parent div --}}
                     {{-- total users card #1 --}}
-                    <div class="bg-white rounded-lg shadow-md p-6 w-1/2 max-sm:w-full">
+                    <div class="bg-white rounded-lg shadow-md p-6 w-1/2 max-xl:w-full">
                         <h2 class="font-semibold! mb-4 home_p_font max-sm:text-sm">Total Users</h2>
-                        <p class="text-3xl font-bold p_font">20</p>
+                        <p class="text-3xl font-bold p_font">{{ $employeeCount + $clientCount }}</p>
                         {{-- employee and client count parent div --}}
                         <div class="flex gap-5 max-sm:flex-col max-sm:gap-2">
                         {{-- employee count --}}
-                            <div class="mt-4 flex flex-col items-center shadow-sm border-t-3 border-blue-400 rounded-lg p-4 w-2/3 max-sm:w-full">
-                                <h2 class="font-semibold! mb-4 home_p_font max-lg:text-sm text-center">Employee Count</h2>
+                            <div class="mt-4 flex flex-col items-center shadow-sm border-t-3 border-blue-400 rounded-lg p-4 w-2/3 max-xl:w-full">
+                                <h2 class="font-semibold! mb-4 home_p_font max-lg:text-sm text-center">Employee/Freelancer Count</h2>
                                 <span class="p-3 bg-blue-100 text-blue-600 rounded-xl inline-block mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                                 </svg>
                                 </span>
-                                <p class="text-3xl font-bold p_font">10</p>
+                                {{-- employee/freelancer user count --}}
+                                <p class="text-3xl font-bold p_font">{{ $employeeCount }}</p>
                             </div>
                             {{-- Client count --}}
-                            <div class="mt-4 flex flex-col items-center shadow-sm border-t-3 border-red-400 rounded-lg p-4 w-2/3 max-sm:w-full">
-                                <h2 class="font-semibold! mb-4 home_p_font  max-lg:text-sm text-center">Client Count</h2>
+                            <div class="mt-4 flex flex-col items-center shadow-sm border-t-3 border-red-400 rounded-lg p-4 w-2/3 max-xl:w-full">
+                                <h2 class="font-semibold! mb-4 home_p_font  max-lg:text-sm text-center">Client/Company Count</h2>
                                 <span class="p-3 bg-red-100 text-red-600 rounded-xl inline-block mb-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                                 </svg>
                                 </span>
-                                <p class="text-3xl font-bold p_font">10</p>
+                                {{-- client/company count --}}
+                                <p class="text-3xl font-bold p_font">{{ $clientCount }}</p>
                             </div>
                         </div>
                     </div>
 
-                    {{-- total job posts card #2 --}}
-                    <div class="bg-white rounded-lg shadow-md p-6 w-1/2 max-sm:w-full">
+                   <div class="bg-white rounded-lg shadow-md p-6 w-1/2 max-xl:w-full">
                         <h2 class="font-semibold! mb-4 home_p_font max-sm:text-sm">Total Job Posts</h2>
-                        <p class="text-3xl font-bold p_font">13</p>
-                            {{-- total jobs table div control --}}
-                            <div class="mt-4 shadow-sm border-t-3 border-yellow-400 rounded-lg p-2 w-full max-h-48 overflow-x-auto">
-                                <table class="w-full max-[1450px]:w-[500px] border-collapse rounded-lg overflow-hidden">
-                                    {{-- table header --}}
-                                    <thead>
-                                        <tr class="bg-gray-100">
-                                            <th class="home_p_font text-sm font-semibold! uppercase p-2 max-lg:text-xs">Job Title</th>
-                                            <th class="home_p_font text-sm font-semibold! uppercase p-2 max-lg:text-xs">Posted By</th>
-                                            <th class="home_p_font text-sm font-semibold! uppercase p-2 max-lg:text-xs">Date Posted</th>
-                                            <th class="home_p_font text-sm font-semibold! uppercase p-2 max-lg:text-xs">Status</th>
-                                        </tr>
-                                    </thead>
+                        <p class="text-3xl font-bold p_font">{{ $totalJobs }}</p>
 
-                                    <tbody class="divide-y divide-gray-200">
-                                        {{-- table data --}}
-                                        <tr class="text-center p_font hover:bg-gray-50 max-lg:text-sm">
-                                         <td class="p-2">Web Dev</td>
-                                         <td class="p-2">Employee</td>
-                                         <td class="p-2">09-10-2025</td>
-                                         <td class="p-2">Open</td>
-                                        </tr>
-                                        <tr class="text-center p_font hover:bg-gray-50 max-lg:text-sm">
-                                         <td class="p-2">Web Dev</td>
-                                         <td class="p-2">Employee</td>
-                                         <td class="p-2">09-10-2025</td>
-                                         <td class="p-2">Open</td>
-                                        </tr>
-                                        <tr class="text-center p_font hover:bg-gray-50 max-lg:text-sm">
-                                         <td class="p-2">Web Dev</td>
-                                         <td class="p-2">Employee</td>
-                                         <td class="p-2">09-10-2025</td>
-                                         <td class="p-2">Open</td>
-                                        </tr>
-                                        <tr class="text-center p_font hover:bg-gray-50 max-lg:text-sm">
-                                         <td class="p-2">Web Dev</td>
-                                         <td class="p-2">Employee</td>
-                                         <td class="p-2">09-10-2025</td>
-                                         <td class="p-2">Open</td>
-                                        </tr>
-                                        
-                                    </tbody>
-                                </table>
-                                
-                            </div>
-                            
-                        
+                        {{-- Chart container --}}
+                        <canvas id="jobsChart" class="mt-4"></canvas>
                     </div>
+
+                    {{-- Chart.js --}}
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                        const ctx = document.getElementById('jobsChart').getContext('2d');
+                        const jobsChart = new Chart(ctx, {
+                            type: 'bar', // you can also use 'line'
+                            data: {
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                datasets: [{
+                                    label: 'Jobs Posted',
+                                    data: @json(array_values($monthlyJobs)), // values for each month
+                                    backgroundColor: '#facc15', // yellow
+                                    borderColor: '#b45309',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { enabled: true }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: { stepSize: 1 }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+
                     
             </div>
             {{-- end of card section 1 --}}

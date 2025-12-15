@@ -66,8 +66,8 @@ class ProfileController extends Controller
 
         // Validate files
         $request->validate([
-            'files.*' => 'nullable|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
-            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'files.*' => 'nullable|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'images.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
 
         // Handle general files

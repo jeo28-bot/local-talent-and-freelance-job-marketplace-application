@@ -29,21 +29,21 @@
         {{-- content --}}
         <div class="lg:w-2xl mx-auto px-5 max-sm:px-3 mb-10">
             <div class="flex items-center justify-between">
-            <div class="flex items-center">
-                <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
-                {{-- User status indicator --}}
-                    @php
-                        $status = trim(strtolower($user->status)); // make sure it's normalized
-                    @endphp
+                <div class="flex items-center">
+                    <a class="sub_title sm:text-4xl text-lg hover:underline cursor-pointer">{{ $user->name  }}</a>
+                    {{-- User status indicator --}}
+                        @php
+                            $status = trim(strtolower($user->status)); // make sure it's normalized
+                        @endphp
 
-                    <span class="relative group p-1.5 rounded-full ml-2 {{ $status === 'online' ? 'bg-green-400' : 'bg-gray-400' }}">
-                        <span class="absolute bottom-full mt-2 hidden group-hover:block 
-                                    px-2 py-1 text-xs text-white bg-[#1e2939] rounded 
-                                    opacity-0 group-hover:opacity-100 transition-opacity duration-200 p_font">
-                            {{ ucfirst($status) }} {{-- Will show Online or Offline --}}
+                        <span class="relative group p-1.5 rounded-full ml-2 {{ $status === 'online' ? 'bg-green-400' : 'bg-gray-400' }}">
+                            <span class="absolute bottom-full mt-2 hidden group-hover:block 
+                                        px-2 py-1 text-xs text-white bg-[#1e2939] rounded 
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-200 p_font">
+                                {{ ucfirst($status) }} {{-- Will show Online or Offline --}}
+                            </span>
                         </span>
-                    </span>
-            </div>
+                </div>
 
             <img 
                 src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : asset('assets/defaultUserPic.png') }}" 
@@ -83,7 +83,7 @@
             
             {{-- follow, block, send message --}}
             <div class="p_font flex gap-2 items-center mb-4">
-                <button class="px-2 py-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400
+                <button class="hidden px-2 py-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400
                         @if(Auth::check() && Auth::user()->name === $user->name)
                             opacity-50 cursor-not-allowed pointer-events-none
                         @endif"
@@ -176,7 +176,73 @@
                     </button>
                 </div>
 
-        {{-- about section --}}
+                {{-- ratings section --}}
+                @php
+                    $ratings = $user->receivedRatings;
+                    $averageRating = $ratings->avg('rating'); // average rating
+                    $totalRatings = $ratings->count();       // total number of ratings
+                    $fullStars = floor($averageRating);      // full stars to show
+                    $halfStar = $averageRating - $fullStars >= 0.5; // whether to show a half star
+                @endphp
+
+                <div class="gap-2 mb-5">
+                    {{-- stars and ratings --}}
+                    <div class="flex text-blue-400 items-center">
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= $fullStars)
+                                {{-- solid star --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6 max-sm:size-5">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                                </svg>
+                            @elseif ($i == $fullStars + 1 && $halfStar)
+                                {{-- half star (optional: you can style as needed or just show full) --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="size-6 max-sm:size-5">
+                                    <path d="M12 3l3 6 6 .5-4.5 4 1.5 6L12 17.5 6 20 7.5 14.5 3 10.5l6-.5 3-6z"/>
+                                </svg>
+                            @else
+                                {{-- outline star --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                                </svg>
+                            @endif
+                        @endfor
+
+                        {{-- ratings count --}}
+                        <span class="p_font text-gray-600 ml-2 text-sm">({{ number_format($averageRating, 1) }}/5.0)</span>
+                    </div>
+                     {{-- total ratings --}}
+                    <a href="{{ route('client.ratings', ['username' => $user->name]) }}"
+                    class="home_p_font text-sm mt-2 cursor-pointer hover:text-black! hover:underline">
+                        {{ $totalRatings }} total rating{{ $totalRatings != 1 ? 's' : '' }}
+                    </a><br>
+
+                    {{-- write and edit a review button --}}
+                    @php
+                        $existingReview = $user->receivedRatings
+                            ->where('reviewer_id', auth()->id())
+                            ->first();
+                    @endphp
+
+                    @if($existingReview)
+                        {{-- edit a review button --}}
+                        <button id="edit_review_button" class="p-2 rounded-lg p_font bg-blue-400 text-white hover:bg-blue-500 mt-2 max-sm:text-sm 
+                            @if(Auth::check() && Auth::user()->name === $user->name)
+                                opacity-50 cursor-not-allowed pointer-events-none
+                            @endif">
+                            Edit my review
+                        </button>
+                    @else
+                        {{-- write a review button --}}
+                        <button id="write_review_button" class="p-2 rounded-lg p_font bg-blue-400 text-white hover:bg-blue-500 mt-2 max-sm:text-sm 
+                            @if(Auth::check() && Auth::user()->name === $user->name)
+                                opacity-50 cursor-not-allowed pointer-events-none
+                            @endif">
+                            Write a review
+                        </button>
+                    @endif
+                </div>
+
+            {{-- about section --}}
             <div class="flex items-center justify-between mb-2">
                 <h1 class="sub_title sm:text-2xl flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -336,9 +402,234 @@
      </section>
      
 
-     {{-- modal section --}}
+    {{-- modal section --}}
+
+    {{-- write review modal --}}
+    <div id="review_modal" class="review_modal modal_bg fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
+      {{-- menu control --}}
+        <div class="w-2xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal sub title and close button --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Describe your review below:</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_review_modal" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+                <form id="reportForm" action="{{ $existingReview ? route('reviews.update', $existingReview->id) : route('reviews.store', $user->id) }}" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm">
+                    @csrf
+                    @if($existingReview)
+                        @method('PUT')
+                    @endif
+                    <input type="hidden" name="rating" id="rating_value" value="{{ $existingReview->rating ?? '' }}">
+
+                    <div class="input_control flex flex-col mb-3">
+                        <h1 class="p_font max-sm:text-sm lg:text-xl font-semibold!">{{ $user->name }}</h1>
+                        <h3 class="home_p_font max-sm:text-sm">{{ $user->email }}</h3>
+                    </div>
+
+                    {{-- stars and ratings --}}
+                    <div class="flex text-blue-400 items-center mb-2">
+                        {{-- ratings  --}}
+                        <span class="p_font text-gray-600 text-sm mr-2">Your rate: </span>
+                        {{-- stars --}}
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="1">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="2">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="3">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="4">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="5">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="input_control flex flex-col mb-3 w-full">
+                        <label for="report_message" class=" mb-1 home_p_font text-black! max-sm:text-sm">
+                            Message <span class="text-gray-400">(optional)</span>
+                        </label>
+                        <textarea id="report_message" name="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm">{{ $existingReview->message ?? '' }}</textarea>
+                    </div>
+                    
+                    <div class="flex">
+                        <input type="submit" value="Submit Review" class="cursor-pointer p_font bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                    </div>
+                </form>
+
+       </div>
+    </div>
+
+    {{-- review modal JS --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const openBtn = document.getElementById('write_review_button') || document.getElementById('edit_review_button');
+        const modal    = document.getElementById('review_modal');
+        const closeBtn = document.getElementById('close_review_modal');
+        const stars    = document.querySelectorAll('.star_rating');
+        const ratingInput = document.getElementById('rating_value');
+
+        if (!openBtn || !modal) return;
+
+        /* =========================
+        OPEN / CLOSE MODAL
+        ========================== */
+
+        openBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        // click outside modal content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+
+        // ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.classList.add('hidden');
+            }
+        });
+
+        /* =========================
+        STAR RATING LOGIC
+        ========================== */
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const value = star.dataset.value;
+                ratingInput.value = value;
+
+                stars.forEach(s => {
+                    if (s.dataset.value <= value) {
+                        s.classList.add('text-blue-400');
+                        s.classList.remove('text-gray-400');
+                    } else {
+                        s.classList.add('text-gray-400');
+                        s.classList.remove('text-blue-400');
+                    }
+                });
+            });
+        });
+
+        const initialRating = parseInt(ratingInput.value);
+        if (initialRating) {
+            stars.forEach(s => {
+                if (s.dataset.value <= initialRating) {
+                    s.classList.add('text-blue-400');
+                    s.classList.remove('text-gray-400');
+                } else {
+                    s.classList.add('text-gray-400');
+                    s.classList.remove('text-blue-400');
+                }
+            });
+        }
+
+    });
+    </script>
+    {{-- reload when submit review --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const form = document.getElementById('reportForm');
+        if (!form) return;
+
+        form.addEventListener('submit', () => {
+            // close the modal immediately (optional)
+            document.getElementById('review_modal').classList.add('hidden');
+
+            // reload page after form is submitted
+            setTimeout(() => {
+                window.location.reload();
+            }, 100); // small delay to let the form submit
+        });
+
+    });
+    </script>
+
+    {{-- edit review modal --}}
+    <div id="edit_review_modal" class="edit_review_modal modal_bg fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
+      {{-- menu control --}}
+        <div class="w-2xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
+            {{-- modal sub title and close button --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">Describe your review below:</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" id="close_review_modal" class="size-5 cursor-pointer  hover:bg-red-400! rounded-sm max-sm:size-4 bg-gray-300!">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+                <form id="edit_review_form" action="" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm">
+                    @csrf
+                    <input type="hidden" name="rating" id="rating_value">
+
+                    <div class="input_control flex flex-col mb-3">
+                        <h1 class="p_font max-sm:text-sm lg:text-xl font-semibold!">{{ $user->name }}</h1>
+                        <h3 class="home_p_font max-sm:text-sm">{{ $user->email }}</h3>
+                    </div>
+
+                    {{-- stars and ratings --}}
+                    <div class="flex text-blue-400 items-center mb-2">
+                        {{-- ratings  --}}
+                        <span class="p_font text-gray-600 text-sm mr-2">Your rate: </span>
+                        {{-- stars --}}
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="1">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="2">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="3">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="4">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                        {{-- solid star --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 hover:scale-110 cursor-pointer star_rating" data-value="5">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="input_control flex flex-col mb-3 w-full">
+                        <label for="report_message" class=" mb-1 home_p_font text-black! max-sm:text-sm">
+                            Message <span class="text-gray-400">(optional)</span>
+                        </label>
+                        <textarea id="report_message" name="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"></textarea> 
+                    </div>
+                    
+                    <div class="flex">
+                        <input type="submit" value="Submit Review" class="cursor-pointer p_font bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">
+                    </div>
+                </form>
+
+       </div>
+    </div>
+
+
+    
+
      
-     {{-- block modal warning --}}
+    {{-- block modal warning --}}
     <div id="block_user" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
         <div class="px-5 py-3 bg-white rounded-xl -mt-20">
             <h2 class="text-xl sub_title_font font-semibold mb-2">Block this user?</h2>

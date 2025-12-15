@@ -23,6 +23,9 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body class="@yield('body-class', 'bg-gray-800') ">
+
+    
+    
     
     <div id="app" class="">
         
@@ -32,57 +35,16 @@
             @yield('content')
 
 
+            
              
         </main>
+
+        
     </div>
 
-    {{-- <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const token = document.querySelector('meta[name="csrf-token"]').content;
 
-        let lastActivity = Date.now();
-        let offlineTimeout = null;
 
-        const activityEvents = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
-        activityEvents.forEach(event => {
-            document.addEventListener(event, () => {
-                lastActivity = Date.now();
-
-                // If the user was offline timer running, cancel it
-                if (offlineTimeout) clearTimeout(offlineTimeout);
-
-                // Set new timer to mark offline after 30s inactivity
-                offlineTimeout = setTimeout(async () => {
-                    console.log("User inactive >30s, setting offline");
-                    await fetch('/set-offline', {
-                        method: 'POST',
-                        credentials: 'same-origin',
-                        headers: {
-                            'X-CSRF-TOKEN': token,
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                }, 30000); // 30s inactivity
-            });
-        });
-
-        // Ping backend every 5s if user is active
-        setInterval(async () => {
-            const secondsInactive = (Date.now() - lastActivity) / 1000;
-            if (secondsInactive > 30) return; // skip ping if inactive
-
-            console.log("Sending keep-online ping...");
-            await fetch('/keep-online', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'X-CSRF-TOKEN': token,
-                    'Content-Type': 'application/json'
-                }
-            });
-        }, 5000);
-    });
-    </script> --}}
+    
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -139,8 +101,7 @@
 
 
 
-
-    
+        
 
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -149,7 +110,11 @@
     @vite(['resources/js/video-call.js'])
 
     
-  
+
+
+
     @include('components.incoming-call')
+
+    
 </body>
 </html>

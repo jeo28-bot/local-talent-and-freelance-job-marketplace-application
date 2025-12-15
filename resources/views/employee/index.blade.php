@@ -101,6 +101,7 @@
 
     </section>
 
+    @include('components.profile_modal')
 
     {{-- modal section --}}
     

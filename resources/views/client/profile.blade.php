@@ -289,8 +289,8 @@
      </section>
 
 
-     {{-- modal section --}}
-
+     {{-- modal section --}}    
+     @include('components.profile_modal')
             {{-- blocked user modal --}}
             <div id="blocked_user_modal" class="fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 modal_bg hidden">
                 <div class="w-xl max-lg:w-xl max-sm:w-full mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 opacity-100 rounded-xl shadow-sm">
@@ -578,7 +578,8 @@
                     <div class="p-3 bg-white rounded-lg shadow-sm">
                         <form action="{{ route('profile.uploadFiles') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <h3 class="p_font mb-2">File Uploads</h3>
+                            <h3 class="p_font ">File Uploads</h3>
+                            <p class="home_p_font text-sm max-sm:text-xs mb-2">pdf,doc,docx | max:10240(10MB)</p>
                                 <input 
                                     id="fileInput"
                                     name="files[]" 
@@ -595,6 +596,7 @@
                                 <ul id="fileList" class="mt-4 space-y-2 mb-2"></ul>
 
                             <h3 class="p_font mb-2">Image Uploads</h3>
+                            <p class="home_p_font text-sm max-sm:text-xs mb-2">jpg,jpeg,png,webp | max:10240(10MB)</p>
                                 <div class="w-full max-w-md mx-auto">
                                 <input 
                                     id="imageInput"

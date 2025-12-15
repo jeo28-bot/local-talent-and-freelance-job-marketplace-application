@@ -262,11 +262,13 @@
         
 
             {{-- logout button --}}
-                <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
+            <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">Log-out</button>
 
         </div>
         
      </section>
+
+            @include('components.profile_modal')
 
             {{-- modal section --}}
 
@@ -373,7 +375,8 @@
                     <div class="p-3 bg-white rounded-lg shadow-sm">
                         <form action="{{ route('profile.uploadFiles') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <h3 class="p_font mb-2">File Uploads</h3>
+                            <h3 class="p_font">File Uploads</h3>
+                            <p class="home_p_font text-sm max-sm:text-xs mb-2">pdf,doc,docx | max:10240(10MB)</p>
                                 <input 
                                     id="fileInput"
                                     name="files[]" 
@@ -389,7 +392,8 @@
                                 <!-- Uploaded files list -->
                                 <ul id="fileList" class="mt-4 space-y-2 mb-2"></ul>
 
-                            <h3 class="p_font mb-2">Image Uploads</h3>
+                            <h3 class="p_font">Image Uploads</h3>
+                            <p class="home_p_font text-sm max-sm:text-xs mb-2">jpg,jpeg,png,webp | max:10240(10MB)</p>
                                 <div class="w-full max-w-md mx-auto">
                                 <input 
                                     id="imageInput"
@@ -461,7 +465,7 @@
                           {{-- input 3 --}}
                         <div class="input_control">
                             <label for="phoneNum" class="p_font">Phone #: <span class="text-red-400">*</span></label>
-                            <input type="number" name="phoneNum" id="phoneNum" placeholder="Enter your new phone #" class="p-2 shadow-sm w-full rounded-lg border-2 border-gray-400 mb-2" value="{{ Auth::user()->phoneNum }}" required>
+                            <input type="text" name="phoneNum" id="phoneNum" placeholder="Enter your new phone #" class="p-2 shadow-sm w-full rounded-lg border-2 border-gray-400 mb-2" value="{{ Auth::user()->phoneNum }}" required>
                         </div>
                           {{-- input 4 --}}
                         <div class="input_control mb-2">

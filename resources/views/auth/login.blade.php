@@ -42,12 +42,15 @@
                                 @enderror
                             </div>
                         </div>
-                        {{-- suspended alert --}}
-                       @if (session('suspended'))
+                
+                        @if (session('suspended'))
                             <h1 class="p_font text-red-400 text-center mb-5 -mt-2">
                                 Your account is suspended. Check back later or send a mail!
                             </h1>
                         @endif
+
+
+                
 
 
                         <div class="row mb-7">

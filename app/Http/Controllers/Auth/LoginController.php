@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\HistoryLog;
 use Carbon\Carbon;
+use App\Models\User;
 
 
 class LoginController extends Controller
@@ -105,16 +106,52 @@ class LoginController extends Controller
         return redirect('/');
     }
 
-
     protected function sendFailedLoginResponse(Request $request)
     {
+        if (session()->has('suspended')) {
+            return redirect()
+                ->back()
+                ->withInput($request->only($this->username(), 'remember'))
+                ->withErrors([
+                    $this->username() => 'Your account is suspended.',
+                ]);
+        }
+
         return redirect()
             ->back()
             ->withInput($request->only($this->username(), 'remember'))
             ->withErrors([
-                $this->username() => __('The provided credentials do not match our records.'),
+                $this->username() => trans('auth.failed'),
             ]);
     }
+
+
+    protected function attemptLogin(Request $request)
+    {
+        $credentials = $this->credentials($request);
+
+        // Find user by username/email
+        $user = User::where($this->username(), $credentials[$this->username()])->first();
+
+        // If user exists AND is suspended → block login
+        if ($user && $user->suspended) {
+            session()->flash('suspended', true);
+            return false;
+        }
+
+        return $this->guard()->attempt(
+            $credentials,
+            $request->filled('remember')
+        );
+    }
+
+    protected function credentials(Request $request)
+    {
+        return array_merge(
+            $request->only($this->username(), 'password')
+        );
+    }
+
 
 
 }

@@ -20,6 +20,27 @@ class EmployeeController extends Controller
     public function index() {
         return view('employee.index');
     }
+
+    public function ratings() {
+        return view('employee.ratings');
+    }
+
+    public function showRatings($username)
+    {
+        // Get the user by slug/username
+        $user = User::where('name', $username)->firstOrFail();
+
+        // Get all received ratings
+        $ratings = $user->receivedRatings()->latest()->get();
+
+        // Count & average
+        $totalRatings = $ratings->count();
+        $averageRating = $ratings->avg('rating');
+
+        // Pass data to the view
+        return view('employee.ratings', compact('user', 'ratings', 'totalRatings', 'averageRating'));
+    }
+
     public function postings(Request $request)
     {
         $user = auth()->user();
@@ -287,7 +308,7 @@ class EmployeeController extends Controller
                 $q->where('audience', 'employee')
                 ->orWhere('audience', 'all');
             })
-            ->whereDate('release_date', $today)  // compare only the date part
+            ->whereDate('release_date', '<=', Carbon::today()) // compare only the date part
             ->orderBy('release_date', 'desc')
             ->get();
 

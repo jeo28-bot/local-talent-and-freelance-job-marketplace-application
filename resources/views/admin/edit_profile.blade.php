@@ -291,11 +291,11 @@
 
                 {{-- edit profile buttons --}}
                 <div class="flex gap-2 max-sm:flex-wrap mb-10 items-start">
-                    <button id="logout" class="bg-[#1e2939] cursor-pointer sub_title_font text-orange-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex gap-2 items-center max-sm:px-3">
+                    <button id="logout" name="toggle_suspend" value="1" class="bg-[#1e2939] cursor-pointer sub_title_font text-green-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex gap-2 items-center max-sm:px-3 {{ $user->suspended ? 'bg-[#1e2939]' : 'bg-red-500 text-white!' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
-                        Suspend</button>
+                        {{ $user->suspended ? 'Unsuspend User' : 'Suspend User' }}</button>
                     <button id="delete_user" class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-3 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex gap-2 items-center max-sm:px-3">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
@@ -427,11 +427,11 @@
             {{-- Suspend user modal warning --}}
             <div id="logout_warning_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center hidden max-sm:px-5">
                 <div class="px-5 py-3 bg-white rounded-xl w-sm max-sm:w-full">
-                    <h2 class="text-xl sub_title_font font-semibold mb-2">Are you sure?</h2>
+                    <h2 class="text-xl sub_title_font font-semibold mb-2">Suspend warning!</h2>
                     <p class="home_p_font text-gray-600 mb-1">
-                        You will be suspending this account.
+                        You will be suspending or unsuspend this account, are you sure you wanna do it?
                     </p>
-                    <p class="home_p_font text-gray-600 mb-5 text-xs">
+                    <p class="home_p_font text-gray-600 mb-5 text-xs hidden">
                         Note:<br>
                         If user status already <strong class="text-red-600">Suspended</strong> and you happen to suspend again,
                         it will be back to default which is <strong class="text-black">Offline</strong>.
@@ -449,14 +449,14 @@
                             @method('PUT')
                             <input type="hidden" name="toggle_suspend" value="1">
                             <button id="logout"
-                                class="bg-[#1e2939] cursor-pointer sub_title_font text-orange-400 px-3 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex gap-2 items-center">
+                                class="bg-[#1e2939] cursor-pointer sub_title_font text-green-400 px-3 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm flex gap-2 items-center {{ $user->suspended ? 'bg-[#374151]-500' : 'bg-red-500 text-white' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                     class="size-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 </svg>
-                                Suspend
+                                {{ $user->suspended ? 'Unsuspend User' : 'Suspend User' }}
                             </button>
                         </form>
                     </div>

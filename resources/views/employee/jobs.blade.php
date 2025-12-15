@@ -171,7 +171,7 @@
                     </div>
                     <div class="input_control flex flex-col mb-3 w-full">
                         <label for="phoneNum" class=" mb-1 home_p_font text-black! max-sm:text-sm">Phone Number *</label>
-                        <input type="number" id="phoneNum" name="phone_num" placeholder="+63" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200 cursor-default" value="{{ auth()->user()->phoneNum }}" readonly>
+                        <input type="text" id="phoneNum" name="phone_num" placeholder="+63" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200 cursor-default" value="{{ auth()->user()->phoneNum }}" readonly>
                     </div>
                 </span>
                 <div class="input_control flex flex-col mb-3 w-full">

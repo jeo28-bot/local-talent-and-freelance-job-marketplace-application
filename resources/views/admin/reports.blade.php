@@ -102,18 +102,18 @@
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-4 py-2 p_font max-lg:text-sm">
+                            <td class="px-4 py-2 p_font max-lg:text-sm ">
                                 @if($report->reportable)
                                     @php
                                         $type = class_basename($report->reportable_type);
                                     @endphp
 
                                     @if($type === 'User')
-                                        <a href="{{ route('admin.public_profile', ['name' => urlencode($report->reportable->name)]) }}" class="cursor-pointer text-blue-500 hover:underline">
+                                        <a href="{{ route('admin.edit_profile', ['name' => urlencode($report->reportable->name)]) }}" class="cursor-pointer text-red-500 hover:underline">
                                             {{ $report->reportable->name }}
                                         </a>
                                     @elseif($type === 'JobPost')
-                                        <a href="{{ url('/admin/jobs/' . urlencode($report->reportable->job_title ?? 'Job #' . $report->reportable_id)) }}" class="cursor-pointer text-blue-500 hover:underline">
+                                        <a href="{{ url('/admin/jobs/' . urlencode($report->reportable->job_title ?? 'Job #' . $report->reportable_id)) }}" class="cursor-pointer text-red-500 hover:underline">
                                             {{ $report->reportable->job_title ?? 'Job #' . $report->reportable_id }}
                                         </a>
                                     @else

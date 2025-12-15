@@ -108,6 +108,7 @@
 
 
     {{-- modals section--}}
+    @include('components.profile_modal')
     @include('components.incoming-call')
 
     {{-- post a job modal --}}
