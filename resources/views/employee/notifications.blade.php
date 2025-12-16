@@ -6,7 +6,7 @@
     @include('components.nav_employee')
 
 
-    <section class="w-ful min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
+    <section class="w-full min-h-[80vh] px-10 py-10 max-sm:py-5 max-sm:px-4 ">
         <div class="xl:w-6xl mx-auto px-5 max-sm:px-3 mb-10">
             <h1 class="sub_title sm:text-xl">Notifications</h1>
             <p class="home_p_font mb-5 text-sm">All your chats with clients and companies are organized here.</p>

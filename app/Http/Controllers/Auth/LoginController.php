@@ -113,7 +113,7 @@ class LoginController extends Controller
                 ->back()
                 ->withInput($request->only($this->username(), 'remember'))
                 ->withErrors([
-                    $this->username() => 'Your account is suspended.',
+                    $this->username() => 'Your account is suspended. Check back later or send a mail!',
                 ]);
         }
 

@@ -12,7 +12,7 @@
       <h3 class="home_p_font text-center text-3xl max-lg:text-xl leading-10 max-lg:leading-8 mb-20 max-lg:mb-10">Manage your job posts and track applicants easily.</h3>
       
        <!-- Quick Action Buttons Panel -->
-        <div class="xl:w-6xl flex justify-center gap-10 rounded-lg mb-20 max-lg:w-full max-lg:flex-col max-lg:items-center max-sm:gap-5 ">
+        <div class="xl:w-6xl flex justify-center gap-10 rounded-lg mb-10 max-lg:w-full max-lg:flex-col max-lg:items-center max-sm:gap-5 ">
             {{-- Post a Job --}}
             <div class="xl:w-2xl py-5 px-10 bg-white rounded-lg shadow-md flex items-center flex-col hover:scale-105 transition-transform duration-300 max-lg:w-xl max-sm:w-full">
                 <div class="p-2 bg-blue-400 rounded-xl mb-2 ">
@@ -52,57 +52,131 @@
 
         </div>
 
-        <h3 class="home_p_font text-black! text-center text-3xl max-lg:text-xl mb-3">Browse Categories</h3>
-      <p class="home_p_font mb-5 text-center">Most popular categories of portal, sorted by popularity</p>
+      {{-- other added elements in home page for client --}}
+      <div class="space-y-10 mb-20 w-4xl max-lg:w-full max-sm:px-3 p_font">
 
-      {{-- category cards --}}
-      <div class="category_card_container flex gap-7 max-lg:grid max-lg:grid-cols-2 items-center justify-center mb-20 max-[450px]:flex! max-[450px]:flex-wrap ">
-        {{-- card 1 --}}
-        <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-amber-300 shadow-sm flex flex-col items-center justify-center p-3">
-          <div class="bg-amber-300 rounded-full p-3 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
-              <path d="M19.006 3.705a.75.75 0 1 0-.512-1.41L6 6.838V3a.75.75 0 0 0-.75-.75h-1.5A.75.75 0 0 0 3 3v4.93l-1.006.365a.75.75 0 0 0 .512 1.41l16.5-6Z" />
-              <path fill-rule="evenodd" d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z" clip-rule="evenodd" />
-            </svg>
+          {{-- Welcome / Hero --}}
+          <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow">
+              <h1 class="text-2xl font-bold mb-2">
+                  Welcome back, {{ auth()->user()->name }} 👋
+              </h1>
+              <p class="opacity-90 text-sm">
+                  Post jobs, find talent, and manage your hires with ease.
+              </p>
           </div>
-          <h4 class="sub_title_font mb-2" >Finance</h4>
-          <h3 class="home_p_font">(20+)</h3>
-        </div>
 
-        {{-- card 2 --}}
-        <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-blue-300 shadow-sm flex flex-col items-center justify-center p-3">
-          <div class="bg-blue-300 rounded-full p-3 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
-            <path d="M21.721 12.752a9.711 9.711 0 0 0-.945-5.003 12.754 12.754 0 0 1-4.339 2.708 18.991 18.991 0 0 1-.214 4.772 17.165 17.165 0 0 0 5.498-2.477ZM14.634 15.55a17.324 17.324 0 0 0 .332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 0 0 .332 4.647 17.385 17.385 0 0 0 5.268 0ZM9.772 17.119a18.963 18.963 0 0 0 4.456 0A17.182 17.182 0 0 1 12 21.724a17.18 17.18 0 0 1-2.228-4.605ZM7.777 15.23a18.87 18.87 0 0 1-.214-4.774 12.753 12.753 0 0 1-4.34-2.708 9.711 9.711 0 0 0-.944 5.004 17.165 17.165 0 0 0 5.498 2.477ZM21.356 14.752a9.765 9.765 0 0 1-7.478 6.817 18.64 18.64 0 0 0 1.988-4.718 18.627 18.627 0 0 0 5.49-2.098ZM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 0 0 1.988 4.718 9.765 9.765 0 0 1-7.478-6.816ZM13.878 2.43a9.755 9.755 0 0 1 6.116 3.986 11.267 11.267 0 0 1-3.746 2.504 18.63 18.63 0 0 0-2.37-6.49ZM12 2.276a17.152 17.152 0 0 1 2.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0 1 12 2.276ZM10.122 2.43a18.629 18.629 0 0 0-2.37 6.49 11.266 11.266 0 0 1-3.746-2.504 9.754 9.754 0 0 1 6.116-3.985Z" />
-          </svg>
-          </div>
-          <h4 class="sub_title_font mb-2" >Sale/Marketing</h4>
-          <h3 class="home_p_font">(20+)</h3>
-        </div>
+          {{-- Info cards --}}
+          <div class="grid grid-cols-3 max-lg:grid-cols-1 gap-4">
 
-        {{-- card 3 --}}
-        <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-pink-300 shadow-sm flex flex-col items-center justify-center p-3">
-          <div class="bg-pink-300 rounded-full p-3 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
-            <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3a9.735 9.735 0 0 0-3.25.555.75.75 0 0 0-.5.707v14.25a.75.75 0 0 0 1 .707A8.237 8.237 0 0 1 6 18.75c1.995 0 3.823.707 5.25 1.886V4.533ZM12.75 20.636A8.214 8.214 0 0 1 18 18.75c.966 0 1.89.166 2.75.47a.75.75 0 0 0 1-.708V4.262a.75.75 0 0 0-.5-.707A9.735 9.735 0 0 0 18 3a9.707 9.707 0 0 0-5.25 1.533v16.103Z" />
-          </svg>
-          </div>
-          <h4 class="sub_title_font mb-2" >Education/Training</h4>
-          <h3 class="home_p_font">(20+)</h3>
-        </div>
+              {{-- Card 1 --}}
+              <div class="bg-white rounded-lg shadow p-5 flex items-start gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-20 text-emerald-500">
+                    <path fill-rule="evenodd" d="M4.5 9.75a6 6 0 0 1 11.573-2.226 3.75 3.75 0 0 1 4.133 4.303A4.5 4.5 0 0 1 18 20.25H6.75a5.25 5.25 0 0 1-2.23-10.004 6.072 6.072 0 0 1-.02-.496Z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div>
+                      <h3 class="font-semibold mb-1">Post a Job</h3>
+                      <p class="text-sm text-gray-600">
+                          Create job posts and start receiving applications instantly.
+                      </p>
+                  </div>
+              </div>
 
-        {{-- card 4 --}}
-        <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-purple-300 shadow-sm flex flex-col items-center justify-center p-3">
-          <div class="bg-purple-300 rounded-full p-3 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-              <path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" />
-            </svg>
+              {{-- Card 2 --}}
+              <div class="bg-white rounded-lg shadow p-5 flex items-start gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon" class="size-20 text-emerald-500">
+                    <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd"></path>
+                  </svg>
+                  <div>
+                      <h3 class="font-semibold mb-1">Finish Profile</h3>
+                      <p class="text-sm text-gray-600">
+                          Complete your profile to attract top talent and build trust.
+                      </p>
+                  </div>
+              </div>
+
+              {{-- Card 3 --}}
+              <div class="bg-white rounded-lg shadow p-5 flex items-start gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                      class="size-20 text-emerald-500">
+                      <path fill-rule="evenodd"
+                          d="M12 6.75a.75.75 0 0 1 .75.75v3.75h3.75a.75.75 0 0 1 0 1.5H12.75V16.5
+                          a.75.75 0 0 1-1.5 0v-3.75H7.5a.75.75 0 0 1 0-1.5h3.75V7.5
+                          a.75.75 0 0 1 .75-.75Z"
+                          clip-rule="evenodd" />
+                  </svg>
+                  <div>
+                      <h3 class="font-semibold mb-1">Manage Applications</h3>
+                      <p class="text-sm text-gray-600">
+                          Review applicants, chat with them, and hire with confidence.
+                      </p>
+                  </div>
+              </div>
+
           </div>
-          <h4 class="sub_title_font mb-2" >Finance</h4>
-          <h3 class="home_p_font">(20+)</h3>
-        </div>
+
+          {{-- Tip card --}}
+          <div class="bg-emerald-50 border-l-4 border-emerald-400 rounded-lg p-4">
+              <p class="text-sm text-gray-700">
+                  💡 <strong>Tip:</strong> Jobs with clear descriptions receive more qualified applicants.
+              </p>
+          </div>
 
       </div>
+
+
+      {{-- category cards --}}
+      <span class="hidden">
+          <h3 class="home_p_font text-black! text-center text-3xl max-lg:text-xl mb-3">Browse Categories</h3>
+      <p class="home_p_font mb-5 text-center">Most popular categories of portal, sorted by popularity</p>
+
+        <div class="category_card_container flex gap-7 max-lg:grid max-lg:grid-cols-2 items-center justify-center mb-20 max-[450px]:flex! max-[450px]:flex-wrap ">
+          {{-- card 1 --}}
+          <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-amber-300 shadow-sm flex flex-col items-center justify-center p-3">
+            <div class="bg-amber-300 rounded-full p-3 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
+                <path d="M19.006 3.705a.75.75 0 1 0-.512-1.41L6 6.838V3a.75.75 0 0 0-.75-.75h-1.5A.75.75 0 0 0 3 3v4.93l-1.006.365a.75.75 0 0 0 .512 1.41l16.5-6Z" />
+                <path fill-rule="evenodd" d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h4 class="sub_title_font mb-2" >Finance</h4>
+            <h3 class="home_p_font">(20+)</h3>
+          </div>
+
+          {{-- card 2 --}}
+          <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-blue-300 shadow-sm flex flex-col items-center justify-center p-3">
+            <div class="bg-blue-300 rounded-full p-3 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
+              <path d="M21.721 12.752a9.711 9.711 0 0 0-.945-5.003 12.754 12.754 0 0 1-4.339 2.708 18.991 18.991 0 0 1-.214 4.772 17.165 17.165 0 0 0 5.498-2.477ZM14.634 15.55a17.324 17.324 0 0 0 .332-4.647c-.952.227-1.945.347-2.966.347-1.021 0-2.014-.12-2.966-.347a17.515 17.515 0 0 0 .332 4.647 17.385 17.385 0 0 0 5.268 0ZM9.772 17.119a18.963 18.963 0 0 0 4.456 0A17.182 17.182 0 0 1 12 21.724a17.18 17.18 0 0 1-2.228-4.605ZM7.777 15.23a18.87 18.87 0 0 1-.214-4.774 12.753 12.753 0 0 1-4.34-2.708 9.711 9.711 0 0 0-.944 5.004 17.165 17.165 0 0 0 5.498 2.477ZM21.356 14.752a9.765 9.765 0 0 1-7.478 6.817 18.64 18.64 0 0 0 1.988-4.718 18.627 18.627 0 0 0 5.49-2.098ZM2.644 14.752c1.682.971 3.53 1.688 5.49 2.099a18.64 18.64 0 0 0 1.988 4.718 9.765 9.765 0 0 1-7.478-6.816ZM13.878 2.43a9.755 9.755 0 0 1 6.116 3.986 11.267 11.267 0 0 1-3.746 2.504 18.63 18.63 0 0 0-2.37-6.49ZM12 2.276a17.152 17.152 0 0 1 2.805 7.121c-.897.23-1.837.353-2.805.353-.968 0-1.908-.122-2.805-.353A17.151 17.151 0 0 1 12 2.276ZM10.122 2.43a18.629 18.629 0 0 0-2.37 6.49 11.266 11.266 0 0 1-3.746-2.504 9.754 9.754 0 0 1 6.116-3.985Z" />
+            </svg>
+            </div>
+            <h4 class="sub_title_font mb-2" >Sale/Marketing</h4>
+            <h3 class="home_p_font">(20+)</h3>
+          </div>
+
+          {{-- card 3 --}}
+          <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-pink-300 shadow-sm flex flex-col items-center justify-center p-3">
+            <div class="bg-pink-300 rounded-full p-3 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-7">
+              <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3a9.735 9.735 0 0 0-3.25.555.75.75 0 0 0-.5.707v14.25a.75.75 0 0 0 1 .707A8.237 8.237 0 0 1 6 18.75c1.995 0 3.823.707 5.25 1.886V4.533ZM12.75 20.636A8.214 8.214 0 0 1 18 18.75c.966 0 1.89.166 2.75.47a.75.75 0 0 0 1-.708V4.262a.75.75 0 0 0-.5-.707A9.735 9.735 0 0 0 18 3a9.707 9.707 0 0 0-5.25 1.533v16.103Z" />
+            </svg>
+            </div>
+            <h4 class="sub_title_font mb-2" >Education/Training</h4>
+            <h3 class="home_p_font">(20+)</h3>
+          </div>
+
+          {{-- card 4 --}}
+          <div class="w-[220px] h-[220px] max-sm:w-[180px] max-sm:h-[180px] max-[450px]:w-full! bg-white rounded-xl border-t-3 border-purple-300 shadow-sm flex flex-col items-center justify-center p-3">
+            <div class="bg-purple-300 rounded-full p-3 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h4 class="sub_title_font mb-2" >Finance</h4>
+            <h3 class="home_p_font">(20+)</h3>
+          </div>
+
+        </div>
+      </span>
 
     </section>
 

@@ -21,33 +21,31 @@
                             <div class="mt-2">
                                 <input id="email" type="email" class="mb-2 max-sm:text-sm poppins-regular-italic p-2 w-full text-white border-2 rounded-lg form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
-                                @error('email')
-                                    <span class="invalid-feedback text-red-400 p_font font-light" role="alert">
-                                        {{ $message }}
-                                    </span>
-                                @enderror
+                               
                             </div>
                         </div>
 
-                        <div class="row mb-7">
+                        <div class="row mb-2">
                             <label for="password" class="max-sm:text-sm col-md-4 col-form-label text-md-end text-white">{{ __('Password') }}</label>
 
                             <div class="mt-2">
                                 <input id="password" type="password" class="mb-2 max-sm:text-sm p-2  w-full form-control @error('password') is-invalid @enderror border-2 rounded-lg text-white" name="password" required autocomplete="current-password">
 
-                                @error('password')
-                                    <span class="invalid-feedback text-red-400 p_font font-light" role="alert">
-                                        {{ $message }}
-                                    </span>
-                                @enderror
+
                             </div>
                         </div>
-                
-                        @if (session('suspended'))
+                        
+                        @error('email')
+                            <h1 class="invalid-feedback text-red-400 p_font font-light mb-5 mt-2 text-center!" role="alert">
+                                {{ $message }}
+                            </h1>
+                        @enderror
+
+                        {{-- @if (session('suspended'))
                             <h1 class="p_font text-red-400 text-center mb-5 -mt-2">
                                 Your account is suspended. Check back later or send a mail!
                             </h1>
-                        @endif
+                        @endif --}}
 
 
                 
