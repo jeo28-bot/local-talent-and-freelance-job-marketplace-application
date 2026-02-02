@@ -113,7 +113,46 @@
 
         </div>
 
+        {{-- announcement float --}}
+        <div class="px-5 fixed bottom-5 right-0 flex flex-col gap-4 max-sm:gap-2 z-50">
+          @foreach ($announcements as $announcement)
+            <div 
+              x-data="{ show: true }"
+              x-show="show"
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 translate-y-4"
+              x-transition:enter-end="opacity-100 translate-y-0"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100"
+              x-transition:leave-end="opacity-0"
+              class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg w-lg max-sm:w-full"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <h1 class="font-semibold max-sm:text-sm">
+                  📢 {{ $announcement->title }}
+                </h1>
 
+                <button 
+                  @click="show = false"
+                  class="bg-blue-600 rounded-sm cursor-pointer hover:bg-blue-400"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <p class="text-sm">
+                {{ $announcement->message }}
+              </p>
+            </div>
+          @endforeach
+        </div>
+        
+  
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
       {{-- browse category section --}}
       <span class="hidden">

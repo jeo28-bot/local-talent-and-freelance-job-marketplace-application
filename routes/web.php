@@ -16,10 +16,13 @@ use App\Http\Controllers\VideoCallController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\AnnouncementController;
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [AnnouncementController::class, 'index']);
+
+// Route::get('/', function () {
+//     return view('index');
+// });
 
 Route::get('/public_job_postings', [PublicController::class, 'publicPostings'])
     ->name('public.job.postings');

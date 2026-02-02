@@ -18,8 +18,14 @@ use Carbon\Carbon;
 class ClientController extends Controller
 {
     public function index() {
+        $announcements = Announcement::where('status', 'active')
+            ->whereIn('audience', ['client', 'all']) // <-- only employee or all
+            ->whereDate('release_date', '<=', Carbon::now()) // only past or today
+            ->orderBy('release_date', 'desc')
+            ->take(3)
+            ->get();
 
-        return view('client.index');
+        return view('client.index', compact('announcements'));
     }
 
      public function ratings() {

@@ -18,8 +18,16 @@ use Carbon\Carbon;
 class EmployeeController extends Controller
 {
     public function index() {
-        return view('employee.index');
+        $announcements = Announcement::where('status', 'active')
+            ->whereIn('audience', ['employee', 'all']) // <-- only employee or all
+            ->whereDate('release_date', '<=', Carbon::now()) // only past or today
+            ->orderBy('release_date', 'desc')
+            ->take(3)
+            ->get();
+
+        return view('employee.index', compact('announcements'));
     }
+
 
     public function ratings() {
         return view('employee.ratings');
@@ -318,7 +326,7 @@ class EmployeeController extends Controller
 
         return view('employee.notifications', compact('notifications', 'announcements'));
     }
-
+    
 
 
 
