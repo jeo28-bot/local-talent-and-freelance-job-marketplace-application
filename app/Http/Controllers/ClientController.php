@@ -28,9 +28,56 @@ class ClientController extends Controller
         return view('client.index', compact('announcements'));
     }
 
-     public function ratings() {
+    public function ratings() {
         return view('client.ratings');
     }
+    public function arch_jobs()
+    {
+        $archivedJobs = JobPost::onlyTrashed()
+            ->where('client_id', Auth::id())
+            ->orderBy('deleted_at', 'desc')
+            ->get();
+
+        return view('client.archived.arch_jobs', compact('archivedJobs'));
+    }
+    public function update_archived_job(Request $request, $id)
+    {
+        $job = JobPost::onlyTrashed()->where('client_id', Auth::id())->findOrFail($id);
+
+        $job->job_title = $request->job_title;
+        $job->job_location = $request->job_location;
+        $job->job_type = $request->job_type;
+        $job->job_pay = $request->job_pay;
+        $job->salary_release = $request->salary_release;
+        $job->skills_required = $request->skills_required;
+        $job->short_description = $request->short_description;
+        $job->full_description = $request->full_description;
+
+        $job->save();
+
+        return redirect()->route('client.arch_jobs')->with('success', 'Archived job updated successfully!');
+    }
+    public function restore_archived_job($id)
+    {
+        $job = JobPost::onlyTrashed()->where('client_id', Auth::id())->findOrFail($id);
+        $job->restore();
+
+        return redirect()->route('client.arch_jobs')->with('success', 'Job restored!');
+    }
+    public function force_delete_archived_job($id)
+    {
+        $job = JobPost::onlyTrashed()
+            ->where('client_id', Auth::id())
+            ->findOrFail($id);
+
+        $job->forceDelete();
+
+        return redirect()
+            ->route('client.arch_jobs')
+            ->with('success', 'Job permanently deleted.');
+    }
+
+
 
     public function showRatings($username)
     {

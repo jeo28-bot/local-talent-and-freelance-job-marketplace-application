@@ -226,6 +226,16 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
 
     Route::delete('/transactions/{id}', [ClientController::class, 'destroyTransaction'])
         ->name('client.transactions.destroy');
+
+    // existing archived jobs page
+    Route::get('/archived/arch_jobs', [ClientController::class, 'arch_jobs'])->name('client.arch_jobs');
+
+    // new route to handle update
+    Route::put('/archived/arch_jobs/{id}', [ClientController::class, 'update_archived_job'])->name('client.update_archived_job');
+    // new route to handle restore
+    Route::put('/archived/arch_jobs/{id}/restore', [ClientController::class, 'restore_archived_job'])->name('client.restore_archived_job');
+    // new route to handle delete
+    Route::delete('/archived/arch_jobs/{id}/delete',[ClientController::class, 'force_delete_archived_job'])->name('client.force_delete_archived_job');
     });
 
     Route::post('/client/transactions/{id}/mark-paid', [ClientController::class, 'markAsPaid'])

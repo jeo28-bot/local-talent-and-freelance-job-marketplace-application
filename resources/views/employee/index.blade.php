@@ -115,9 +115,10 @@
 
         {{-- announcement float --}}
         <div class="px-5 fixed bottom-5 right-0 flex flex-col gap-4 max-sm:gap-2 z-50">
-          @foreach ($announcements as $announcement)
+          @foreach ($announcements as $index => $announcement)
             <div 
-              x-data="{ show: true }"
+              x-data="{ show: false }"
+              x-init="setTimeout(() => show = true, {{ $index }} * 500)"
               x-show="show"
               x-transition:enter="transition ease-out duration-300"
               x-transition:enter-start="opacity-0 translate-y-4"

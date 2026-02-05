@@ -111,7 +111,12 @@
                                         @csrf
                                         @method('PATCH')
                                         <button type="button" 
-                                            class="open_cancel_application_modal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1210px]:w-full"
+                                            class="open_cancel_application_modal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1210px]:w-full 
+                                            {{ $application->status == 'accepted' 
+                                                    ? 'text-orange-600 opacity-80 cursor-not-allowed!' 
+                                                    : 'text-red-400' 
+                                            }} "
+                                            {{ $application->status == 'accepted' ? 'disabled' : '' }}
                                             data-id="{{ $application->id }}">
                                             Cancel
                                         </button>

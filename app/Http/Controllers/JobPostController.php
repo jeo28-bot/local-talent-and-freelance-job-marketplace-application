@@ -96,10 +96,14 @@ class JobPostController extends Controller
     public function destroy($id)
     {
         $post = JobPost::where('client_id', Auth::id())->findOrFail($id);
-        $post->delete();
 
-        return redirect()->route('client.postings')->with('success', 'Job post deleted successfully!');
+        $post->delete(); // now = archive
+
+        return redirect()
+            ->route('client.postings')
+            ->with('success', 'Job post archived successfully!');
     }
+
 
     public function updateStatus(Request $request, JobPost $job)
     {

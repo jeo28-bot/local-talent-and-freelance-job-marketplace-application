@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class JobPost extends Model
 {
@@ -31,6 +32,6 @@ class JobPost extends Model
     {
         return $this->hasMany(SavedJob::class, 'job_post_id');
     }
-
+    use SoftDeletes;
 
 }

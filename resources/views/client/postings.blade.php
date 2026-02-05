@@ -9,7 +9,7 @@
     <!-- main content -->
     <section class="w-full flex min-h-[80vh] flex-col items-center  px-20 max-lg:px-10 max-sm:px-5 max-sm:pt-5 pt-10">
         <div class="xl:w-6xl max-xl:w-full mx-auto px-5 max-sm:px-1 mb-10">
-            <div class="flex items-center justify-between max-sm:flex-col max-xl:items-start max-xl:mb-4 mb-5">
+            <div class="flex items-center justify-between max-xl:flex-col max-xl:items-start max-xl:mb-3 mb-2">
                 <div>
                     <h1 class="sub_title sm:text-xl">Job Posting</h1>
                     <p class="home_p_font mb-2 text-sm">Easily post your job openings and reach top candidates.</p>
@@ -37,12 +37,21 @@
                                 <input type="text" name="location" value="{{ request('location') }}" class="max-xl:pl-10 max-xl:w-full pl-3 py-2 max-sm:pl-7 rounded-lg p_font max-sm:text-sm" placeholder="Remote, address, zone, block">
                         </div>
                     
-                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2">Search</button>
+                        <button class=" p_font px-2 py-1 bg-[#1e2939] rounded-lg text-sm cursor-pointer text-white hover:opacity-80 ml-2">
+                            Search
+                        </button>
                     </form>
 
                 </div>
-
-
+            </div>
+            {{-- archived button --}}
+            <div class="flex justify-end mb-3">
+                <a href="{{route('client.arch_jobs')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                    </svg>
+                    Archived Jobs
+                </a>
             </div>
 
             {{-- no job posted yet message --}}
@@ -159,7 +168,7 @@
                         data-full="{{ $post->full_description }}">
                             Edit Job
                         </button>
-                        <!-- edit details button -->
+                        <!-- delete button -->
                         <button href="" id="delete_job_button" class="delete_job_button job_posting_button cursor-pointer job_posting_button bg-red-600 text-white px-5 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-70 max-sm:text-sm max-sm:w-full text-center max-lg:text-sm max-lg:px-4 max-lg:py-3" data-id="{{ $post->id }}">
                             Delete
                         </button>
@@ -407,7 +416,9 @@
     <div id="delete_job_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
         <div class=" px-5 py-3 bg-white rounded-xl">
             <h2 class="text-xl sub_title_font font-semibold mb-2">Delete Job Posting?</h2>
-            <p class="home_p_font text-gray-600 mb-5">This action cannot be undone. <br>Are you sure you want to delete this job posting?</p>
+            <p class="home_p_font text-gray-600 mb-3">
+                This job posting will be archived instead <br>of permanently deleted and can be restored.
+            </p>
 
             <div class="flex gap-2">
                 <button id="cancel_delete_job" type="button"
