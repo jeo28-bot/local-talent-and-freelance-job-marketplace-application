@@ -21,10 +21,10 @@
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
                     {{-- search inputs --}}
-                    <form action="" method="GET" class="bg-white  shadow-sm rounded-lg w-sm max-lg:w-full p_font max-sm:text-sm flex items-center">
+                    <form action="{{ route('client.arch_applicants') }}" method="GET" class="bg-white  shadow-sm rounded-lg w-sm max-lg:w-full p_font max-sm:text-sm flex items-center">
                             {{-- input 1 job title, skills, company --}}
                             <input type="text" name="q" 
-                            value="{{ request('q') }}"  value="" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm w-sm max-lg:w-full" placeholder="Search job title, skills, company">
+                            value="{{ request('q') }}" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm w-sm max-lg:w-full" placeholder="Search applicant name, job title">
                             
                             
                     
@@ -54,7 +54,7 @@
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Applicant Name</th>
 
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
-                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Application Date</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Archived Date</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Actions</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">View & Drop</th>
@@ -87,7 +87,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm ">
-                                {{ $application->created_at->format('Y-m-d') }}
+                                {{ $application->deleted_at->format('Y-m-d') }}
                             </td>
                             <td class="px-4 py-2 p_font text-sm 
                                 {{ $application->status == 'pending' ? 'text-orange-600' : ($application->status == 'accepted' ? 'text-green-600' : 'text-red-600') }}">
@@ -162,6 +162,31 @@
 
         </div>
         @endif
+
+            {{-- Custom Pagination --}}
+            @if ($archivedApplicants->total() > 10)
+                <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
+                    <h3 class="home_p_font text-sm max-sm:text-xs">
+                         {{ $archivedApplicants->firstItem() ?? 0 }} to {{ $archivedApplicants->lastItem() ?? 0 }} of {{ $archivedApplicants->total() ?? 0 }} results
+                    </h3>
+
+                    <div class="flex ml-auto gap-2 max-sm:ml-0">
+                        {{-- Previous button --}}
+                        @if ($archivedApplicants->onFirstPage())
+                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</button>
+                        @else
+                            <a href="{{ $archivedApplicants->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</a>
+                        @endif
+
+                        {{-- Next button --}}
+                        @if ($archivedApplicants->hasMorePages())
+                            <a href="{{ $archivedApplicants->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
+                        @else
+                            <button disabled class="cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
+                        @endif
+                    </div>
+                </div>
+            @endif
     </section>
 
     {{-- modal section --}}

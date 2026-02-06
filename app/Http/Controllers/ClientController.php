@@ -101,27 +101,39 @@ class ClientController extends Controller
     }
     // end of job post archive methods
 
-    // applicant archive methods
     public function arch_applicants(Request $request)
     {
+        $rawSearch = trim($request->q);
+        $searchId = null;
+
+        // 🔢 Handle formatted ID like 202575
+        if ($rawSearch && preg_match('/^2025(\d+)$/', $rawSearch, $matches)) {
+            $searchId = $matches[1]; // extract real ID
+        } elseif (is_numeric($rawSearch)) {
+            $searchId = $rawSearch;
+        }
+
         $archivedApplicants = JobApplication::onlyTrashed()
             ->whereHas('job', function ($query) {
                 $query->where('client_id', Auth::id());
             })
 
-            // 🔍 Main search (q)
-            ->when($request->q, function ($query) use ($request) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('full_name', 'like', '%' . $request->q . '%')
-                    ->orWhere('email', 'like', '%' . $request->q . '%')
-                    ->orWhere('phone_num', 'like', '%' . $request->q . '%')
-                    ->orWhere('status', 'like', '%' . $request->q . '%')
+            // 🔢 EXACT ID SEARCH (isolated & guaranteed)
+            ->when($searchId, function ($query) use ($searchId) {
+                $query->where('id', $searchId);
+            })
 
-                    // 🔢 Search by ID
-                    ->orWhere('id', $request->q)
-
-                    // 📅 Search by archived date
-                    ->orWhereDate('deleted_at', $request->q);
+            // 🔍 TEXT SEARCH (only if NOT ID)
+            ->when($rawSearch && !$searchId, function ($query) use ($rawSearch) {
+                $query->where(function ($q) use ($rawSearch) {
+                    $q->where('full_name', 'like', "%{$rawSearch}%")
+                    ->orWhere('email', 'like', "%{$rawSearch}%")
+                    ->orWhere('phone_num', 'like', "%{$rawSearch}%")
+                    ->orWhere('status', 'like', "%{$rawSearch}%")
+                    ->orWhereRaw("DATE(deleted_at) = ?", [$rawSearch])
+                    ->orWhereHas('job', function ($job) use ($rawSearch) {
+                        $job->where('job_title', 'like', "%{$rawSearch}%");
+                    });
                 });
             })
 
@@ -131,6 +143,8 @@ class ClientController extends Controller
 
         return view('client.archived.arch_applicants', compact('archivedApplicants'));
     }
+
+
     public function restore_archived_applicants($id)
     {
         $applicant = JobApplication::onlyTrashed()

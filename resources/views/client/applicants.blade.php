@@ -42,7 +42,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
                     </svg>
-                    Archived Jobs
+                    Archived Applicants
                 </a>
             </div>
 
@@ -266,8 +266,8 @@
     {{-- delete modal warning --}}
     <div id="delete_job_warning" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
         <div class="px-5 py-3 bg-white rounded-xl -mt-20">
-            <h2 class="text-xl sub_title_font font-semibold mb-2">Delete Applicant?</h2>
-            <p class="home_p_font text-gray-600 mb-5">This action cannot be undone. <br>Are you sure you want to delete this applicant?</p>
+            <h2 class="text-xl sub_title_font font-semibold mb-2">Archive Applicant?</h2>
+            <p class="home_p_font text-gray-600 mb-5">This action cannot be undone. <br>Are you sure you want to archive this applicant?</p>
 
             <div class="flex gap-2">
                 <button id="cancel_delete_applicant" type="button"
@@ -277,7 +277,7 @@
             
                 <button type="button" id="delete_applicant"
                     class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
-                    Delete
+                    Archive
                 </button>
             </div>
         </div>
