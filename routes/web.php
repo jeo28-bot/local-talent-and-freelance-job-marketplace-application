@@ -200,11 +200,11 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::get('/client/jobs', [ClientController::class, 'jobs'])->name('client.jobs');
 
     // Single job detail page
-     Route::get('/client/jobs/{slug}', [ClientController::class, 'showJob'])->name('client.jobs.show');
+    Route::get('/client/jobs/{slug}', [ClientController::class, 'showJob'])->name('client.jobs.show');
 
-     Route::get('/client/public_profile/{name}', [ClientController::class, 'publicProfile'])->name('client.public_profile');
-     Route::get('/client/chat/{name}', [ChatController::class, 'show'])->name('client.chat');
-     Route::post('/client/chat/{name}/send', [ChatController::class, 'sendMessage'])->name('client.chat.send');
+    Route::get('/client/public_profile/{name}', [ClientController::class, 'publicProfile'])->name('client.public_profile');
+    Route::get('/client/chat/{name}', [ChatController::class, 'show'])->name('client.chat');
+    Route::post('/client/chat/{name}/send', [ChatController::class, 'sendMessage'])->name('client.chat.send');
     Route::get('/client/chats', [ChatController::class, 'index'])->name('client.chats');
     Route::get('/client/chat/{name}/messages', [ChatController::class, 'getMessages'])->name('client.chat.messages');
     Route::get('/client/chat/{name}/messages', [ChatController::class, 'fetchMessages'])->name('client.chat.messages');
@@ -227,15 +227,25 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
     Route::delete('/transactions/{id}', [ClientController::class, 'destroyTransaction'])
         ->name('client.transactions.destroy');
 
-    // existing archived jobs page
-    Route::get('/archived/arch_jobs', [ClientController::class, 'arch_jobs'])->name('client.arch_jobs');
+    // archived route for job posts
+        // existing archived jobs page
+        Route::get('/archived/arch_jobs', [ClientController::class, 'arch_jobs'])->name('client.arch_jobs');
+        // new route to handle update
+        Route::put('/archived/arch_jobs/{id}', [ClientController::class, 'update_archived_job'])->name('client.update_archived_job');
+        // new route to handle restore
+        Route::put('/archived/arch_jobs/{id}/restore', [ClientController::class, 'restore_archived_job'])->name('client.restore_archived_job');
+        // new route to handle delete
+        Route::delete('/archived/arch_jobs/{id}/delete',[ClientController::class, 'force_delete_archived_job'])->name('client.force_delete_archived_job');
 
-    // new route to handle update
-    Route::put('/archived/arch_jobs/{id}', [ClientController::class, 'update_archived_job'])->name('client.update_archived_job');
-    // new route to handle restore
-    Route::put('/archived/arch_jobs/{id}/restore', [ClientController::class, 'restore_archived_job'])->name('client.restore_archived_job');
-    // new route to handle delete
-    Route::delete('/archived/arch_jobs/{id}/delete',[ClientController::class, 'force_delete_archived_job'])->name('client.force_delete_archived_job');
+    // archived route for job posts
+        // existing archived jobs page
+        Route::get('/archived/arch_applicants', [ClientController::class, 'arch_applicants'])->name('client.arch_applicants');
+        // new route to handle update
+        Route::put('/archived/arch_applicants/{id}', [ClientController::class, 'update_archived_applicants'])->name('client.update_archived_applicants');
+        // new route to handle restore
+        Route::put('/archived/arch_applicants/{id}/restore', [ClientController::class, 'restore_archived_applicants'])->name('client.restore_archived_applicants');
+        // new route to handle delete
+        Route::delete('/archived/arch_applicants/{id}/delete',[ClientController::class, 'force_delete_archived_applicants'])->name('client.force_delete_archived_applicants');
     });
 
     Route::post('/client/transactions/{id}/mark-paid', [ClientController::class, 'markAsPaid'])

@@ -170,7 +170,7 @@
                         </button>
                         <!-- delete button -->
                         <button href="" id="delete_job_button" class="delete_job_button job_posting_button cursor-pointer job_posting_button bg-red-600 text-white px-5 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-70 max-sm:text-sm max-sm:w-full text-center max-lg:text-sm max-lg:px-4 max-lg:py-3" data-id="{{ $post->id }}">
-                            Delete
+                            Archive
                         </button>
                     </div>
 
@@ -415,7 +415,7 @@
     {{-- delete modal warning --}}
     <div id="delete_job_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
         <div class=" px-5 py-3 bg-white rounded-xl">
-            <h2 class="text-xl sub_title_font font-semibold mb-2">Delete Job Posting?</h2>
+            <h2 class="text-xl sub_title_font font-semibold mb-2">Archive Job Posting?</h2>
             <p class="home_p_font text-gray-600 mb-3">
                 This job posting will be archived instead <br>of permanently deleted and can be restored.
             </p>
@@ -431,7 +431,7 @@
                     @method('DELETE')
                     <button type="submit" id="delete_job"
                         class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
-                        Delete
+                        Archive
                     </button>
                 </form>
             </div>

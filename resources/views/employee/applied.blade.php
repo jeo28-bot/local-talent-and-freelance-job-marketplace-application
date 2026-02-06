@@ -111,9 +111,9 @@
                                         @csrf
                                         @method('PATCH')
                                         <button type="button" 
-                                            class="open_cancel_application_modal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1210px]:w-full 
+                                            class="open_cancel_application_modal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-70 max-[1210px]:w-full 
                                             {{ $application->status == 'accepted' 
-                                                    ? 'text-orange-600 opacity-80 cursor-not-allowed!' 
+                                                    ? 'text-orange-600 opacity-70 cursor-not-allowed!' 
                                                     : 'text-red-400' 
                                             }} "
                                             {{ $application->status == 'accepted' ? 'disabled' : '' }}
@@ -124,7 +124,11 @@
                                 </td>
                                 <td class="px-5">
                                     <button type="button" 
-                                        class="open-delete-job-applied-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70" 
+                                        class="open-delete-job-applied-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70 {{ $application->status == 'accepted' 
+                                                    ? 'text-orange-600 opacity-70 cursor-not-allowed!' 
+                                                    : 'text-red-400' 
+                                            }} " 
+                                        {{ $application->status == 'accepted' ? 'disabled' : '' }}
                                         data-id="{{ $application->id }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
                                             stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
@@ -233,7 +237,7 @@
         </div>
 
 
-     {{-- cancel application modal warning --}}
+        {{-- cancel application modal warning --}}
         <div id="cancel_application_modal" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
             <div class=" px-5 py-3 bg-white rounded-xl">
                 <h2 class="text-xl sub_title_font font-semibold mb-2">Cancel job application?</h2>
@@ -258,7 +262,7 @@
             </div>
         </div>
 
-     {{-- delete job applied modal warning --}}
+        {{-- delete job applied modal warning --}}
         <div id="delete_job_applied_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
             <div class="px-5 py-3 bg-white rounded-xl -mt-20">
                 <h2 class="text-xl sub_title_font font-semibold mb-2">Delete this job applied row?</h2>

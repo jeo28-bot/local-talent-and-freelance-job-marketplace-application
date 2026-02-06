@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // target fields in modal (guarded)
   const usernameEl = document.getElementById("applicant_username");
+  const jobTitleEl = document.getElementById("applicant_job_title");
   const statusEl   = document.getElementById("applicant_status");
   const fullnameEl = document.getElementById("applicant_fullname");
   const emailEl    = document.getElementById("applicant_email");
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ds = btn.dataset;
 
       setText(usernameEl, ds.username);
+      setText(jobTitleEl, ds.jobtitle);
       setText(fullnameEl, ds.fullname);
       setText(emailEl, ds.email);
       setText(phoneEl, ds.phone);

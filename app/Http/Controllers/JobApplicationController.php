@@ -179,10 +179,11 @@ class JobApplicationController extends Controller
     public function destroy($id)
     {
         $application = JobApplication::findOrFail($id);
-        $application->delete();
+        $application->delete(); // ← soft delete now
 
-        return redirect()->back()->with('success', 'Application deleted successfully.');
+        return redirect()->back()->with('success', 'Application archived successfully.');
     }
+
 
     public function cancel($id)
     {
