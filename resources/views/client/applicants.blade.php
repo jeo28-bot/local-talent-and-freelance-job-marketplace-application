@@ -36,7 +36,7 @@
 
             </div>
 
-             {{-- archived button --}}
+            {{-- archived button --}}
             <div class="flex justify-end mb-3">
                 <a href="{{route('client.arch_applicants')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">

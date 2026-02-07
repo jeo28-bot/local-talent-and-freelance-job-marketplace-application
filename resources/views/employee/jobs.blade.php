@@ -109,8 +109,10 @@
                         </div>
                        {{-- apply button --}}
                         @if($job->status === 'open')
-                            <a id="quick_apply_button" 
-                            class="lg:w-2xl sm:w-lg cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center">
+                            <a id="quick_apply_button"
+                            class="job_posting_button lg:w-2xl w-lg max-lg:w-full cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center"
+                            data-already-applied="{{ $alreadyApplied ? '1' : '0' }}"
+                            data-job-id="{{ $job->id }}">
                             Quick Apply
                             </a>
                         @else
@@ -146,6 +148,21 @@
     </section>
 
     {{-- modal section --}}
+
+    {{-- already applied modal --}}
+    <div id="already_applied_modal" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20">
+            <h2 class="text-xl sub_title_font font-semibold mb-2 max-sm:text-lg">You have already applied to this job!</h2>
+            <p class="home_p_font text-gray-600 mb-5 max-sm:text-sm max-sm:mb-3">You have already applied to this job. <br>Please check your applications.</p>
+
+                <button id="close_already_applied_modal" type="button"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Close
+                </button>
+
+            </div>
+        </div>
+    </div>
 
     {{-- quick apply modal --}}
     <div class="quick_apply_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 hidden">
@@ -226,6 +243,39 @@
 
        </div>
     </div>
+
+
+    {{-- script section --}}
+
+    {{-- you have already applied modal script --}}
+    <script>
+        const quickApplyBtn = document.getElementById('quick_apply_button');
+
+        quickApplyBtn?.addEventListener('click', function() {
+            const alreadyApplied = this.dataset.alreadyApplied === '1';
+
+            if (alreadyApplied) {
+                // show "already applied" modal
+                document.getElementById('already_applied_modal').classList.remove('hidden');
+                // make sure quick apply modal is hidden
+                document.querySelector('.quick_apply_modal').classList.add('hidden');
+            } else {
+                // show quick apply modal ONLY if not already applied
+                document.querySelector('.quick_apply_modal').classList.remove('hidden');
+            }
+        });
+
+        // close buttons
+        document.getElementById('close_already_applied_modal')?.addEventListener('click', function() {
+            document.getElementById('already_applied_modal').classList.add('hidden');
+        });
+
+        // make sure to match the ID in your SVG button
+        document.getElementById('close_quick_apply')?.addEventListener('click', function() {
+            document.querySelector('.quick_apply_modal').classList.add('hidden');
+        });
+
+    </script>
 
     <script>
     document.querySelector('#reportForm').addEventListener('submit', async (e) => {

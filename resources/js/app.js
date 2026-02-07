@@ -32,20 +32,7 @@ popMenu.addEventListener("click", (e) => {
   }
 });
 
-// quick apply modal
-let quick_apply_modal = document.querySelector('.quick_apply_modal');
-let quick_apply_button = document.querySelector('#quick_apply_button');
-let close_quick_apply = document.querySelector('#close_quick_apply');
 
-quick_apply_button.addEventListener('click', () => {
-  quick_apply_modal.classList.remove('hidden'); // show modal
-  console.log('quick apply clicked');
-});
-
-close_quick_apply.addEventListener('click', () => {
-  quick_apply_modal.classList.add('hidden'); // hide modal
-  console.log('quick apply closed');
-});
 
 // report job modal
 let report_job = document.querySelector('#report_job');

@@ -238,7 +238,7 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
         Route::delete('/archived/arch_jobs/{id}/delete',[ClientController::class, 'force_delete_archived_job'])->name('client.force_delete_archived_job');
 
     // archived route for job posts
-        // existing archived jobs page
+        // existing archived applicants
         Route::get('/archived/arch_applicants', [ClientController::class, 'arch_applicants'])->name('client.arch_applicants');
         // new route to handle update
         Route::put('/archived/arch_applicants/{id}', [ClientController::class, 'update_archived_applicants'])->name('client.update_archived_applicants');
@@ -246,6 +246,14 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
         Route::put('/archived/arch_applicants/{id}/restore', [ClientController::class, 'restore_archived_applicants'])->name('client.restore_archived_applicants');
         // new route to handle delete
         Route::delete('/archived/arch_applicants/{id}/delete',[ClientController::class, 'force_delete_archived_applicants'])->name('client.force_delete_archived_applicants');
+
+    // archived route for transactions
+        // existing transactions page
+        Route::get('/archived/arch_transactions', [ClientController::class, 'arch_transactions'])->name('client.arch_transactions');
+        // new route to handle restore
+        Route::put('/archived/arch_transactions/{id}/restore', [ClientController::class, 'restore_archived_transaction'])->name('client.restore_archived_transaction');
+        // new route to handle delete
+        Route::delete('/archived/arch_transactions/{id}/delete',[ClientController::class, 'force_delete_archived_transaction'])->name('client.force_delete_archived_transaction');
     });
 
     Route::post('/client/transactions/{id}/mark-paid', [ClientController::class, 'markAsPaid'])

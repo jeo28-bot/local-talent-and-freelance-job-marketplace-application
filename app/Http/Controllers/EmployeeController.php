@@ -358,6 +358,7 @@ class EmployeeController extends Controller
     }
     public function showJob($slug)
     {
+        // find the job by slug
         $job = JobPost::all()->first(function ($job) use ($slug) {
             return Str::slug($job->job_title) === $slug;
         });
@@ -366,9 +367,13 @@ class EmployeeController extends Controller
             abort(404);
         }
 
-        return view('employee.jobs', compact('job'));
-    }
+        // ✅ check if the logged-in employee already applied
+        $alreadyApplied = JobApplication::where('job_id', $job->id)
+            ->where('user_id', Auth::id())
+            ->exists();
 
+        return view('employee.jobs', compact('job', 'alreadyApplied'));
+    }
     // save function
     public function saved(Request $request)
     {

@@ -13,6 +13,7 @@ use App\Models\Notification;
 use App\Models\Announcement;
 use App\Events\IncomingCallEvent;
 use Carbon\Carbon;
+use App\Models\Transaction;
 
 
 class ClientController extends Controller
@@ -101,6 +102,8 @@ class ClientController extends Controller
     }
     // end of job post archive methods
 
+
+    // applicant archive methods
     public function arch_applicants(Request $request)
     {
         $rawSearch = trim($request->q);
@@ -143,8 +146,6 @@ class ClientController extends Controller
 
         return view('client.archived.arch_applicants', compact('archivedApplicants'));
     }
-
-
     public function restore_archived_applicants($id)
     {
         $applicant = JobApplication::onlyTrashed()
@@ -171,8 +172,68 @@ class ClientController extends Controller
             ->route('client.arch_applicants')
             ->with('success', 'Applicant permanently deleted.');
     }
-
     // end of applicant archive methods
+
+
+   public function arch_transactions(Request $request)
+    {
+        $query = Transaction::onlyTrashed()
+            ->where('client_id', Auth::id())
+            ->orderBy('deleted_at', 'desc');
+
+        // 🔍 search
+        if ($request->filled('q')) {
+            $search = $request->q;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                ->orWhere('job_title', 'like', "%{$search}%")
+                 ->orWhere('amount', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhere('payment_method', 'like', "%{$search}%")
+                ->orWhereHas('employee', function ($emp) use ($search) {
+                        $emp->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $archivedTransactions = $query
+            ->paginate(10)
+            ->withQueryString(); // ✅ keeps ?q= when paging
+
+        return view('client.archived.arch_transactions', compact('archivedTransactions'));
+    }
+    public function restore_archived_transaction($id)
+    {
+        $transaction = Transaction::onlyTrashed()
+            ->where('client_id', Auth::id())
+            ->findOrFail($id);
+
+        $transaction->restore();
+
+        return redirect()
+            ->route('client.arch_transactions')
+            ->with('success', 'Transaction restored successfully.');
+    }
+    public function force_delete_archived_transaction($id)
+    {
+        $transaction = \App\Models\Transaction::onlyTrashed()
+            ->where('client_id', auth()->id())
+            ->findOrFail($id);
+
+        $transaction->forceDelete();
+
+        return redirect()
+            ->route('client.arch_transactions')
+            ->with('success', 'Transaction permanently deleted.');
+    }
+
+
+    // end of transactions archive methods
+
+
+
+
 
 
 
