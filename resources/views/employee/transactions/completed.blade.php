@@ -31,8 +31,16 @@
                     </form>
 
                 </div>
+            </div>
 
-
+            {{-- archived button --}}
+            <div class="flex justify-end mb-3">
+                <a href="{{route('employee.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                    </svg>
+                    Archived Transactions
+                </a>
             </div>
 
             {{-- Only show completed transactions --}}
@@ -76,13 +84,13 @@
                                     <form 
                                         action="{{ route('employee.transactions.destroy', $transaction->id) }}" 
                                         method="POST" 
-                                        onsubmit="return confirm('Are you sure you want to delete this transaction?')">
+                                        onsubmit="return confirm('Are you sure you want to arhive this transaction?')">
                                         @csrf
                                         @method('DELETE')
                                         <button 
                                             type="submit" 
                                             class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 p_font">
-                                            Delete
+                                            Archive
                                         </button>
                                     </form>
                                 </div>

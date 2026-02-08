@@ -77,17 +77,17 @@
                                     x-transition 
                                     class="absolute right-0 mt-2 w-28 bg-[#1E2939] border border-gray-600 rounded-lg shadow-lg py-2">
                                     
-                                    <!-- delete form -->
+                                    <!-- archive form -->
                                     <form 
                                         action="{{ route('client.transactions.destroy', $transaction->id) }}" 
                                         method="POST" 
-                                        onsubmit="return confirm('Are you sure you want to delete this transaction?')">
+                                        onsubmit="return confirm('Are you sure you want to archive this transaction?')">
                                         @csrf
                                         @method('DELETE')
                                         <button 
                                             type="submit" 
                                             class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 p_font">
-                                            Delete
+                                            Archive
                                         </button>
                                     </form>
                                 </div>

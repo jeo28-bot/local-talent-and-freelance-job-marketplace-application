@@ -174,8 +174,8 @@ class ClientController extends Controller
     }
     // end of applicant archive methods
 
-
-   public function arch_transactions(Request $request)
+    // transaction archive methods
+    public function arch_transactions(Request $request)
     {
         $query = Transaction::onlyTrashed()
             ->where('client_id', Auth::id())
@@ -188,11 +188,12 @@ class ClientController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('id', 'like', "%{$search}%")
                 ->orWhere('job_title', 'like', "%{$search}%")
-                 ->orWhere('amount', 'like', "%{$search}%")
+                ->orWhere('amount', 'like', "%{$search}%")
                 ->orWhere('status', 'like', "%{$search}%")
                 ->orWhere('payment_method', 'like', "%{$search}%")
+                ->orWhereDate('deleted_at', $search) // ✅ search by date properly
                 ->orWhereHas('employee', function ($emp) use ($search) {
-                        $emp->where('name', 'like', "%{$search}%");
+                    $emp->where('name', 'like', "%{$search}%");
                 });
             });
         }
@@ -203,6 +204,7 @@ class ClientController extends Controller
 
         return view('client.archived.arch_transactions', compact('archivedTransactions'));
     }
+
     public function restore_archived_transaction($id)
     {
         $transaction = Transaction::onlyTrashed()
@@ -227,8 +229,6 @@ class ClientController extends Controller
             ->route('client.arch_transactions')
             ->with('success', 'Transaction permanently deleted.');
     }
-
-
     // end of transactions archive methods
 
 

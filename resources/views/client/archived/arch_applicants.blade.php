@@ -52,7 +52,6 @@
                          <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Application ID</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Applicant Name</th>
-
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Archived Date</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
@@ -73,9 +72,7 @@
                             <a href="{{ route('client.public_profile', $application->user->name) }}" class="underline text-blue-700 hover:text-blue-400">
                                 {{ $application->full_name }}
                             </a>
-
                             </td>
-            
                             <td class="px-4 py-2 p_font max-lg:text-sm">
                                 @if ($application->job)
                                     <a href="{{ route('client.jobs.show', Str::slug($application->job->job_title)) }}" 
@@ -95,7 +92,6 @@
                                     archived
                                 </span>
                             </td>
-
                             <td class="px-4 py-2 p_font max-lg:text-sm capitalize flex max-xl:flex-col">
                                 <form action="{{ route('client.restore_archived_applicants', $application->id) }}" method="POST">
                                     @csrf
@@ -104,7 +100,6 @@
                                         Restore
                                     </button>
                                 </form>
-                               
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm">
                                 <div class="flex gap-1">

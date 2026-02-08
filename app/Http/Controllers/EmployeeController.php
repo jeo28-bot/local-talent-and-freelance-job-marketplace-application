@@ -28,6 +28,134 @@ class EmployeeController extends Controller
         return view('employee.index', compact('announcements'));
     }
 
+    // job applied archive methods
+    public function arch_applied(Request $request)
+    {
+        $query = JobApplication::onlyTrashed()
+            ->where('user_id', Auth::id())
+            ->with('job');
+
+        // 🔍 search
+        if ($request->filled('q')) {
+            $search = $request->q;
+
+            // strip "2025" prefix if present
+            if (str_starts_with($search, '2025')) {
+                $search = substr($search, 4);
+            }
+
+            $query->where(function ($q) use ($search) {
+                $q->where('full_name', 'like', "%{$search}%")
+
+                ->orWhereHas('job', function ($job) use ($search) {
+                    $job->where('job_title', 'like', "%{$search}%");
+                })
+
+                // search real ID
+                ->orWhere('id', $search)
+
+                // search archived date
+                ->orWhereDate('deleted_at', $search);
+            });
+        }
+
+        $archivedApplications = $query
+            ->orderBy('deleted_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('employee.archived.arch_applied', compact('archivedApplications'));
+    }
+    public function restore_archived_applications($id)
+    {
+        $application = JobApplication::onlyTrashed()
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+    
+        $application->restore();
+
+        return redirect()->route('employee.arch_applied')->with('success', 'Application restored successfully.');
+    }
+    public function force_delete_archived_applications($id)
+    {
+        $application = JobApplication::onlyTrashed()
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $application->forceDelete();
+
+        return redirect()
+            ->route('employee.arch_applied')
+            ->with('success', 'Application permanently deleted.');
+    }
+
+    // job transactoins archive methods
+    public function arch_transactions(Request $request)
+    {
+        $query = Transaction::onlyTrashed()
+            ->where('employee_id', Auth::id())
+            ->orderBy('deleted_at', 'desc');
+
+         // 🔍 search
+        if ($request->filled('q')) {
+            $search = $request->q;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('id', 'like', "%{$search}%")
+                ->orWhere('job_title', 'like', "%{$search}%")
+                ->orWhere('amount', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhere('payment_method', 'like', "%{$search}%")
+                ->orWhereDate('deleted_at', $search) // ✅ search by date properly
+                ->orWhereHas('employee', function ($emp) use ($search) {
+                    $emp->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $archivedTransactions = $query
+            ->paginate(10)
+            ->withQueryString(); // ✅ keeps ?q= when paging
+
+        return view('employee.archived.arch_transactions', compact('archivedTransactions'));
+
+        // // Fetch only soft-deleted (archived) transactions for the logged-in employee
+        // $archivedTransactions = Transaction::onlyTrashed()
+        //     ->where('employee_id', Auth::id()) // filter by logged-in employee
+        //     ->orderBy('deleted_at', 'desc')
+        //     ->paginate(10)
+        //     ->withQueryString(); // keeps search/filter query strings if needed
+
+        // // Pass data to the view
+        // return view('employee.archived.arch_transactions', compact('archivedTransactions'));
+    }
+    public function restore_archived_transactions($id)
+    {
+        $transactions = Transaction::onlyTrashed()
+            ->where('id', $id)
+            ->where('employee_id', Auth::id())
+            ->firstOrFail();
+    
+        $transactions->restore();
+
+        return redirect()->route('employee.arch_transactions')->with('success', 'Transaction restored successfully.');
+    }
+    public function force_delete_archived_transactions($id)
+    {
+        $transactions = Transaction::onlyTrashed()
+            ->where('id', $id)
+            ->where('employee_id', Auth::id())
+            ->firstOrFail();
+
+        $transactions->forceDelete();
+
+        return redirect()
+            ->route('employee.arch_transactions')
+            ->with('success', 'Transaction permanently deleted.');
+    }
+
 
     public function ratings() {
         return view('employee.ratings');

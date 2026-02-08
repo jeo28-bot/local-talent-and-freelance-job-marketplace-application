@@ -160,6 +160,22 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::post('/transactions/request-payout', [EmployeeController::class, 'requestPayout'])
     ->name('employee.transactions.requestPayout');
 
+     // archived route for job posts
+        // existing archived applied
+        Route::get('/archived/arch_applied', [EmployeeController::class, 'arch_applied'])->name('employee.arch_applied');
+        // new route to handle restore
+        Route::put('/archived/arch_applicants/{id}/restore', [EmployeeController::class, 'restore_archived_applications'])->name('employee.restore_archived_applications');
+        // new route to handle delete
+        Route::delete('/archived/arch_applicants/{id}/force-delete', [EmployeeController::class, 'force_delete_archived_applications'])->name('employee.force_delete_archived_applications');
+        
+
+    // archived route for transactions
+        // existing transactions page
+        Route::get('/archived/arch_transactions', [EmployeeController::class, 'arch_transactions'])->name('employee.arch_transactions');
+        // new route to handle restore
+        Route::put('/archived/arch_transactions/{id}/restore', [EmployeeController::class, 'restore_archived_transactions'])->name('employee.restore_archived_transactions');
+        // new route to handle delete
+        Route::delete('/archived/arch_transactions/{id}/force-delete', [EmployeeController::class, 'force_delete_archived_transactions'])->name('employee.force_delete_archived_transactions');
     });
     
     Route::post('/employee/block/{id}', [EmployeeController::class, 'blockUser'])->name('employee.block');
@@ -181,6 +197,7 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     // ratings and reviews route for employee
     Route::get('employee/ratings/{username}', [EmployeeController::class, 'showRatings'])
     ->name('employee.ratings');
+    
 
 
 });

@@ -32,6 +32,16 @@
 
             </div>
 
+            {{-- archived button --}}
+            <div class="flex justify-end mb-3">
+                <a href="{{route ('employee.arch_applied')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                    </svg>
+                    Archived applied
+                </a>
+            </div>
+
 
            
             @if($applications->isNotEmpty())
@@ -265,10 +275,10 @@
         {{-- delete job applied modal warning --}}
         <div id="delete_job_applied_warning" class="modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5 hidden">
             <div class="px-5 py-3 bg-white rounded-xl -mt-20">
-                <h2 class="text-xl sub_title_font font-semibold mb-2">Delete this job applied row?</h2>
+                <h2 class="text-xl sub_title_font font-semibold mb-2">Archive Applicant?</h2>
                 <p class="home_p_font text-gray-600 mb-5">
                     This action cannot be undone. <br>
-                    Are you sure you want to delete this job applied row?
+                    Are you sure you want to archive this applicant?
                 </p>
 
                 <div class="flex gap-2">
@@ -282,7 +292,7 @@
                         @method('DELETE')
                         <button type="submit" id="confirm_delete_applied_button"
                             class="bg-[#1e2939] cursor-pointer sub_title_font text-red-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
-                            Delete
+                            Archive
                         </button>
                     </form>
                 </div>

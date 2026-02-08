@@ -3,7 +3,7 @@
 @section('body-class', 'bg-[#F0F0F0]')
 
 @section('content')
-    @include('components.nav_client')
+    @include('components.nav_employee')
 
 
     <!-- main content -->
@@ -21,7 +21,7 @@
                     <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
                     </svg>
                     {{-- search inputs --}}
-                    <form action="{{ route('client.arch_transactions') }}" method="GET" class="bg-white  shadow-sm rounded-lg w-sm max-lg:w-full p_font max-sm:text-sm flex items-center">
+                    <form action="{{ route('employee.arch_transactions') }}" method="GET" class="bg-white  shadow-sm rounded-lg w-sm max-lg:w-full p_font max-sm:text-sm flex items-center">
                             {{-- input 1 job title, skills, company --}}
                             <input type="text" name="q" 
                             value="{{ request('q') }}" class="  pl-10 max-sm:pl-7 py-2 rounded-lg p_font max-sm:text-sm w-sm max-lg:w-full" placeholder="Search applicant name, job title">
@@ -44,7 +44,6 @@
             </div>
             @else
 
-             
             {{-- table div --}}
             <div id="applicants_table" id="table_div" class="overflow-x-auto shadow-lg rounded-lg  mb-5">
                 <table class="w-full min-w-[700px] shadow-lg rounded-lg overflow-hidden">
@@ -90,7 +89,7 @@
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm">
                                 <div class="flex gap-1">
-                                    <form action="{{ route('client.restore_archived_transaction', $transaction->id) }}"
+                                    <form action="{{ route('employee.restore_archived_transactions', $transaction->id) }}"
                                     method="POST">
                                     @csrf
                                     @method('PUT')
@@ -102,7 +101,7 @@
                                         </button>
                                     </form>
                                     
-                                    <form action="{{ route('client.force_delete_archived_transaction', $transaction->id) }}" method="POST" class="force-delete-form">
+                                    <form action="{{ route('employee.force_delete_archived_transactions', $transaction->id) }}" method="POST" class="force-delete-form">
                                         @csrf
                                         @method('DELETE')
 
@@ -133,6 +132,8 @@
                         </tr>
                         @endforeach
                     </tbody>
+
+
                 </table>
             </div>
             @endif
@@ -143,7 +144,6 @@
                     <h3 class="home_p_font text-sm max-sm:text-xs">
                          {{ $archivedTransactions->firstItem() ?? 0 }} to {{ $archivedTransactions->lastItem() ?? 0 }} of {{ $archivedTransactions->total() ?? 0 }} results
                     </h3>
-
                     <div class="flex ml-auto gap-2 max-sm:ml-0">
                         {{-- Previous button --}}
                         @if ($archivedTransactions->onFirstPage())
@@ -163,13 +163,9 @@
             @endif
 
         </div>
-
     </section>
 
-   
-
     {{-- modal section --}}
-
     {{-- delete modal warning --}}
     <div id="delete_job_warning" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
         <div class="px-5 py-3 bg-white rounded-xl -mt-20">
@@ -210,7 +206,8 @@
         });
     </script>
 
-    @include('components.footer_client')
+
+    @include('components.footer_employee')
     
     <script src="{{ asset('js/client.js') }}"></script>
     <script src="{{ asset('js/client/applicants.js') }}"></script>
