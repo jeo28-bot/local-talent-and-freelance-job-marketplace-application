@@ -63,6 +63,7 @@
                     <thead class="bg-gray-200 ">
                         <tr class="bg-gray-300 ">
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">#</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job ID</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">User<span class="text-gray-500">(Poster)</span></th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Location</th>
@@ -71,6 +72,7 @@
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Salary Release</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Created-date</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Archived</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Actions</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
                         </tr>
@@ -81,6 +83,9 @@
                         <tr class="border-b-2 border-gray-300 py-2 hover:bg-gray-200">
                             <td class="px-4 py-2 p_font max-lg:text-sm home_p_font">
                                  {{ $jobPosts->firstItem() + $index }}
+                            </td>
+                            <td class="px-4 py-2 p_font max-lg:text-sm ">
+                                <h1>{{ $job->id }}</h1>
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm w-50 break-words">
                                  <a href="{{ route('admin.jobs.show', ['title' => urlencode($job->job_title)]) }}" class="hover:underline text-blue-500 hover:text-blue-400 cursor-pointer">{{ $job->job_title }}</a>
@@ -100,7 +105,7 @@
                              <td class="px-4 py-2 p_font max-lg:text-sm ">
                                  <h1>{{ ucfirst($job->salary_release) }}</h1>
                             </td>
-                             <td class="px-4 py-2 p_font max-lg:text-sm ">
+                            <td class="px-4 py-2 p_font max-lg:text-sm ">
                                 <button
                                 data-id="{{ $job->id }}" 
                                 data-status="{{ $job->status }}"
@@ -121,8 +126,19 @@
                              <td class="px-4 py-2 p_font max-lg:text-sm ">
                                  <h1>{{ $job->created_at->format('M d, Y') }}</h1>
                             </td>
+                            <td class="px-4 py-2 p_font max-lg:text-sm text-center ">
+                                @if($job->deleted_at)
+                                    <span class="badge bg-gray-300 border-1 border-gray-600 p_font px-2 py-1 rounded-full text-sm text-gray-600 font-semibold!">Archived</span>
+                                @else
+                                    <span class="badge bg-blue-300 border-1 border-blue-600 p_font px-2 py-1 rounded-full text-sm text-blue-600 font-semibold!">Active</span>
+                                @endif
+                            </td>
                              <td class="px-4 py-2 p_font max-lg:text-sm flex flex-col text-center">
-                                <a href="{{ route('admin.jobs.show', ['title' => urlencode($job->job_title)]) }}" class="bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 mb-1">
+                                <a href="{{ $job->deleted_at ? '#' : route('admin.jobs.show', ['title' => urlencode($job->job_title)]) }}" class="bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 mb-1
+                                {{ $job->deleted_at 
+                                ? 'text-gray-500 cursor-not-allowed opacity-50 pointer-events-none' 
+                                : 'text-green-400 cursor-pointer hover:opacity-80' }} 
+                                    ">
                                 View
                                 </a>
                                 <button href=""  id="edit_job_button" class="edit_job_button job_posting_button bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-orange-400 cursor-pointer hover:opacity-80 mb-1" 

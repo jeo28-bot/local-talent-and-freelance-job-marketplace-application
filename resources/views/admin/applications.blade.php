@@ -71,6 +71,7 @@
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Phone #</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Applied Date</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Archived</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Actions</th>
                         </tr>
                     </thead>
@@ -124,6 +125,13 @@
                                     @endif">
                                     {{ $application->status }}
                                  </span>
+                            </td>
+                            <td class="px-4 py-2 p_font max-lg:text-sm text-center ">
+                                @if($application->deleted_at)
+                                    <span class="badge bg-gray-300 border-1 border-gray-600 p_font px-2 py-1 rounded-full text-sm text-gray-600 font-semibold!">Archived</span>
+                                @else
+                                    <span class="badge bg-blue-300 border-1 border-blue-600 p_font px-2 py-1 rounded-full text-sm text-blue-600 font-semibold!">Active</span>
+                                @endif
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm flex flex-col text-center">
                                    <button href=""  class="view_applicant_button bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 mb-1"

@@ -53,7 +53,9 @@ class AdminController extends Controller
 
     public function applications(Request $request)
     {
-        $query = JobApplication::with(['user', 'job'])->orderBy('created_at', 'desc');
+        $query = JobApplication::withTrashed() // 👈 include archived
+        ->with(['user', 'job'])
+        ->orderBy('created_at', 'desc');
 
         $search = $request->input('search'); // define $search upfront, even if null
 
@@ -220,11 +222,14 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $query = \App\Models\JobPost::with('client')->orderBy('created_at', 'desc');
+        $query = \App\Models\JobPost::withTrashed() // 👈 include archived
+            ->with('client')
+            ->orderBy('created_at', 'desc');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('job_title', 'LIKE', "%{$search}%")
+                $q->where('id', 'LIKE', "%{$search}%")
+                ->orWhere('job_title', 'LIKE', "%{$search}%")
                 ->orWhere('job_location', 'LIKE', "%{$search}%")
                 ->orWhere('job_pay', 'LIKE', "%{$search}%")
                 ->orWhere('salary_release', 'LIKE', "%{$search}%")
@@ -233,20 +238,23 @@ class AdminController extends Controller
                     $clientQuery->where('name', 'LIKE', "%{$search}%");
                 });
 
-                // Try to parse search as a date
+                // date search
                 try {
-                    $date = \Carbon\Carbon::parse($search)->toDateString(); // YYYY-MM-DD
+                    $date = \Carbon\Carbon::parse($search)->toDateString();
                     $q->orWhereDate('created_at', $date);
                 } catch (\Exception $e) {
-                    // Not a date, ignore
+                    // ignore invalid date
                 }
             });
         }
 
-        $jobPosts = $query->paginate(10)->appends(['search' => $search]);
+        $jobPosts = $query
+            ->paginate(10)
+            ->appends(['search' => $search]);
 
         return view('admin.job_post', compact('jobPosts'));
     }
+
 
     public function updateJobStatus(Request $request, $id)
     {
@@ -449,8 +457,8 @@ class AdminController extends Controller
     }
     public function destroyJobPost($id)
     {
-        $job = JobPost::findOrFail($id);
-        $job->delete();
+        $job = JobPost::withTrashed()->findOrFail($id);
+        $job->forceDelete();
 
         return redirect()->route('admin.job_post')->with('success', 'Job post deleted successfully!');
     }
