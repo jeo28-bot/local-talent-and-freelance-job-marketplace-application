@@ -113,7 +113,10 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
    // routes/web.php
     Route::get('/admin/history-log/export', [AdminController::class, 'exportLogs'])->name('admin.history_log.export');
 
+    Route::delete('/admin/applications/{id}', [AdminController::class, 'destroyApplication'])
+    ->name('admin.applications.destroy');
 
+    
 });
 
 Route::middleware(['auth', 'user_type:employee'])->group(function () {

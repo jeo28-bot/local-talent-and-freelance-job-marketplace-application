@@ -144,7 +144,7 @@
                                     View
                                    </button>
 
-                                   <form action="{{ route('applications.destroy', $application->id) }}" method="POST" class="delete-applicant-form mr-1">
+                                   <form action="{{ route('admin.applications.destroy', $application->id) }}" method="POST" class="delete-applicant-form mr-1">
                                         @csrf
                                         @method('DELETE')
                                         <button href="" class="open-delete-modal bg-[#1e2939] rounded px-5 py-2 button_font text-sm text-red-400 cursor-pointer hover:opacity-80 w-full">

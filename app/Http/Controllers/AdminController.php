@@ -92,6 +92,17 @@ class AdminController extends Controller
 
         return view('admin.applications', compact('applications'));
     }
+    public function destroyApplication($id)
+    {
+        $application = JobApplication::withTrashed()->findOrFail($id);
+
+        $application->forceDelete(); // permanent delete
+
+        return redirect()
+            ->route('admin.applications')
+            ->with('success', 'Application permanently deleted.');
+    }
+
 
 
      public function jobs() {
@@ -110,9 +121,9 @@ class AdminController extends Controller
 
         return view('admin.announcements', compact('announcements', 'search'));
     }
-   public function transactions(Request $request)
+    public function transactions(Request $request)
     {
-        $query = \App\Models\Transaction::with(['employee', 'client']);
+        $query = \App\Models\Transaction::withTrashed()->with(['employee', 'client']);
 
         $search = $request->input('search'); // define upfront
 
@@ -163,8 +174,8 @@ class AdminController extends Controller
     }
     public function destroy($id)
     {
-        $transaction = Transaction::findOrFail($id);
-        $transaction->delete();
+        $transaction = Transaction::withTrashed()->findOrFail($id);
+        $transaction->forceDelete();
 
         return redirect()->back()->with('success', 'Transaction deleted successfully!');
     }

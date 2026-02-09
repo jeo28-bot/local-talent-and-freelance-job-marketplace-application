@@ -88,7 +88,10 @@
                                 <h1>{{ $job->id }}</h1>
                             </td>
                             <td class="px-4 py-2 p_font max-lg:text-sm w-50 break-words">
-                                 <a href="{{ route('admin.jobs.show', ['title' => urlencode($job->job_title)]) }}" class="hover:underline text-blue-500 hover:text-blue-400 cursor-pointer">{{ $job->job_title }}</a>
+                                {{-- non clickable --}}
+                                 <span class="text-gray-700 font-semibold capitalize">{{ $job->job_title }}</span>
+                                 {{-- clickable --}}
+                                 {{-- <a href="{{ route('admin.jobs.show', ['title' => urlencode($job->job_title)]) }}" class="hover:underline text-blue-500 hover:text-blue-400 cursor-pointer">{{ $job->job_title }}</a> --}}
                             </td>
                              <td class="px-4 py-2 p_font max-lg:text-sm ">
                                  <a href="{{ route('admin.public_profile', ['name' => urlencode($job->client->name)]) }}" class="hover:underline text-blue-500 hover:text-blue-400 cursor-pointer">{{ $job->client->name ?? 'N/A' }}</a>

@@ -74,6 +74,7 @@
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Receiving acc no.</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Transaction Ref No.</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Payment Date</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Archived</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
                     </tr>
                 </thead>
@@ -138,6 +139,13 @@
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                         {{ $transaction->payment_date ? \Carbon\Carbon::parse($transaction->payment_date)->format('M d, Y') : '—' }}
                         </td>
+                        <td class="px-4 py-2 p_font max-lg:text-sm text-center ">
+                            @if($transaction->deleted_at)
+                                <span class="badge bg-gray-300 border-1 border-gray-600 p_font px-2 py-1 rounded-full text-sm text-gray-600 font-semibold!">Archived</span>
+                            @else
+                                <span class="badge bg-blue-300 border-1 border-blue-600 p_font px-2 py-1 rounded-full text-sm text-blue-600 font-semibold!">Active</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                             <form action="{{ route('admin.transactions.destroy', $transaction->id) }}" method="POST" class="delete-transaction-form">
                                 @csrf
@@ -164,6 +172,7 @@
                                 </button>
                             </form>
                         </td>
+                        
 
                     </tr>
                     @endforeach

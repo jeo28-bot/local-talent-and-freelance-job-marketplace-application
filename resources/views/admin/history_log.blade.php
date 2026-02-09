@@ -57,7 +57,7 @@
             {{-- contents --}}
             {{-- cards --}}
             {{-- card section 1 --}}
-             @if ($historyLogs->isNotEmpty())
+            @if ($historyLogs->isNotEmpty())
             <div id="table_div" class="overflow-x-auto shadow-lg rounded-lg mb-5">
             <table class="w-full min-w-[700px] shadow-lg rounded-lg overflow-hidden">
                 <thead class="bg-gray-200 ">
@@ -135,38 +135,41 @@
 
             </table>
             </div>
+
+            {{-- Custom Pagination --}}
+            <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
+                <h3 class="home_p_font text-sm max-sm:text-xs">
+                    {{ $historyLogs->firstItem() }} to {{ $historyLogs->lastItem() }} of {{ $historyLogs->total() }} results
+                </h3>
+
+                <div class="flex ml-auto gap-2 max-sm:ml-0">
+                    {{-- Previous button --}}
+                    @if($historyLogs->onFirstPage())
+                        <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</button>
+                    @else
+                        <a href="{{ $historyLogs->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</a>
+                    @endif
+
+                    {{-- Next button --}}
+                    @if($historyLogs->hasMorePages())
+                        <a href="{{ $historyLogs->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
+                    @else
+                        <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
+                    @endif
+                </div>
+            </div>
+            {{-- end of pagination --}}
+
             @else
-                <div class="w-full h-[300px] flex flex-col justify-center items-center border-2 border-dashed border-gray-400 rounded-lg mt-1 hidden">
+                <div class="w-full h-[300px] flex flex-col justify-center items-center border-2 border-dashed border-gray-400 rounded-lg mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-15 mb-2 text-gray-400">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                     </svg>
                     <p class="p_font text-gray-500 text-center p-5">No history log yet. Check back later!</p>
                 </div>
-            @endif
+            @endforelse
 
-        {{-- Custom Pagination --}}
-        <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
-            <h3 class="home_p_font text-sm max-sm:text-xs">
-                {{ $historyLogs->firstItem() }} to {{ $historyLogs->lastItem() }} of {{ $historyLogs->total() }} results
-            </h3>
-
-            <div class="flex ml-auto gap-2 max-sm:ml-0">
-                {{-- Previous button --}}
-                @if($historyLogs->onFirstPage())
-                    <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</button>
-                @else
-                    <a href="{{ $historyLogs->previousPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Previous</a>
-                @endif
-
-                {{-- Next button --}}
-                @if($historyLogs->hasMorePages())
-                    <a href="{{ $historyLogs->nextPageUrl() }}" class="job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg hover:opacity-90 text-sm max-sm:text-xs">Next</a>
-                @else
-                    <button disabled class="-z-1 cursor-not-allowed opacity-50 job_posting_button bg-[#1E2939] text-white px-5 py-2 max-sm:py-2 max-sm:px-5 rounded-lg text-sm max-sm:text-xs">Next</button>
-                @endif
-            </div>
-        </div>
-        {{-- end of pagination --}}
+        
 
 
 
