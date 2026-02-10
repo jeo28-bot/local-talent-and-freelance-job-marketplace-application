@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckUserType
+class ActiveRole
 {
     public function handle(Request $request, Closure $next, $role)
     {
@@ -14,17 +14,24 @@ class CheckUserType
             abort(403);
         }
 
-        // ✅ USE active_role instead of user_type
+        // Admin can access anything
         if (auth()->user()->user_type === 'admin') {
-            // Admin can access any route
             return $next($request);
         }
 
-        if (auth()->user()->active_role !== $role) {
+        $user = auth()->user();
+
+        // If active_role is null, allow access to the dashboard matching user_type
+        if ($user->active_role === null && $user->user_type === $role) {
+            return $next($request);
+        }
+
+        // Otherwise, normal check
+        if ($user->active_role !== $role) {
             abort(403, 'Unauthorized access');
         }
 
         return $next($request);
-
     }
+
 }

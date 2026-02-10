@@ -69,7 +69,7 @@
                             01-2 2z" />
                 </svg>
                 <h2 class="text-xl font-semibold text-gray-800 sub_title_font">No job postings yet</h2>
-                <p class="text-gray-500 mt-1 home_p_font">Please check back later for available job opportunities.</p>
+                <p class="text-gray-500 mt-1 home_p_font">Post a job now to get started.</p>
             </div>
 
             @else

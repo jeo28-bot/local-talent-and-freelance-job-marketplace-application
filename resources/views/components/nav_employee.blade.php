@@ -160,6 +160,17 @@
                 {{-- links --}}
                 <div class="text-sm border-b-1 border-gray-600 mb-2 pb-2">
                     {{-- link 1 --}}
+                    <form method="POST" action="{{ route('switch.role') }}" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg max-sm:text-sm cursor-pointer">
+                      @csrf
+                      <input type="hidden" name="role" value="client">
+                        <button type="submit" class="flex items-center gap-2  cursor-pointer"> 
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"></path>
+                          </svg>
+                          Switch to Client
+                        </button>
+                    </form>
+                    {{-- link 2 --}}
                     <a href="{{ route('employee.profile') }}" class="flex items-center gap-2 p-2 hover:bg-gray-700 rounded-lg max-sm:text-sm"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>

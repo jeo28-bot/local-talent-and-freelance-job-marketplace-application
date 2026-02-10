@@ -63,17 +63,20 @@ class LoginController extends Controller
         // Set user online
         $user->update(['status' => 'online']);
 
-        // Create login history record
+        // Login history
         HistoryLog::create([
             'user_id'   => $user->id,
             'user_type' => $user->user_type,
-            'details'   => 'Logged in around ' . Carbon::now()->format('g:i A - F d, Y'),
+            'details'   => 'Logged in around ' . \Carbon\Carbon::now()->format('g:i A - F d, Y'),
         ]);
 
-        // Redirect based on role
+        // Reset active_role to match user_type
+        $user->update(['active_role' => $user->user_type]);
+
+        // Redirect based purely on user_type
         switch ($user->user_type) {
             case 'admin':
-                return redirect('/admin');
+                return redirect('/admin'); // always admin dashboard
             case 'employee':
                 return redirect('/employee');
             case 'client':
@@ -82,6 +85,11 @@ class LoginController extends Controller
                 return redirect('/');
         }
     }
+
+
+
+
+
 
 
     public function logout(Request $request)
@@ -103,7 +111,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 
     protected function sendFailedLoginResponse(Request $request)

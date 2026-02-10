@@ -17,6 +17,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\RoleSwitchController;
+
 
 Route::get('/', [AnnouncementController::class, 'index']);
 
@@ -26,6 +28,11 @@ Route::get('/', [AnnouncementController::class, 'index']);
 
 Route::get('/public_job_postings', [PublicController::class, 'publicPostings'])
     ->name('public.job.postings');
+
+Route::post('/switch-role', [RoleSwitchController::class, 'switch'])
+    ->name('switch.role')
+    ->middleware('auth');
+
 
 
 
