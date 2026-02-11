@@ -29,14 +29,23 @@
                 </div>
             </div>
 
-            {{-- archived button --}}
-            <div class="flex justify-end mb-3">
-                <a href="{{route('client.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+            {{-- question and archive div --}}
+            <div  class="flex items-center justify-between mb-3">
+                <button id="openInfoModalBtn" class="p-1 rounded-full bg-[#1e2939] text-blue-400 hover:bg-gray-500 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"></path>
                     </svg>
-                    Archived Transactions
-                </a>
+                </button>
+
+                {{-- archived button --}}
+                <div class="flex justify-end">
+                    <a href="{{route('client.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                        </svg>
+                        Archived Transactions
+                    </a>
+                </div>
             </div>
             
 
@@ -222,6 +231,56 @@
         </div>
     </div>
 
+    {{-- info modal warning --}}
+    <div id="infoModal" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20 w-lg max-sm:w-full shadow-sm">
+            <h2 class="text-xl sub_title_font font-semibold mb-2 flex items-center gap-2 text-blue-500 max-sm:text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"></path>
+                </svg>
+                Payment Process 
+            </h2>
+            <p class="home_p_font text-gray-600 mb-5 max-sm:text-sm">
+            Payments on this platform are securely handled by the admin as a trusted middleman.
+            The client sends the payment to the platform, where it is temporarily held for safety.
+            Once the job is completed and confirmed, the payment is then released to the employee.
+            This process ensures protection for both parties and promotes fair and secure transactions.
+            </p>
+            <div class="flex gap-2">
+                <button id="closeInfoModalBtn" type="button"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Close
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openInfoModalBtn = document.getElementById('openInfoModalBtn');
+        const closeInfoModalBtn = document.getElementById('closeInfoModalBtn');
+        const infoModal = document.getElementById('infoModal');
+
+        // Open modal
+        openInfoModalBtn.addEventListener('click', () => {
+            infoModal.classList.remove('hidden');
+        });
+
+        // Close modal
+        closeInfoModalBtn.addEventListener('click', () => {
+            infoModal.classList.add('hidden');
+        });
+
+        // Optional: click outside modal to close
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) {
+                infoModal.classList.add('hidden');
+            }
+        });
+    </script>
+
+
+    {{-- script section --}}
    <script>
     document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('transactionModal');

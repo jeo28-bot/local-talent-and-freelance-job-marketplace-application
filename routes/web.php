@@ -283,8 +283,11 @@ Route::middleware(['auth', 'user_type:client'])->group(function () {
         Route::delete('/archived/arch_transactions/{id}/delete',[ClientController::class, 'force_delete_archived_transaction'])->name('client.force_delete_archived_transaction');
     });
 
-    Route::post('/client/transactions/{id}/mark-paid', [ClientController::class, 'markAsPaid'])
-    ->name('client.transactions.markAsPaid');
+    // Route::post('/client/transactions/{id}/mark-paid', [ClientController::class, 'markAsPaid'])
+    // ->name('client.transactions.markAsPaid');
+    Route::post('/client/transactions/{id}/submit-payment', [ClientController::class, 'markAsSubmitted'])
+    ->name('client.transactions.submitPayment');
+
 
     Route::get('/client/applicants', [ClientController::class, 'indexForClient'])
     ->name('client.applicants');

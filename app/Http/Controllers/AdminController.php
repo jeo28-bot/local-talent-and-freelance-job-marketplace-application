@@ -163,15 +163,53 @@ class AdminController extends Controller
     public function updateTransactionStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,requested,completed',
+            'status' => 'required|in:pending,requested,completed,approved,submitted',
         ]);
 
         $transaction = Transaction::findOrFail($id);
         $transaction->status = $request->status;
         $transaction->save();
 
+        // -----------------------------------
+        // 🔔 Notifications for employee and client
+        // -----------------------------------
+        $statusMessage = match($transaction->status) {
+            'completed' => "Payment for '{$transaction->job_title}' has been completed.",
+            'approved'  => "Payment for '{$transaction->job_title}' has been approved by the admin.",
+            default     => null
+        };
+
+        if ($statusMessage) {
+            // Notify employee
+            \App\Models\Notification::create([
+                'user_id' => $transaction->employee_id,
+                'type' => 'payment_update',
+                'title' => 'Transaction Update',
+                'body' => $statusMessage,
+                'data' => [
+                    'client_id' => $transaction->client_id,
+                    'transaction_id' => $transaction->id,
+                ],
+                'is_read' => false,
+            ]);
+
+            // Notify client
+            \App\Models\Notification::create([
+                'user_id' => $transaction->client_id,
+                'type' => 'payment_update',
+                'title' => 'Transaction Update',
+                'body' => $statusMessage,
+                'data' => [
+                    'employee_id' => $transaction->employee_id,
+                    'transaction_id' => $transaction->id,
+                ],
+                'is_read' => false,
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Transaction status updated successfully!');
     }
+
     public function destroy($id)
     {
         $transaction = Transaction::withTrashed()->findOrFail($id);

@@ -29,16 +29,24 @@
                 </div>
             </div>
 
-            {{-- archived button --}}
-            <div class="flex justify-end mb-3">
-                <a href="{{route('client.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+            {{-- question and archive div --}}
+            <div class="flex items-center justify-between mb-3">
+                <button id="openInfoModalBtn" class="p-1 rounded-full bg-[#1e2939] text-blue-400 hover:bg-gray-500 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"></path>
                     </svg>
-                    Archived Transactions
-                </a>
+                </button>
+
+                {{-- archived button --}}
+                <div class="flex justify-end">
+                    <a href="{{route('client.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                        </svg>
+                        Archived Transactions
+                    </a>
+                </div>
             </div>
-            
 
             
                 @if ($transactions->count() > 0)
@@ -112,6 +120,10 @@
                                         <span class="text-orange-500 font-semibold">Pending</span>
                                     @elseif ($transaction->status === 'paid')
                                         <span class="text-green-500 font-semibold">Paid</span>
+                                    @elseif ($transaction->status === 'submitted')
+                                        <span class="text-orange-500 font-semibold">Submitted</span>
+                                    @elseif ($transaction->status === 'approved')
+                                        <span class="text-blue-500 font-semibold">Approved</span>
                                     @elseif ($transaction->status === 'requested')
                                         <span class="text-blue-500 font-semibold">Requested</span>
                                     @elseif ($transaction->status === 'completed')
@@ -142,9 +154,13 @@
                                     data-reference-no="{{ $transaction->reference_no }}">
                                         Pay Now
                                     </button>
-                            @elseif ($transaction->status === 'pending')
+                            @elseif ($transaction->status === 'pending' || $transaction->status === 'submitted')
                                     <button type="submit" class="bg-[#1e2939] sub_title_font text-orange-400 px-4 py-2 rounded-lg opacity-70 max-sm:text-sm cursor-not-allowed" disable>
-                                        Request Payout
+                                        @if($transaction->status === 'pending')
+                                            Pending
+                                        @elseif($transaction->status === 'submitted')
+                                            Submitted
+                                        @endif
                                     </button>
                             @else
                                 <button class="bg-[#1e2939] sub_title_font text-blue-500 px-4 py-2 rounded-lg max-sm:text-sm opacity-70 cursor-not-allowed">
@@ -229,16 +245,23 @@
                 <input type="hidden" name="transaction_id" id="transaction_id">
 
                 <div class="w-full bg-white p-3 rounded-lg shadow-sm mb-4">
-                    <h1 id="modal_job_title" class="p_font text-xl font-semibold text-gray-800 max-sm:text-sm">Guitarist</h1>
-                    <h3 id="modal_employee_name" class="home_p_font max-sm:text-sm">Employee Name</h3>
+                    <h1 id="modal_job_title" class="p_font text-xl font-semibold text-gray-800 max-sm:text-sm capitalize">Guitarist</h1>
+                    <h3 id="modal_employee_name" class="home_p_font max-sm:text-sm capitalize">Employee Name</h3>
                     <h3 class="home_p_font max-sm:text-sm mb-2">
                         Amount(₱): <span id="modal_amount" class="text-green-600 font-semibold">12,000.00</span>
+                    </h3>
+                    <h3 class="home_p_font max-sm:text-sm mb-1">
+                        Admin fee (3%) (₱): <span id="modal_admin_fee" class="text-green-600 font-semibold">0.00</span>
+                    </h3>
+                    <ul class="border-1 border-gray-300"></ul>
+                    <h3 class="home_p_font max-sm:text-sm mb-1">
+                        Total Payment (₱): <span id="modal_total_payment" class="text-green-600 font-semibold">0.00</span>
                     </h3>
 
                     <label class="p_font max-sm:text-sm">Payment Method:</label>
                     <input id="modal_payment_method" class="p_font bg-gray-200 border border-gray-300 text-sm rounded-lg block w-full p-2.5 text-blue-500 max-sm:text-xs max-sm:p-1.5 mb-2" disabled>
 
-                    <label class="p_font max-sm:text-sm">Account number:</label><br>
+                    <label class="p_font max-sm:text-sm">Admin account number:</label><br>
                     <input id="modal_reference_no" type="text" class="max-sm:text-sm p-2.5 rounded-lg border border-gray-300 max-sm:p-1.5 w-full mb-2 bg-gray-200" disabled>
 
                     <label class="p_font max-sm:text-sm">Transaction Reference #: <br><span class="text-gray-500 text-xs">(If you already paid through another method, just type “N/A”)</span></label><br>
@@ -263,9 +286,60 @@
         </div>
     </div>
 
+    {{-- info modal warning --}}
+    <div id="infoModal" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20 w-lg max-sm:w-full shadow-sm">
+            <h2 class="text-xl sub_title_font font-semibold mb-2 flex items-center gap-2 text-blue-500 max-sm:text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"></path>
+                </svg>
+                Payment Process 
+            </h2>
+            <p class="home_p_font text-gray-600 mb-5 max-sm:text-sm">
+            Payments on this platform are securely handled by the admin as a trusted middleman.
+            The client sends the payment to the platform, where it is temporarily held for safety.
+            Once the job is completed and confirmed, the payment is then released to the employee.
+            This process ensures protection for both parties and promotes fair and secure transactions.
+            </p>
+            <div class="flex gap-2">
+                <button id="closeInfoModalBtn" type="button"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Close
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openInfoModalBtn = document.getElementById('openInfoModalBtn');
+        const closeInfoModalBtn = document.getElementById('closeInfoModalBtn');
+        const infoModal = document.getElementById('infoModal');
+
+        // Open modal
+        openInfoModalBtn.addEventListener('click', () => {
+            infoModal.classList.remove('hidden');
+        });
+
+        // Close modal
+        closeInfoModalBtn.addEventListener('click', () => {
+            infoModal.classList.add('hidden');
+        });
+
+        // Optional: click outside modal to close
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) {
+                infoModal.classList.add('hidden');
+            }
+        });
+    </script>
 
 
 
+
+
+    {{-- script section --}}
+    
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('payNowModal');
@@ -273,29 +347,45 @@
         const openButtons = document.querySelectorAll('.openPayNowBtn');
         const form = document.getElementById('payNowForm');
 
+        function formatPeso(value) {
+            return '₱' + value.toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
         openButtons.forEach(btn => {
             btn.addEventListener('click', () => {
+
                 const id = btn.dataset.transactionId;
                 const jobTitle = btn.dataset.jobTitle;
                 const employeeName = btn.dataset.employeeName;
-                const amount = btn.dataset.amount;
+
+                const rawAmount = btn.dataset.amount;
+                const amount = parseFloat(rawAmount.replace(/[^0-9.]/g, ''));
+
+                const adminFee = amount * 0.03;
+                const totalPayment = amount + adminFee;
+
                 const paymentMethod = btn.dataset.paymentMethod;
                 const referenceNo = btn.dataset.referenceNo;
 
-                // Fill modal fields
                 document.getElementById('transaction_id').value = id;
-                document.getElementById('modal_job_title').textContent = jobTitle;
-                document.getElementById('modal_employee_name').textContent = employeeName;
-                document.getElementById('modal_amount').textContent = amount;
+                document.getElementById('modal_job_title').innerHTML = '<span class="font-semibold">Job : </span>'+jobTitle;
+                document.getElementById('modal_employee_name').innerHTML = '<span class="font-semibold">Employee : </span>'+ employeeName;
+
+                document.getElementById('modal_amount').textContent = formatPeso(amount);
+                document.getElementById('modal_admin_fee').textContent = formatPeso(adminFee);
+                document.getElementById('modal_total_payment').textContent = formatPeso(totalPayment);
+
                 document.getElementById('modal_payment_method').value = paymentMethod;
                 document.getElementById('modal_reference_no').value = referenceNo;
 
-                // Correct route
-                form.action = `/client/transactions/${id}/mark-paid`;
-
+                form.action = `/client/transactions/${id}/submit-payment`;
                 modal.classList.remove('hidden');
             });
         });
+
 
         // AJAX submit for smoother experience
         form.addEventListener('submit', async (e) => {

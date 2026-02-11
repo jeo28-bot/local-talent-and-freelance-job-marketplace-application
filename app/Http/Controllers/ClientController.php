@@ -399,7 +399,7 @@ class ClientController extends Controller
         $user = auth()->user();
 
         $query = \App\Models\Transaction::where('client_id', $user->id)
-            ->whereIn('status', ['pending', 'paid', 'requested']); // only relevant statuses
+            ->whereIn('status', ['pending', 'paid', 'requested', 'submitted', 'approved']); // only relevant statuses
 
         // --- SEARCH HANDLING ---
         if ($request->filled('q')) {
@@ -475,7 +475,37 @@ class ClientController extends Controller
 
         return redirect()->back()->with('success', 'Transaction deleted successfully.');
     }
-    public function markAsPaid(Request $request, $id)
+    // public function markAsPaid(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'transaction_ref_no' => 'required|string',
+    //     ]);
+
+    //     $transaction = \App\Models\Transaction::findOrFail($id);
+
+    //     // Update transaction
+    //     $transaction->update([
+    //         'transaction_ref_no' => $request->transaction_ref_no,
+    //         'status' => 'completed',
+    //         'payment_date' => now(),
+    //     ]);
+
+    //     // 🔔 Send notification to employee
+    //     \App\Models\Notification::create([
+    //         'user_id' => $transaction->employee_id,  // employee receives it
+    //         'type' => 'payment_completed',
+    //         'title' => 'Payment Completed',
+    //         'body' => 'Your payment for "' . $transaction->job_title . '" has been completed by the client.',
+    //         'data' => [
+    //             'client_id' => $transaction->client_id,
+    //             'transaction_id' => $transaction->id,
+    //         ],
+    //         'is_read' => false,
+    //     ]);
+
+    //     return redirect()->back()->with('success', 'Payment marked as completed successfully.');
+    // }
+    public function markAsSubmitted(Request $request, $id)
     {
         $request->validate([
             'transaction_ref_no' => 'required|string',
@@ -486,16 +516,16 @@ class ClientController extends Controller
         // Update transaction
         $transaction->update([
             'transaction_ref_no' => $request->transaction_ref_no,
-            'status' => 'completed',
+            'status' => 'submitted',
             'payment_date' => now(),
         ]);
 
-        // 🔔 Send notification to employee
+        // 🔔 Notify admin (NOT employee yet)
         \App\Models\Notification::create([
-            'user_id' => $transaction->employee_id,  // employee receives it
-            'type' => 'payment_completed',
-            'title' => 'Payment Completed',
-            'body' => 'Your payment for "' . $transaction->job_title . '" has been completed by the client.',
+            'user_id' => 1, // admin ID (adjust if needed)
+            'type' => 'payment_submitted',
+            'title' => 'Payment Submitted',
+            'body' => 'A payment has been submitted for "' . $transaction->job_title . '" and is awaiting confirmation.',
             'data' => [
                 'client_id' => $transaction->client_id,
                 'transaction_id' => $transaction->id,
@@ -503,8 +533,9 @@ class ClientController extends Controller
             'is_read' => false,
         ]);
 
-        return redirect()->back()->with('success', 'Payment marked as completed successfully.');
+        return back()->with('success', 'Payment submitted successfully.');
     }
+
 
     public function blockUser(Request $request, $id)
     {

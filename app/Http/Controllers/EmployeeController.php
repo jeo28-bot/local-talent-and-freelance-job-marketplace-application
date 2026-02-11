@@ -257,7 +257,7 @@ class EmployeeController extends Controller
 
         // ✅ Base query for employee's non-completed transactions
         $transactionsQuery = \App\Models\Transaction::where('employee_id', $user->id)
-            ->whereIn('status', ['pending', 'paid', 'requested'])
+            ->whereIn('status', ['pending', 'paid', 'requested', 'submitted', 'approved'])
             ->with('client') // eager-load client
             ->latest();
 

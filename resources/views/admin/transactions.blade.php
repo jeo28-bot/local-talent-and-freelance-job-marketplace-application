@@ -67,6 +67,8 @@
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Client </th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Amount</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Admin Fee(3%)</th>
+                        <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Total Payment</th>
                         <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">
                             Status
                         </th>
@@ -106,14 +108,20 @@
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                          ₱{{ number_format($transaction->amount, 2) }}
                         </td>
+                        <td class="px-4 py-2 p_font max-lg:text-sm">
+                         ₱{{ number_format($transaction->amount * 0.03, 2) }}
+                        </td>
+                        <td class="px-4 py-2 p_font max-lg:text-sm">
+                         ₱{{ number_format($transaction->amount + ($transaction->amount * 0.03), 2) }}
+                        </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm uppercase text-sm font-semibold!">
                             <a class="cursor-pointer open-status-modal hover:opacity-65"
                                 data-id="{{ $transaction->id }}"
                                 data-status="{{ $transaction->status }}">
                                 <span class="p-2 rounded-lg border-1
                                     @if($transaction->status === 'pending') text-orange-600  bg-orange-200  border-orange-500
-                                    @elseif($transaction->status === 'completed') text-green-600 bg-green-200  border-green-500
-                                    @elseif($transaction->status === 'requested') text-yellow-600 bg-yellow-200  border-yellow-500
+                                    @elseif($transaction->status === 'completed' || $transaction->status === 'approved') text-green-600 bg-green-200  border-green-500
+                                    @elseif($transaction->status === 'requested' || $transaction->status === 'submitted') text-yellow-600 bg-yellow-200  border-yellow-500
                                     @elseif($transaction->status === 'cancelled') text-gray-600 bg-gray-200  border-gray-500
                                     @endif">
                                 {{ ucfirst($transaction->status) ?? 'N/A'  }}
@@ -248,6 +256,7 @@
                     @method('PUT')
                     <button type="submit" name="status" value="pending" class="px-4 py-2 border-1 border-orange-600 uppercase text-sm bg-orange-200 text-orange-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">Pending</button>
                     <button type="submit" name="status" value="requested" class="px-4 py-2 border-1 border-yellow-600 uppercase text-sm bg-yellow-200 text-yellow-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">requested</button>
+                    <button type="submit" name="status" value="approved" class="px-4 py-2 border-1 border-green-600 uppercase text-sm bg-green-200 text-green-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">approved</button>
                     <button type="submit" name="status" value="completed" class="px-4 py-2 border-1 border-green-600 uppercase text-sm bg-green-200 text-green-600 rounded-lg button_font hover:opacity-80 cursor-pointer font-semibold!">completed</button>
                 </form>
             </div>
