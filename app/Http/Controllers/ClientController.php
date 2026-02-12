@@ -522,7 +522,7 @@ class ClientController extends Controller
 
         // 🔔 Notify admin (NOT employee yet)
         \App\Models\Notification::create([
-            'user_id' => 1, // admin ID (adjust if needed)
+            'user_id' => 6, // admin ID (adjust if needed)
             'type' => 'payment_submitted',
             'title' => 'Payment Submitted',
             'body' => 'A payment has been submitted for "' . $transaction->job_title . '" and is awaiting confirmation.',

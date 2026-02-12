@@ -17,6 +17,7 @@ use App\Models\Report;
 use App\Models\HistoryLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use App\Models\Notification;
 
 class AdminController extends Controller
 {
@@ -50,6 +51,80 @@ class AdminController extends Controller
 
         return view('admin.index', compact('employeeCount', 'clientCount', 'totalJobs', 'monthlyJobs'));
     }
+
+    // notifications function
+    public function notifications(Request $request)
+    {
+        $admin = auth()->user();
+
+        $notifications = \App\Models\Notification::where('user_id', $admin->id)
+            ->where('type', 'payment_submitted') // 👈 ADMIN-ONLY filter
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('body', 'like', "%{$search}%")
+                    ->orWhereRaw(
+                        "DATE_FORMAT(created_at, '%b %d, %Y - %h:%i %p') LIKE ?",
+                        ["%{$search}%"]
+                    );
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(5)
+            ->appends(['search' => $request->input('search')]);
+
+        return view('admin.notifications', compact('notifications'));
+    }
+    public function openNotification($id)
+    {
+        $notification = \App\Models\Notification::findOrFail($id);
+
+        // ✅ mark as read
+        if (!$notification->is_read) {
+            $notification->update(['is_read' => 1]);
+        }
+
+        // get transaction id from notification data
+        $transactionId = $notification->data['transaction_id'] ?? null;
+
+        // redirect to transactions page WITH search
+        return redirect()->route('admin.transactions', [
+            'search' => $transactionId
+        ]);
+    }
+    public function deleteNotification($id)
+    {
+        $notification = \App\Models\Notification::find($id);
+
+        if (!$notification) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notification not found.'
+            ]);
+        }
+
+        $notification->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification deleted successfully.'
+        ]);
+    }
+    public function unreadNotificationCount()
+    {
+        $admin = auth()->user();
+
+        // Count unread notifications for this admin
+        $unreadCount = \App\Models\Notification::where('user_id', $admin->id)
+                        ->where('is_read', false)
+                        ->count();
+
+        return response()->json(['unreadCount' => $unreadCount]);
+    }
+
+
+
+
 
     public function applications(Request $request)
     {

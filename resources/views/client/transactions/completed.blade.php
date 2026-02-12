@@ -210,8 +210,8 @@
 
             <div class="w-full bg-white p-3 rounded-lg shadow-sm mb-4">
                 <div class="input_control flex flex-col mb-3 max-sm:mb-1">
-                    <h1 id="modalJobTitle" class="p_font text-lg font-semibold text-gray-800 max-sm:text-sm"></h1>
-                    <h3 id="modalClient" class="home_p_font max-sm:text-sm"></h3>
+                    <h1 id="modalJobTitle" class="p_font text-lg font-semibold text-gray-800 max-sm:text-sm capitalize"></h1>
+                    <h3 id="modalClient" class="home_p_font max-sm:text-sm capitalize"></h3>
                 </div>
 
                 <h2 class="home_p_font max-sm:text-sm">Amount <span class="text-green-700">(₱)</span></h2>
@@ -299,8 +299,8 @@
         // open modal
         document.querySelectorAll('.viewDetailsBtn').forEach(btn => {
             btn.addEventListener('click', () => {
-                jobTitle.textContent = btn.dataset.job;
-                client.textContent = btn.dataset.client;
+                jobTitle.innerHTML = '<span class="font-semibold">Job : </span>' + btn.dataset.job;
+                client.innerHTML = '<span class="font-semibold">Employee : </span>' + btn.dataset.client;
                 amount.textContent = btn.dataset.amount;
                 date.textContent = btn.dataset.date;
                 status.textContent = btn.dataset.status;

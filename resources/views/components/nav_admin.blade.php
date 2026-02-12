@@ -213,12 +213,47 @@
 
 
 
-            {{-- notifaction --}}
-            <a href="{{ route('admin.reports') }}" class="p-2 border-1 border-gray-600 rounded-full cursor-pointer hover:shadow-sm shadow-white">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white max-sm:size-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-            </svg>
-            </a>
+            {{-- notificaction --}}
+            <div class=" border-1 border-gray-600 rounded-full cursor-pointer hover:shadow-sm shadow-white flex relative">
+                {{-- notification dot (hidden by default) --}}
+                <div id="notifDot2" class="p-1 bg-red-500 rounded-full absolute mt-1 hidden"></div>
+
+                <a href="{{ route('admin.notifications') }}" class="p-2 border-1 border-gray-600 rounded-full cursor-pointer hover:shadow-sm shadow-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white max-sm:size-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
+                </a>
+            </div>
+
+           <script>
+            function updateNotifDot() {
+                fetch('{{ route("admin.notifications.unread-count") }}', { credentials: 'same-origin' })
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+                        return res.json();
+                    })
+                    .then(data => {
+                        const dot = document.getElementById('notifDot2');
+                        if (data.unreadCount > 0) {
+                            dot.classList.remove('hidden');
+                        } else {
+                            dot.classList.add('hidden');
+                        }
+                    })
+                    .catch(err => console.error('Unread notification fetch failed:', err));
+            }
+
+            // Initial check
+            updateNotifDot();
+
+            // Poll every 5 seconds
+            setInterval(updateNotifDot, 5000);
+            </script>
+
+
+
+            
+
 
             {{-- profile --}}
             <button id="profile_dropdown" class="flex items-center text-gray-400 p_font cursor-pointer">

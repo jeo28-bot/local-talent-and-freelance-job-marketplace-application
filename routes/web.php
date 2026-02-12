@@ -46,6 +46,15 @@ Route::middleware(['auth', 'user_type:admin'])->group(function () {
     Route::get('/admin/jobs', [AdminController::class, 'jobs'])->name('admin.jobs');
     Route::get('/admin/announcements', [AdminController::class, 'announcements'])->name('admin.announcements');
     Route::get('/admin/applications', [AdminController::class, 'applications'])->name('admin.applications');
+    Route::get('/admin/notifications/unread-count', [AdminController::class, 'unreadNotificationCount'])
+    ->name('admin.notifications.unread-count');
+    Route::get('/admin/notifications', [AdminController::class, 'notifications'])->name('admin.notifications');
+    Route::get('/admin/notifications/{notification}', 
+        [AdminController::class, 'openNotification']
+    )->name('admin.notifications.open');
+    Route::delete('/admin/notifications/{id}', [AdminController::class, 'deleteNotification'])->name('admin.notifications.delete');
+
+
     Route::get('/admin/jobs/{title}', [AdminController::class, 'showJob'])
     ->name('admin.jobs.show');
     Route::get('/admin/job_post', [AdminController::class, 'job_post'])->name('admin.job_post');

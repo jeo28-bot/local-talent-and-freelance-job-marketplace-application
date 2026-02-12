@@ -12,7 +12,7 @@
             <p class="home_p_font mb-5 text-sm">All your important notifications are organized here.</p>
 
             
-           {{-- ANNOUNCEMENTS --}}
+            {{-- ANNOUNCEMENTS --}}
             @foreach ($announcements as $ann)
                 <div id="announcement-{{ $ann->id }}" class="relative announcement-item z-0"
                     data-title="{{ $ann->title }}"

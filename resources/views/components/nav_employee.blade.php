@@ -11,9 +11,9 @@
         </a>
 
         <div class=" flex ml-10 gap-5 max-lg:hidden max-xl:gap-2 max-xl:ml-5">
-          <a href="{{ auth()->user()->user_type === 'client' ? route('client.index') : route('employee.index') }}" 
+          <a href="{{ route('employee.index') }}" 
               class="pages_nav a_font px-2 py-8 
-                  {{ request()->routeIs(auth()->user()->user_type === 'client' ? 'client.index' : 'employee.index') ? 'selected_nav' : '' }}">
+                  {{ request()->routeIs('employee.index') ? 'selected_nav' : '' }}">
               Home
           </a>
           <a href="{{ route('employee.postings') }}" class="pages_nav a_font px-2 py-8 {{ request()->routeIs('employee.postings') ? 'selected_nav' : '' }}">Job Posting</a>
