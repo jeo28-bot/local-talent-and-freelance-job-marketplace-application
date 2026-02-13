@@ -78,9 +78,17 @@
             {{--  job posted cards --}}
            <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-4">
                 <div class="div_control mb-2 flex flex-row items-center justify-between">
-                    <a href="{{ route('client.jobs.show', Str::slug($post->job_title)) }}" 
+                    @php
+                        $count = $posts->where('job_title', $post->job_title)->count();
+                    @endphp
+
+                    <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}"
                     class="job_posting_title text-2xl max-sm:text-xl capitalize hover:opacity-70 hover:underline">
-                    {{ $post->job_title }}
+                        {{ $post->job_title }}
+
+                        @if ($count > 1)
+                            <span class="text-sm text-gray-500">({{ $count }})</span>
+                        @endif
                     </a>
                         <h4 class="status_holder job_posting_company text-sm  posted_time_before_a_day max-sm:text-xs flex items-center text-blue-5400! bg-amber-200 p-2 rounded-lg shadow-sm cursor-pointer hover:bg-amber-400 max-sm:p-1" data-id="{{ $post->id }}" data-status="{{ $post->status }}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">

@@ -41,12 +41,18 @@
                     </svg>
                 </button>
                 {{-- archived button --}}
-                <div class="flex justify-end">
-                    <a href="{{route('employee.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
+                <div class="flex justify-end gap-2">
+                    <button id="openTotalEarningBtn" class="p_font bg-[#1e2939] text-green-400 px-3 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-1 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+                        </svg>
+                        Total Earnings
+                    </button>
+
+                    <a href="{{route('employee.arch_transactions')}}" class="p_font bg-[#1e2939] text-blue-400 px-3 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
                         </svg>
-                        Archived Transactions
                     </a>
                 </div>
             </div>
@@ -226,7 +232,7 @@
             </div>
         </div>
     </div>
-
+    {{-- info modal script --}}
     <script>
         const openInfoModalBtn = document.getElementById('openInfoModalBtn');
         const closeInfoModalBtn = document.getElementById('closeInfoModalBtn');
@@ -249,7 +255,76 @@
             }
         });
     </script>
-    
+
+    {{-- view total earnings modal --}}
+    <div id="totalEarning" class="hidden modal_bg min-h-screen fixed top-0 z-40 w-full flex items-center justify-center px-5">
+        <div class="px-5 py-3 bg-white rounded-xl -mt-20 w-lg max-sm:w-full shadow-sm">
+            <h2 class="text-xl sub_title_font font-semibold mb-2 flex items-center gap-2 text-blue-500 max-sm:text-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path>
+                </svg>
+                Your Total Earnings
+            </h2>
+            <div class="p-2 bg-gray-100 rounded-lg shadow-sm mb-2 flex flex-col items-baseline">
+                <h2 class="p_font text-gray-400 font-semibold max-sm:text-sm">As of <?php echo e(date('F j, Y')); ?></h2>
+                <h1 class="title_font text-4xl font-semibold! p_font text-green-600 mb-2 max-sm:text-3xl ml-auto">
+                    ₱ {{ number_format($totalEarnings ?? 0, 2) }}
+                </h1>
+            </div>
+            <p class="p_font text-sm text-gray-500 font-light!">
+                This is the total amount you have earned from completed transactions on our platform. 
+                It reflects the sum of all payments released to you for jobs that have been successfully completed and confirmed. 
+                Keep up the great work, and watch your earnings grow as you continue to take on new projects!
+            </p>
+
+           
+            <div class="flex gap-2 justify-end">
+                <button id="closetotalEarningBtn" type="button"
+                    class="bg-[#1e2939] cursor-pointer sub_title_font text-blue-400 px-4 py-2 rounded-lg hover:bg-[#374151] max-sm:text-sm">
+                    Close
+                </button>
+
+            </div>
+        </div>
+    </div>
+    {{-- view total earning modal JS --}}
+    <script>
+        const totalEarningModal = document.getElementById('totalEarning');
+        const openTotalEarningBtn = document.getElementById('openTotalEarningBtn');
+        const closeTotalEarningBtn = document.getElementById('closetotalEarningBtn');
+
+        // Open modal
+        openTotalEarningBtn.addEventListener('click', () => {
+            totalEarningModal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        });
+
+        // Close modal (button)
+        closeTotalEarningBtn.addEventListener('click', () => {
+            closeTotalEarningModal();
+        });
+
+        // Close modal when clicking outside
+        totalEarningModal.addEventListener('click', (e) => {
+            if (e.target === totalEarningModal) {
+                closeTotalEarningModal();
+            }
+        });
+
+        // Close modal on ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !totalEarningModal.classList.contains('hidden')) {
+                closeTotalEarningModal();
+            }
+        });
+
+        function closeTotalEarningModal() {
+            totalEarningModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    </script>
+
+
 
     {{-- view details modal --}}
     <div id="transactionModal" class="report_modal fixed top-0 left-0 w-full h-full z-50 hidden max-sm:px-6 bg-black/50 flex justify-center items-start overflow-y-auto py-10">

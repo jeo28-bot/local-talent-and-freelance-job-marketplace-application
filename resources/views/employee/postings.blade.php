@@ -68,10 +68,19 @@
                     {{--  job posted cards --}}
                     <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-5">
                             <div class="div_control mb-2 flex flex-row items-center justify-between">
+                                @php
+                                    $count = $posts->where('job_title', $post->job_title)->count();
+                                @endphp
+
                                 <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}"
                                 class="job_posting_title text-2xl max-sm:text-xl capitalize hover:opacity-70 hover:underline">
-                                {{ $post->job_title }}
+                                    {{ $post->job_title }}
+
+                                    @if ($count > 1)
+                                        <span class="text-sm text-gray-500">({{ $count }})</span>
+                                    @endif
                                 </a>
+
                                     @php
                                         $isSaved = auth()->user()->savedJobs->contains($post->id);
                                     @endphp

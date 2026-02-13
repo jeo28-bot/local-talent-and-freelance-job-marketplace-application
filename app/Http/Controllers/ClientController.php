@@ -465,7 +465,13 @@ class ClientController extends Controller
 
         $transactions = $query->latest()->paginate(3);
 
-        return view('client.transactions.completed', compact('transactions'));
+        // ✅ MATCHED total earnings query
+        $totalEarnings = \App\Models\Transaction::where('client_id', $user->id)
+            ->where('status', 'completed')
+            ->sum('amount');
+
+
+        return view('client.transactions.completed', compact('transactions', 'totalEarnings'));
     }
 
     public function destroyTransaction($id)

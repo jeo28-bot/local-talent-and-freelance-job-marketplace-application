@@ -285,17 +285,16 @@ class EmployeeController extends Controller
         $user = auth()->user();
         $search = $request->input('q');
 
-        // ✅ Base query for completed transactions
+        // Base query for completed transactions (employee-specific)
         $transactionsQuery = \App\Models\Transaction::where('employee_id', $user->id)
             ->where('status', 'completed')
-            ->with('client') // eager load client info
+            ->with('client')
             ->latest();
 
-        // ✅ Apply search filter if query exists
         if (!empty($search)) {
             $transactionsQuery->where(function ($q) use ($search) {
                 $q->where('job_title', 'like', "%{$search}%")
-                ->orWhere('id', 'like', "%{$search}%") // 🔥 Search by transaction ID
+                ->orWhere('id', 'like', "%{$search}%")
                 ->orWhereHas('client', function ($clientQuery) use ($search) {
                     $clientQuery->where('name', 'like', "%{$search}%");
                 })
@@ -304,11 +303,21 @@ class EmployeeController extends Controller
             });
         }
 
-        // ✅ Paginate and preserve query string
-        $transactions = $transactionsQuery->paginate(3)->withQueryString();
+        $transactions = $transactionsQuery
+            ->paginate(3)
+            ->withQueryString();
 
-        return view('employee.transactions.completed', compact('transactions'));
+        // ✅ MATCHED total earnings query
+        $totalEarnings = \App\Models\Transaction::where('employee_id', $user->id)
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        return view(
+            'employee.transactions.completed',
+            compact('transactions', 'totalEarnings')
+        );
     }
+
 
     public function destroyTransaction($id)
     {
