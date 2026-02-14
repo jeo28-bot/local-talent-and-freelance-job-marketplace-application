@@ -44,13 +44,40 @@
 
                 </div>
             </div>
+
             {{-- archived button --}}
-            <div class="flex justify-end mb-3">
+            <div class="flex justify-between items-center mb-3">
+                {{-- category controler div --}}
+                <form method="GET" action="{{ route('client.postings') }}" class="flex gap-3 max-sm:gap-1 items-center">
+                    <select name="job_type" id="job_types"
+                        class="p_font p-2 max-sm:p-1 border-2 border-gray-400 rounded-2xl max-sm:text-sm  bg-white shadow-lg"
+                        onchange="this.form.submit()">
+                        <option disabled {{ request('job_type') ? '' : 'selected' }}>Job Types</option>
+                        <option value="part-time" {{ request('job_type') == 'part-time' ? 'selected' : '' }}>Part-time</option>
+                        <option value="contractual" {{ request('job_type') == 'contractual' ? 'selected' : '' }}>Contractual</option>
+                        <option value="temporary" {{ request('job_type') == 'temporary' ? 'selected' : '' }}>Temporary</option>
+                        <option value="internship" {{ request('job_type') == 'internship' ? 'selected' : '' }}>Internship</option>
+                        <option value="full-time" {{ request('job_type') == 'full-time' ? 'selected' : '' }}>Full-time</option>
+                    </select>
+
+                    <select name="salary_release" id="payment_type"
+                        class="p_font p-2 max-sm:p-1 border-2 border-gray-400 rounded-2xl max-sm:text-sm  bg-white shadow-lg"
+                        onchange="this.form.submit()">
+                        <option disabled {{ request('salary_release') ? '' : 'selected' }}>Payment Type</option>
+                        <option value="weekly" {{ request('salary_release') == 'weekly' ? 'selected' : '' }}>Weekly</option>
+                        <option value="bi-weekly" {{ request('salary_release') == 'bi-weekly' ? 'selected' : '' }}>Bi-weekly</option>
+                        <option value="monthly" {{ request('salary_release') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                        <option value="per-project" {{ request('salary_release') == 'per-project' ? 'selected' : '' }}>Per Project</option>
+                    </select>
+
+                    <button type="button" onclick="window.location.href='{{ route('client.postings') }}'" class="p_font px-2 py-1 rounded-lg  bg-[#1e2939] hover:opacity-75 shadow-lg text-sm cursor-pointer text-white">Clear</button>
+                </form>
+
                 <a href="{{route('client.arch_jobs')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
                     </svg>
-                    Archived Jobs
+                    <span class="max-lg:hidden">Archived Jobs</span>
                 </a>
             </div>
 

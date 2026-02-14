@@ -60,7 +60,17 @@ class JobPostController extends Controller
             $query->where('job_location', 'like', "%{$request->location}%");
         }
 
-        $posts = $query->latest()->paginate(3);
+        // 🏷 Job Type filter
+        if ($request->filled('job_type')) {
+            $query->where('job_type', $request->job_type);
+        }
+
+        // 💰 Payment Type filter
+        if ($request->filled('salary_release')) {
+            $query->where('salary_release', $request->salary_release);
+        }
+
+        $posts = $query->paginate(3)->withQueryString();
 
         return view('client.postings', compact('posts'));
     }

@@ -8,7 +8,7 @@
         
     <section class="w-full flex min-h-[80vh] flex-col items-center  px-20 max-lg:px-10 max-sm:px-5 max-sm:pt-5 pt-10">
         <div class="xl:w-6xl max-xl:w-full mx-auto px-5 max-sm:px-2 mb-10">
-            <div class="flex items-center justify-between max-xl:flex-col max-xl:items-start max-xl:mb-4 mb-5">
+            <div class="flex items-center justify-between max-xl:flex-col max-xl:items-start mb-2">
                 <div>
                     <h1 class="sub_title sm:text-xl">Job Posting</h1>
                     <p class="home_p_font mb-2 text-sm">Easily post your job openings and reach top candidates.</p>
@@ -41,6 +41,32 @@
 
                 </div>
             </div>
+            {{-- category controler div --}}
+            <form method="GET" action="{{ route('employee.postings') }}" class="flex gap-3 max-sm:gap-1 items-center">
+                <select name="job_type" id="job_types"
+                    class="p_font p-2 max-sm:p-1 border-2 border-gray-400 rounded-2xl max-sm:text-sm mb-3 bg-white shadow-lg"
+                    onchange="this.form.submit()">
+                    <option disabled {{ request('job_type') ? '' : 'selected' }}>Job Types</option>
+                    <option value="part-time" {{ request('job_type') == 'part-time' ? 'selected' : '' }}>Part-time</option>
+                    <option value="contractual" {{ request('job_type') == 'contractual' ? 'selected' : '' }}>Contractual</option>
+                    <option value="temporary" {{ request('job_type') == 'temporary' ? 'selected' : '' }}>Temporary</option>
+                    <option value="internship" {{ request('job_type') == 'internship' ? 'selected' : '' }}>Internship</option>
+                    <option value="full-time" {{ request('job_type') == 'full-time' ? 'selected' : '' }}>Full-time</option>
+                </select>
+
+                <select name="salary_release" id="payment_type"
+                    class="p_font p-2 max-sm:p-1 border-2 border-gray-400 rounded-2xl max-sm:text-sm mb-3 bg-white shadow-lg"
+                    onchange="this.form.submit()">
+                    <option disabled {{ request('salary_release') ? '' : 'selected' }}>Payment Type</option>
+                    <option value="weekly" {{ request('salary_release') == 'weekly' ? 'selected' : '' }}>Weekly</option>
+                    <option value="bi-weekly" {{ request('salary_release') == 'bi-weekly' ? 'selected' : '' }}>Bi-weekly</option>
+                    <option value="monthly" {{ request('salary_release') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                    <option value="per-project" {{ request('salary_release') == 'per-project' ? 'selected' : '' }}>Per Project</option>
+                </select>
+
+                <button type="button" onclick="window.location.href='{{ route('employee.postings') }}'" class="p_font px-2 py-1 rounded-lg mb-3 bg-[#1e2939] hover:opacity-75 shadow-lg text-sm cursor-pointer text-white">Clear</button>
+            </form>
+
             
  
 

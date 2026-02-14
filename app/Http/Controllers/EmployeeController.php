@@ -200,6 +200,17 @@ class EmployeeController extends Controller
             });
         }
 
+        // 🏷 Job Type filter
+        if ($request->filled('job_type')) {
+            $query->where('job_type', $request->job_type);
+        }
+
+        // 💰 Payment Type filter
+        if ($request->filled('salary_release')) {
+            $query->where('salary_release', $request->salary_release);
+        }
+
+
         // 📍 Location filter
         if ($request->filled('location')) {
             $query->where('job_location', 'like', "%{$request->location}%");
@@ -229,7 +240,8 @@ class EmployeeController extends Controller
         $query->orderBy('created_at', 'desc');
 
         // 📑 Pagination
-        $posts = $query->paginate(3);
+       $posts = $query->paginate(3)->withQueryString();
+
 
         return view('employee.postings', compact('posts'));
     }
