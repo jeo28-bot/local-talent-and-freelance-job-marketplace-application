@@ -448,8 +448,13 @@ class AdminController extends Controller
     {
         $decodedName = urldecode($name);
         $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
+        
+         // Check if the user has any accepted job applications
+        $isWorking = \App\Models\JobApplication::where('user_id', $user->id)
+                        ->where('status', 'accepted')
+                        ->exists();
 
-        return view('admin.public_profile', compact('user'));
+        return view('admin.public_profile', compact('user', 'isWorking'));
     }
     public function edit_profile($name)
     {

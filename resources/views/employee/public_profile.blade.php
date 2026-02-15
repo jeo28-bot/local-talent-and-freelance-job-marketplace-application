@@ -107,7 +107,7 @@
                     </a>
                 @else
                     <button disabled
-                        class="px-2 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed flex items-center gap-2">
+                        class="px-2 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed flex items-center gap-2 max-sm:text-sm max-sm:px-1 max-sm:py-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -177,6 +177,7 @@
 
                 <div id="block_report_show" data-user-id="{{ $user->id }}" style="display:none;"></div>
 
+                <ul class="border-1 border-gray-300 mb-2"></ul>
 
                 {{-- ratings section --}}
                 @php
@@ -214,7 +215,7 @@
                     </div>
                     {{-- total ratings --}}
                     <a href="{{ route('employee.ratings', ['username' => $user->name]) }}"
-                    class="home_p_font text-sm mt-2 cursor-pointer hover:text-black! hover:underline">
+                    class="home_p_font text-sm mt-2 cursor-pointer hover:text-black! hover:underline max-sm:text-sm">
                         {{ $totalRatings }} total rating{{ $totalRatings != 1 ? 's' : '' }}
                     </a>
 

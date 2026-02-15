@@ -39,10 +39,19 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                 </svg>
             {{ $user->address }}</p>
+
+            {{-- working status --}}
+            <div class="p_font mb-4">
+                @if($isWorking)
+                    <span class="p_font px-3 py-1 bg-green-200 text-green-800 rounded-lg shadow-sm text-sm max-sm:px-2 max-sm:text-xs">Currently Working</span>
+                @else
+                    <span class="p_font px-3 py-1 bg-red-200 text-red-800 rounded-lg shadow-sm text-sm max-sm:px-2 max-sm:text-xs">Not currently working</span>
+                @endif
+            </div>
             
             {{-- follow, block, send message --}}
             <div class="p_font flex gap-2 items-center mb-4">
-                <button class="px-2 py-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400
+                <button class="px-2 py-2 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 hidden
                         @if(Auth::check() && Auth::user()->name === $user->name)
                             opacity-50 cursor-not-allowed pointer-events-none -z-1
                         @endif"
@@ -55,9 +64,9 @@
                 </button>
                 @if(Auth::check() && Auth::user()->name !== $user->name)
                     <a href="{{ route('admin.chat', ['name' => $user->name]) }}"
-                    class="px-2 py-2 bg-blue-300 rounded-lg cursor-pointer hover:bg-blue-400 flex items-center gap-2">
+                    class="px-2 py-2 bg-blue-300 rounded-lg cursor-pointer hover:bg-blue-400 flex items-center gap-2 max-sm:text-sm max-sm:px-1 max-sm:py-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                            stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 
                                 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133
@@ -70,9 +79,9 @@
                     </a>
                 @else
                     <button disabled
-                        class="px-2 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed flex items-center gap-2">
+                        class="px-2 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed flex items-center gap-2 max-sm:text-sm max-sm:px-1 max-sm:py-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                            stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 
                                 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133
@@ -118,6 +127,8 @@
                     Report
                 </button>
             </div>
+
+            <ul class="border-1 border-gray-300 mb-2"></ul>
             
             {{-- ratings section --}}
                 @php

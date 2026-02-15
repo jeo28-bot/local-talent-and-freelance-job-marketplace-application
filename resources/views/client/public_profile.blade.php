@@ -63,13 +63,23 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
                 </svg>
            {{ $user->phoneNum }}</p>
-            <p class="home_p_font mb-5 text-sm flex items-center gap-2">
+            <p class="home_p_font mb-2 text-sm flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                 </svg>
             {{ $user->address }}</p>
-            
+
+            {{-- working status --}}
+            <div class="p_font mb-4">
+                @if($isWorking)
+                    <span class="p_font px-3 py-1 bg-green-200 text-green-800 rounded-lg shadow-sm text-sm max-sm:px-2 max-sm:text-xs">Currently Working</span>
+                @else
+                    <span class="p_font px-3 py-1 bg-red-200 text-red-800 rounded-lg shadow-sm text-sm max-sm:px-2 max-sm:text-xs">Not currently working</span>
+                @endif
+            </div>
+
+         
      
             @if($blockedByViewer)
                 <p class="p-2 rounded-lg text-center p_font mb-4 bg-red-200 text-red-600 border border-red-400 flex items-center justify-center gap-1 max-sm:text-sm"> 
@@ -96,9 +106,9 @@
                 </button>
                 @if(Auth::check() && Auth::user()->name !== $user->name)
                     <a href="{{ route('client.chat', ['name' => $user->name]) }}"
-                    class="px-2 py-2 bg-blue-300 rounded-lg cursor-pointer hover:bg-blue-400 flex items-center gap-2">
+                    class="px-2 py-2 bg-blue-300 rounded-lg cursor-pointer hover:bg-blue-400 flex items-center gap-2 max-sm:text-sm max-sm:px-1 max-sm:py-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                            stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 
                                 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133
@@ -125,6 +135,7 @@
                         Message
                     </button>
                 @endif
+                
                 <button
                         id="block_report_show"
                         class="p-1 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 ml-auto
@@ -144,6 +155,8 @@
                 </button>
 
             </div>
+               <ul class="border-1 border-gray-300 mb-2"></ul>
+
                 {{-- block and report dropdown --}}
                 <div class="flex flex-col p-2 gap-2 p_font absolute -mt-3 ml-130 max-lg:right-15 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="block_report_dropdown">
                     @if(!$blockedByViewer)

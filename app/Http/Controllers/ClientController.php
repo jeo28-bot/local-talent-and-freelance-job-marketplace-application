@@ -379,6 +379,11 @@ class ClientController extends Controller
         $user = \App\Models\User::where('name', $decodedName)->firstOrFail();
         $viewer = auth()->user();
 
+        // Check if the user has any accepted job applications
+        $isWorking = \App\Models\JobApplication::where('user_id', $user->id)
+                        ->where('status', 'accepted')
+                        ->exists();
+
         // Check if the **profile user blocked the viewer**
         $isBlockedByUser = \App\Models\BlockedUser::where('user_id', $user->id)
                             ->where('blocked_user_id', $viewer->id)
@@ -389,7 +394,7 @@ class ClientController extends Controller
                                 ->where('blocked_user_id', $user->id)
                                 ->exists();
 
-        return view('client.public_profile', compact('user', 'isBlockedByUser', 'blockedByViewer'));
+        return view('client.public_profile', compact('user', 'isBlockedByUser', 'blockedByViewer', 'isWorking'));
     }
 
 

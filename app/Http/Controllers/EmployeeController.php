@@ -390,9 +390,10 @@ class EmployeeController extends Controller
     {
         $search = $request->input('q');
 
+        // Paginated applications for table view
         $applications = \App\Models\JobApplication::with(['job', 'user'])
             ->where('user_id', Auth::id())
-           ->when($search, function ($query, $search) {
+            ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->whereHas('job', fn($jobQuery) => $jobQuery->where('job_title', 'like', "%{$search}%"))
                     ->orWhereHas('user', fn($userQuery) => $userQuery->where('name', 'like', "%{$search}%"))
@@ -400,7 +401,6 @@ class EmployeeController extends Controller
                     ->orWhere('status', 'like', "%{$search}%")
                     ->orWhereRaw("CONCAT('2025', id) LIKE ?", ["%{$search}%"]);
 
-                    // Optional: date search
                     if (\Carbon\Carbon::hasFormat($search, 'Y-m-d')) {
                         $q->orWhereDate('created_at', $search);
                     }
@@ -408,10 +408,31 @@ class EmployeeController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
-            ->withQueryString(); // keeps search query in pagination links
+            ->withQueryString();
 
-        return view('employee.applied', compact('applications', 'search'));
+        // All applications for list view
+        $allApplications = \App\Models\JobApplication::with(['job', 'user'])
+            ->where('user_id', Auth::id())
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('job', fn($jobQuery) => $jobQuery->where('job_title', 'like', "%{$search}%"))
+                    ->orWhereHas('user', fn($userQuery) => $userQuery->where('name', 'like', "%{$search}%"))
+                    ->orWhere('full_name', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhereRaw("CONCAT('2025', id) LIKE ?", ["%{$search}%"]);
+
+                    if (\Carbon\Carbon::hasFormat($search, 'Y-m-d')) {
+                        $q->orWhereDate('created_at', $search);
+                    }
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('employee.applied', compact('applications', 'allApplications', 'search'));
     }
+
+    
     public function openNotification($id)
     {
         $notification = \App\Models\Notification::findOrFail($id);
@@ -507,14 +528,20 @@ class EmployeeController extends Controller
     {
         $user = Auth::user();
 
+        // Check if the user has any accepted job applications
+        $isWorking = \App\Models\JobApplication::where('user_id', $user->id)
+                        ->where('status', 'accepted')
+                        ->exists();
+
         // Get blocked users by this employee
-        $blockedUsers = BlockedUser::where('user_id', $user->id)
+        $blockedUsers = \App\Models\BlockedUser::where('user_id', $user->id)
             ->with('blocked') // eager load blocked user info
             ->orderBy('blocked_at', 'desc')
             ->get();
 
-        return view('employee.profile', compact('blockedUsers'));
+        return view('employee.profile', compact('blockedUsers', 'isWorking'));
     }
+
     public function showJob($slug)
     {
         // find the job by slug

@@ -47,7 +47,11 @@
             {{ Auth::user()->address }}</p>
 
              {{-- settings button --}}
-            <div class="flex mb-3">
+            <div class="flex mb-3 items-center">
+                <a href="{{ route('client.public_profile', ['name' => Auth::user()->name]) }}" class="text-blue-500 hover:underline p_font text-sm">
+                    View public profile
+                </a>
+
                 <button id="profile_settings" class="p-1 bg-gray-300 rounded-lg cursor-pointer hover:bg-gray-400 ml-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke-width="1.5" stroke="currentColor" class="size-6 max-sm:size-5">
@@ -56,6 +60,8 @@
                     </svg>
                 </button>
             </div>
+           
+
             {{-- dropdown settings --}}
             <div class="max-sm:w-[135px] flex flex-col p-2 gap-2 p_font absolute -mt-2 ml-120 max-lg:ml-95 max-sm:right-7 bg-white border border-gray-300 rounded-lg shadow-lg max-sm:text-sm hidden" id="dropdown_settings">
                 <button 
@@ -132,6 +138,8 @@
                 });
             });
             </script>
+
+            <ul class="border-1 border-gray-300 mb-2"></ul>
 
         {{-- about section --}}
             <div class="flex items-center justify-between mb-2">

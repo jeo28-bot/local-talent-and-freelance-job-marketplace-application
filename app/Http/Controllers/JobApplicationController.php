@@ -65,13 +65,12 @@ class JobApplicationController extends Controller
         $clientId = auth()->id();
         $search = $request->input('q');
 
+        // Paginated applications for table view
         $applications = \App\Models\JobApplication::with(['job', 'user'])
             ->whereHas('job', function ($q) use ($clientId) {
                 $q->where('client_id', $clientId);
             })
             ->when($search, function ($query, $search) {
-
-                // Check if search is formatted like 2025{id}
                 $numericId = null;
                 if (preg_match('/^2025(\d+)$/', $search, $matches)) {
                     $numericId = $matches[1];
@@ -88,7 +87,6 @@ class JobApplicationController extends Controller
                     ->orWhere('status', 'like', "%{$search}%")
                     ->orWhereDate('created_at', $search);
 
-                    // 🔍 Search by application ID (raw or prefixed with 2025)
                     if ($numericId) {
                         $q->orWhere('id', $numericId);
                     } elseif (is_numeric($search)) {
@@ -99,8 +97,41 @@ class JobApplicationController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('client.applicants', compact('applications', 'search'));
+        // All applications for list view (no pagination)
+        $allApplications = \App\Models\JobApplication::with(['job', 'user'])
+            ->whereHas('job', function ($q) use ($clientId) {
+                $q->where('client_id', $clientId);
+            })
+            ->when($search, function ($query, $search) {
+                $numericId = null;
+                if (preg_match('/^2025(\d+)$/', $search, $matches)) {
+                    $numericId = $matches[1];
+                }
+
+                $query->where(function ($q) use ($search, $numericId) {
+                    $q->whereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhere('full_name', 'like', "%{$search}%")
+                    ->orWhereHas('job', function ($jobQuery) use ($search) {
+                        $jobQuery->where('job_title', 'like', "%{$search}%");
+                    })
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhereDate('created_at', $search);
+
+                    if ($numericId) {
+                        $q->orWhere('id', $numericId);
+                    } elseif (is_numeric($search)) {
+                        $q->orWhere('id', $search);
+                    }
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get(); // <-- all results
+
+        return view('client.applicants', compact('applications', 'allApplications', 'search'));
     }
+
 
 
 

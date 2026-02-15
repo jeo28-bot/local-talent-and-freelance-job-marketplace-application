@@ -33,7 +33,23 @@
             </div>
 
             {{-- archived button --}}
-            <div class="flex justify-end mb-3">
+            <div class="flex justify-between items-center mb-3">
+                {{-- list & table option button div --}}
+                <div class="flex gap-2 max-sm:gap-1 items-center">
+                    {{-- list option --}}
+                    <button class="p-1 bg-[#1e2939] shadow-lg rounded-lg cursor-pointer hover:opacity-80" id="list_view_button" title="List View">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 text-blue-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"></path>
+                        </svg>
+                    </button>
+                    {{-- table option --}}
+                    <button class="p-1 bg-[#1e2939] shadow-lg rounded-lg cursor-pointer hover:opacity-80" id="table_view_button" title="Table View">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 text-blue-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"></path>
+                        </svg>
+                    </button>
+                </div>
+
                 <a href="{{route ('employee.arch_applied')}}" class="p_font bg-[#1e2939] text-blue-400 px-5 py-2 rounded-lg hover:opacity-80 max-lg:text-sm! max-sm:px-2 max-sm:py-1.5 flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-lg:size-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
@@ -43,9 +59,149 @@
             </div>
 
 
+            @php
+                $groupedApplications = $allApplications->groupBy('job_id');
+            @endphp
+
+            {{-- one by one table for each job post T.T --}}
+            <div id="list_view" class="transition-all duration-200">
+            @foreach ($groupedApplications as $jobId => $jobApplications)
+            <h1 class="p_font text-lg font-semibold max-sm:text-sm capitalize mb-2">Job Title: 
+                <span class="font-bold! text-blue-500">
+                    {{ optional($jobApplications->first()->job)->job_title ?? 'Deleted Job' }}
+            </span>
+                </span> 
+                <span class="text-gray-400 text-sm">
+                ({{ $jobApplications->count() }} applicant{{ $jobApplications->count() > 1 ? 's' : '' }})
+                </span></h1>
+                {{-- table div --}}
+                <div id="applicants_table" id="table_div" class="overflow-x-auto shadow-lg rounded-lg  mb-5">
+                <table class="w-full min-w-[700px] shadow-lg rounded-lg overflow-hidden">
+                    <thead class="bg-gray-200 ">
+                        <tr class="bg-gray-300">
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs"></th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Application ID</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Applicant Name</th>
+
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Application Date</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Actions</th>
+                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">View & Drop</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($jobApplications as $application)
+                            <tr class="applicant_row border-b-2 border-gray-300 py-2 hover:bg-gray-200 ">
+                                <td class="px-4 py-2 p_font max-lg:text-sm home_p_font">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
+                                {{ '2025'.$application->id }}
+                                </td>
+                                <td class="px-4 py-2 p_font max-lg:text-sm">
+                                    <a href="{{ route('client.public_profile', $application->user->name) }}" class="underline text-blue-700 hover:text-blue-400">
+                                        {{ $application->full_name }}
+                                    </a>
+
+                                </td>
+                
+                                <td class="px-4 py-2 p_font max-lg:text-sm">
+                                    @if ($application->job)
+                                        <a href="{{ route('client.jobs.show', Str::slug($application->job->job_title)) }}" 
+                                        class="hover:underline text-blue-700 hover:text-blue-400">
+                                            {{ $application->job->job_title }}
+                                        </a>
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2 p_font max-lg:text-sm ">
+                                    {{ $application->created_at->format('Y-m-d') }}
+                                </td>
+                                <td class="px-4 py-2 p_font text-sm 
+                                    {{ $application->status == 'pending' ? 'text-orange-600' : ($application->status == 'accepted' ? 'text-green-600' : 'text-red-600') }}">
+                                    <span class="p-2 bg-amber-50 rounded-lg {{ $application->status == 'pending' ? 'border-1 border-amber-600 bg-orange-200' : ($application->status == 'accepted' ? 'border-1 border-green-600 bg-green-200' : 'border-1 border-red-600 bg-red-200') }}">{{ ucfirst($application->status) }}</span>
+                                </td>
+
+                                <td class="px-4 py-2 p_font max-lg:text-sm capitalize flex max-xl:flex-col">
+                                <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <input type="hidden" name="status" value="accepted">
+                                        <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full max-[1280px]:mb-1">Accept</button>
+                                    </form>
+
+                                    <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline rejectForm">
+                                        @csrf
+                                        <input type="hidden" name="status" value="rejected">
+
+                                        <button type="button"
+                                            class="openRejectModal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full">
+                                            Reject
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="px-4 py-2 p_font max-lg:text-sm">
+                                    <div class="flex gap-1">
+                                            <button
+                                            class="view_applicant_button bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70"
+                                            data-username="{{ $application->user ? e($application->user->name) : e($application->full_name) }}"
+                                            data-fullname="{{ e($application->full_name) }}"
+                                            data-email="{{ e($application->email ?? 'N/A') }}"
+                                            data-phone="{{ e($application->phone_num ?? 'N/A') }}"
+                                            data-message="{{ e($application->message ?? 'No message provided') }}"
+                                            data-status="{{ $application->status }}"
+                                            >
+
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                            </button>
+                                            <form action="{{ route('applications.destroy', $application->id) }}" method="POST"      class="delete-applicant-form"
+                                                >
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="open-delete-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70 
+                                                {{ $application->status == 'accepted' 
+                                                    ? 'text-orange-600 opacity-70 cursor-not-allowed!' 
+                                                    : 'text-red-400' 
+                                                }} " 
+                                                {{ $application->status == 'accepted' ? 'disabled' : '' }}  >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21
+                                                            c.342.052.682.107 1.022.166m-1.022-.165L18.16 
+                                                            19.673a2.25 2.25 0 0 1-2.244 2.077H8.084
+                                                            a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79
+                                                            m14.456 0a48.108 48.108 0 0 0-3.478-.397
+                                                            m-12 .562c.34-.059.68-.114 1.022-.165
+                                                            m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 
+                                                            0v-.916c0-1.18-.91-2.164-2.09-2.201
+                                                            a51.964 51.964 0 0 0-3.32 0c-1.18.037
+                                                            -2.09 1.022-2.09 2.201v.916m7.5 
+                                                            0a48.667 48.667 0 0 0-7.5 0" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+
+                </table>
+                </div>
+
+                <ul class="border-1 border-gray-300 mb-5"></ul>
+            @endforeach
+            </div>
+            {{-- end one by one table for each job post T.T --}}
+
            
             @if($applications->isNotEmpty())
-            <div id="table_div" class="overflow-x-auto shadow-lg rounded-lg mb-5">
+            <div id="table_view" class="overflow-x-auto shadow-lg rounded-lg mb-5">
                 <table class="w-full min-w-[700px] shadow-lg rounded-lg overflow-hidden">
                     <thead class="bg-gray-200 ">
                         <tr class="bg-gray-300">
@@ -134,11 +290,8 @@
                                 </td>
                                 <td class="px-5">
                                     <button type="button" 
-                                        class="open-delete-job-applied-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70 {{ $application->status == 'accepted' 
-                                                    ? 'text-orange-600 opacity-70 cursor-not-allowed!' 
-                                                    : 'text-red-400' 
-                                            }} " 
-                                        {{ $application->status == 'accepted' ? 'disabled' : '' }}
+                                        class="open-delete-job-applied-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70" 
+                                        
                                         data-id="{{ $application->id }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
                                             stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
@@ -174,7 +327,7 @@
 
         {{-- Custom Pagination --}}
         @if ($applications->total() > 10)
-            <div id="posting_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
+            <div id="custom_pagination" class="w-full mx-auto flex items-center max-sm:flex-col max-sm:items-center gap-2">
                 <h3 class="home_p_font text-sm max-sm:text-xs">
                     {{ $applications->firstItem() ?? 0 }} to {{ $applications->lastItem() ?? 0 }} of {{ $applications->total() ?? 0 }} results
                 </h3>
@@ -299,7 +452,58 @@
             </div>
         </div>
 
+        {{-- script section --}}
+    
+        {{-- table and list applicants JS --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const tableViewBtn = document.getElementById('table_view_button');
+                const listViewBtn  = document.getElementById('list_view_button');
 
+                const tableView = document.getElementById('table_view');
+                const listView  = document.getElementById('list_view');
+                const customPagination = document.getElementById('custom_pagination');
+
+                if (!tableView || !listView) return;
+
+                // 🔹 Check saved view from localStorage
+                const savedView = localStorage.getItem('applicants_view') || 'list';
+
+                if(savedView === 'table') {
+                    tableView.classList.remove('hidden');
+                    listView.classList.add('hidden');
+                    customPagination?.classList.remove('hidden');
+                    setActive(tableViewBtn, listViewBtn);
+                } else {
+                    listView.classList.remove('hidden');
+                    tableView.classList.add('hidden');
+                    customPagination?.classList.add('hidden');
+                    setActive(listViewBtn, tableViewBtn);
+                }
+
+                // 🔹 Button click handlers
+                tableViewBtn.addEventListener('click', () => {
+                    tableView.classList.remove('hidden');
+                    listView.classList.add('hidden');
+                    customPagination?.classList.remove('hidden');
+                    localStorage.setItem('applicants_view', 'table');
+                    setActive(tableViewBtn, listViewBtn);
+                });
+
+                listViewBtn.addEventListener('click', () => {
+                    listView.classList.remove('hidden');
+                    tableView.classList.add('hidden');
+                    customPagination?.classList.add('hidden');
+                    localStorage.setItem('applicants_view', 'list');
+                    setActive(listViewBtn, tableViewBtn);
+                });
+
+                function setActive(activeBtn, inactiveBtn) {
+                    activeBtn.classList.add('ring-2', 'ring-blue-400');
+                    inactiveBtn.classList.remove('ring-2', 'ring-blue-400');
+                }
+            });
+        </script>
 
 
     @include('components.footer_employee')
