@@ -121,7 +121,7 @@
                                         text-red-600! p-2 rounded-lg bg-red-200 border-1 border-red-500
                                     @endif
                                   ">
-                                    {{ ucfirst($job->status) }}
+                                     {{ $job->status === 'open' ? 'Active' : ($job->status === 'close' ? 'Inactive' : 'Paused') }}
                                 </span></h1>
                             </td>
 
@@ -367,8 +367,8 @@
                 <form id="status_form" action="" method="POST" class="flex gap-2 max-sm:flex-col max-sm:w-full max-lg:gap-2">
                     @csrf
                     @method('PUT')
-                    <button type="submit" name="status" value="open" class="px-4 py-2 bg-green-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Open</button>
-                    <button type="submit" name="status" value="close" class="px-3 py-2 bg-red-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Close</button>
+                    <button type="submit" name="status" value="open" class="px-4 py-2 bg-green-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Active</button>
+                    <button type="submit" name="status" value="close" class="px-3 py-2 bg-red-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Inactive</button>
                     <button type="submit" name="status" value="pause" class="px-3 py-2 bg-gray-500 rounded-lg text-white button_font hover:opacity-80 cursor-pointer">Pause</button>
                 </form>
             </div>

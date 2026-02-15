@@ -114,10 +114,14 @@
                                 <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full max-[1280px]:mb-1">Accept</button>
                             </form>
 
-                            <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline">
+                            <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline rejectForm">
                                 @csrf
                                 <input type="hidden" name="status" value="rejected">
-                                <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full">Reject</button>
+
+                                <button type="button"
+                                    class="openRejectModal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full">
+                                    Reject
+                                </button>
                             </form>
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
@@ -202,11 +206,6 @@
                 </div>
             @endif
 
-            
-            
-
-            
-            
 
         </div>
     </section>
@@ -214,6 +213,89 @@
     
 
     {{-- modal section --}}
+
+    {{-- rejected remark modal --}}
+    <div class="hidden rejected_remark_modal fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 modal_bg">
+        <div class="sm:w-2xl mt-20 mx-auto p-5 max-sm:p-4 bg-gray-200 rounded-xl shadow-sm">
+
+            {{-- title + close --}}
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="sub_title_font max-sm:text-sm">
+                    Send remarks for <span class="text-red-500 font-semibold">rejecting</span> applicant:
+                </h3>
+                <svg id="closeRejectModal"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="size-5 cursor-pointer max-sm:size-4 bg-gray-300 rounded-sm hover:bg-red-400!"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </div>
+
+            {{-- message --}}
+            <div class="input_control flex flex-col mb-3 w-full bg-white p-3 rounded-lg shadow-sm">
+                <label class="mb-1 home_p_font max-sm:text-sm">
+                    Message <span class="text-red-400">*</span>
+                </label>
+                <textarea id="rejectMessage"
+                    class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm"
+                    rows="5" required></textarea>
+            </div>
+
+            {{-- send --}}
+            <div class="flex">
+                <button id="sendReject"
+                    type="button"
+                    class="ml-auto p_font bg-[#1E2939] text-white px-7 py-3 rounded-lg hover:opacity-90 max-sm:text-sm hover:opacity-80 cursor-pointer">
+                    Send
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        let activeRejectForm = null;
+
+        // Open modal
+        document.querySelectorAll('.openRejectModal').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeRejectForm = btn.closest('form');
+                document.querySelector('.rejected_remark_modal').classList.remove('hidden');
+            });
+        });
+
+        // Close modal
+        document.getElementById('closeRejectModal').addEventListener('click', () => {
+            document.querySelector('.rejected_remark_modal').classList.add('hidden');
+            document.getElementById('rejectMessage').value = '';
+        });
+
+        // Send + submit form
+        document.getElementById('sendReject').addEventListener('click', () => {
+            const message = document.getElementById('rejectMessage').value.trim();
+
+            if (!message) {
+                alert('Please enter a rejection message.');
+                return;
+            }
+
+            if (!activeRejectForm) return;
+
+            // add message input
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'message';
+            input.value = message;
+
+            activeRejectForm.appendChild(input);
+            activeRejectForm.submit();
+        });
+    </script>
+
+
+
+
     {{-- view applicant details modal --}}
     <div id="view_applicant" class="modal_bg fixed top-0 left-0 w-full h-full z-50 max-sm:px-6 max-lg:px-20 hidden">
       {{-- menu control --}}

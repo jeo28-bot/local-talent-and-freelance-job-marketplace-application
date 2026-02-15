@@ -346,19 +346,39 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $query = \App\Models\JobPost::withTrashed() // 👈 include archived
+        $query = \App\Models\JobPost::withTrashed()
             ->with('client')
             ->orderBy('created_at', 'desc');
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
+
+            // normalize search (lowercase)
+            $normalized = strtolower($search);
+
+            // map friendly terms to status values
+            $statusMap = [
+                'active'   => 'open',
+                'inactive' => 'close',
+                'paused'   => 'pause',
+                'pause'    => 'pause',
+            ];
+
+            $query->where(function ($q) use ($search, $normalized, $statusMap) {
+
                 $q->where('id', 'LIKE', "%{$search}%")
                 ->orWhere('job_title', 'LIKE', "%{$search}%")
                 ->orWhere('job_location', 'LIKE', "%{$search}%")
                 ->orWhere('job_pay', 'LIKE', "%{$search}%")
                 ->orWhere('salary_release', 'LIKE', "%{$search}%")
-                ->orWhere('status', 'LIKE', "%{$search}%")
-                ->orWhereHas('client', function ($clientQuery) use ($search) {
+                ->orWhere('status', 'LIKE', "%{$search}%");
+
+                // 🔥 search by readable status
+                if (array_key_exists($normalized, $statusMap)) {
+                    $q->orWhere('status', $statusMap[$normalized]);
+                }
+
+                // client name search
+                $q->orWhereHas('client', function ($clientQuery) use ($search) {
                     $clientQuery->where('name', 'LIKE', "%{$search}%");
                 });
 
@@ -378,6 +398,7 @@ class AdminController extends Controller
 
         return view('admin.job_post', compact('jobPosts'));
     }
+
 
 
     public function updateJobStatus(Request $request, $id)

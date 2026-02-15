@@ -41,18 +41,34 @@ class JobPostController extends Controller
    
     public function postings(Request $request)
     {
-        $query = JobPost::with('client')->where('client_id', Auth::id());
+        $query = JobPost::with('client')
+            ->where('client_id', Auth::id());
 
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function ($subQuery) use ($q) {
-                $subQuery->where('job_title', 'like', "%$q%")
-                    ->orWhere('job_type', 'like', "%$q%")
-                    ->orWhere('job_pay', 'like', "%$q%")
-                    ->orWhere('salary_release', 'like', "%$q%")
-                    ->orWhere('short_description', 'like', "%$q%")
-                    ->orWhere('skills_required', 'like', "%$q%")
-                    ->orWhere('status', 'like', "%$q%");
+            $normalized = strtolower($q);
+
+            $statusMap = [
+                'active'   => 'open',
+                'inactive' => 'close',
+                'paused'   => 'pause',
+                'pause'    => 'pause',
+            ];
+
+            $query->where(function ($subQuery) use ($q, $normalized, $statusMap) {
+
+                $subQuery->where('job_title', 'like', "%{$q}%")
+                    ->orWhere('job_type', 'like', "%{$q}%")
+                    ->orWhere('job_pay', 'like', "%{$q}%")
+                    ->orWhere('salary_release', 'like', "%{$q}%")
+                    ->orWhere('short_description', 'like', "%{$q}%")
+                    ->orWhere('skills_required', 'like', "%{$q}%")
+                    ->orWhere('status', 'like', "%{$q}%");
+
+                // 🔥 friendly status search
+                if (array_key_exists($normalized, $statusMap)) {
+                    $subQuery->orWhere('status', $statusMap[$normalized]);
+                }
             });
         }
 
@@ -74,6 +90,7 @@ class JobPostController extends Controller
 
         return view('client.postings', compact('posts'));
     }
+
 
 
     public function update(Request $request, JobPost $job)

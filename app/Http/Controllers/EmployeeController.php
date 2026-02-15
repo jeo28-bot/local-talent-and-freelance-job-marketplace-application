@@ -186,17 +186,31 @@ class EmployeeController extends Controller
         // 🔎 Search filter
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->where(function ($subQuery) use ($q) {
-                $subQuery->where('job_title', 'like', "%$q%")
-                    ->orWhere('job_type', 'like', "%$q%")
-                    ->orWhere('job_pay', 'like', "%$q%")
-                    ->orWhere('salary_release', 'like', "%$q%")
-                    ->orWhere('short_description', 'like', "%$q%")
-                    ->orWhere('skills_required', 'like', "%$q%")
-                    ->orWhere('status', 'like', "%$q%")
+            $normalized = strtolower($q);
+
+            $statusMap = [
+                'active'   => 'open',
+                'inactive' => 'close',
+                'paused'   => 'pause',
+                'pause'    => 'pause',
+            ];
+
+            $query->where(function ($subQuery) use ($q, $normalized, $statusMap) {
+                $subQuery->where('job_title', 'like', "%{$q}%")
+                    ->orWhere('job_type', 'like', "%{$q}%")
+                    ->orWhere('job_pay', 'like', "%{$q}%")
+                    ->orWhere('salary_release', 'like', "%{$q}%")
+                    ->orWhere('short_description', 'like', "%{$q}%")
+                    ->orWhere('skills_required', 'like', "%{$q}%")
+                    ->orWhere('status', 'like', "%{$q}%")
                     ->orWhereHas('client', function ($clientQuery) use ($q) {
-                        $clientQuery->where('name', 'like', "%$q%");
+                        $clientQuery->where('name', 'like', "%{$q}%");
                     });
+
+                // 🔥 human-friendly status search
+                if (array_key_exists($normalized, $statusMap)) {
+                    $subQuery->orWhere('status', $statusMap[$normalized]);
+                }
             });
         }
 
@@ -210,7 +224,6 @@ class EmployeeController extends Controller
             $query->where('salary_release', $request->salary_release);
         }
 
-
         // 📍 Location filter
         if ($request->filled('location')) {
             $query->where('job_location', 'like', "%{$request->location}%");
@@ -218,17 +231,14 @@ class EmployeeController extends Controller
 
         // ❌ Exclude blocked clients
         if ($user) {
-            // User → blocked client
             $blockedClientIds = BlockedUser::where('user_id', $user->id)
                 ->pluck('blocked_user_id')
                 ->toArray();
 
-            // Client → blocked user
             $clientsWhoBlockedMe = BlockedUser::where('blocked_user_id', $user->id)
                 ->pluck('user_id')
                 ->toArray();
 
-            // Merge all
             $allBlockedClientIds = array_unique(array_merge($blockedClientIds, $clientsWhoBlockedMe));
 
             if (!empty($allBlockedClientIds)) {
@@ -236,15 +246,15 @@ class EmployeeController extends Controller
             }
         }
 
-        // 🆕 Always show newest jobs first
+        // 🆕 Newest first
         $query->orderBy('created_at', 'desc');
 
         // 📑 Pagination
-       $posts = $query->paginate(3)->withQueryString();
-
+        $posts = $query->paginate(3)->withQueryString();
 
         return view('employee.postings', compact('posts'));
     }
+
 
 
     public function public_profile()

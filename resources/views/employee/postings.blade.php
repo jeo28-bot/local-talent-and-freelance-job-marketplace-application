@@ -191,7 +191,7 @@
                                                         @elseif($post->status === 'pause') text-gray-600
                                                         @endif"
                                                         data-id="{{ $post->id }}">
-                                                        {{ $post->status }}
+                                                        {{ $post->status === 'open' ? 'Active' : ($post->status === 'close' ? 'Inactive' : 'Paused') }}
                                                     </span>
                                         </h4>
                                     </div>

@@ -243,6 +243,14 @@
 
 
               <a href="{{ route('client.profile') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Profile</a>
+              <form method="POST" action="{{ route('switch.role') }}" class="pages_nav border-b-1 px-5 py-3 border-gray-500">
+                @csrf
+                <input type="hidden" name="role" value="employee">
+                  <button type="submit" class="flex items-center gap-2  cursor-pointer"> 
+                    Switch to <span class="text-yellow-400 font-semibold">Employee</span>
+                  </button>
+              </form>
+
               {{-- <a href="#" class="pages_nav border-b-1 px-5 py-3 border-gray-500">Settings</a> --}}
               {{-- logout --}}
               <a href="#" 

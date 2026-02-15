@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Transaction;
 use App\Models\JobPostController;
 use App\Models\Notification;
+use App\Models\JobPost;
+use App\Models\Message;
 
 
 
@@ -107,6 +109,7 @@ class JobApplicationController extends Controller
     {
         return $this->belongsTo(\App\Models\JobPost::class, 'job_id');
     }
+
     public function updateStatus(Request $request, $id)
     {
         $application = JobApplication::findOrFail($id);
@@ -129,7 +132,7 @@ class JobApplicationController extends Controller
             'accepted' => "Client accepted your application for {$job->job_title}.",
             'rejected' => "Client rejected your application for {$job->job_title}.",
             'pending'  => "Client moved your application for {$job->job_title} to pending.",
-            default     => null
+            default    => null
         };
 
         if ($statusMessage) {
@@ -141,15 +144,29 @@ class JobApplicationController extends Controller
                 'is_read' => false,
                 'data' => [
                     'client_id' => $job->client_id,
-                    'application_id' => $application->id, // <- needed!
+                    'application_id' => $application->id,
                 ]
+            ]);
+        }
+
+        // ------------------------------------------------
+        // 🔥 SEND CHAT MESSAGE WHEN REJECTED (NEW)
+        // ------------------------------------------------
+        if ($application->status === 'rejected' && $request->filled('message')) {
+
+            Message::create([
+                'sender_id'   => auth()->id(),               // client
+                'receiver_id' => $application->user_id,     // employee
+                'content'     => $request->message,
+                'file'        => null,
+                'file_type'   => null,
+                'is_vc'       => null,
             ]);
         }
 
         // ---------------------------------------------------------------
         // existing transaction logic...
         // ---------------------------------------------------------------
-
         if ($application->status === 'accepted') {
             $exists = \App\Models\Transaction::where('job_id', $job->id)
                 ->where('employee_id', $application->user_id)
