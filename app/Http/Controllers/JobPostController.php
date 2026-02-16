@@ -20,6 +20,7 @@ class JobPostController extends Controller
             'skills_required' => 'nullable|string',
             'short_description' => 'nullable|string|max:500',
             'full_description' => 'nullable|string',
+            'job_vacancies' => 'required|integer|min:1',
         ]);
 
         // ✅ store in database
@@ -33,6 +34,7 @@ class JobPostController extends Controller
             'skills_required' => $validated['skills_required'] ?? null,
             'short_description' => $validated['short_description'] ?? null,
             'full_description' => $validated['full_description'] ?? null,
+            'vacancies' => $validated['job_vacancies'],
             'status' => 'open',
         ]);
 
@@ -86,7 +88,11 @@ class JobPostController extends Controller
             $query->where('salary_release', $request->salary_release);
         }
 
-        $posts = $query->paginate(3)->withQueryString();
+        $posts = $query
+        ->orderBy('created_at', 'desc') // 🔥 newest first
+        ->paginate(3)
+        ->withQueryString();
+
 
         return view('client.postings', compact('posts'));
     }
@@ -104,6 +110,7 @@ class JobPostController extends Controller
             'skills_required' => 'nullable|string',
             'short_description' => 'nullable|string|max:500',
             'full_description' => 'nullable|string',
+            'job_vacancies' => 'required|integer|min:1',
         ]);
 
         $job->update([
@@ -115,6 +122,7 @@ class JobPostController extends Controller
             'skills_required' => $request->skills_required,
             'short_description' => $request->short_description,
             'full_description' => $request->full_description,
+            'vacancies' => $request->job_vacancies,
         ]);
 
         return redirect()->route('client.postings')->with('success', 'Job updated successfully!');

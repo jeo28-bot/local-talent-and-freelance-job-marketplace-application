@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\JobApplication;
 
 class JobPost extends Model
 {
@@ -18,6 +19,7 @@ class JobPost extends Model
         'short_description',
         'full_description',
         'status',
+        'vacancies'
     ];
 
     public function client()
@@ -33,5 +35,22 @@ class JobPost extends Model
         return $this->hasMany(SavedJob::class, 'job_post_id');
     }
     use SoftDeletes;
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class, 'job_id');
+    }
+
+    public function acceptedApplications()
+    {
+        return $this->applications()->where('status', 'accepted');
+    }
+    public function getRemainingVacanciesAttribute()
+    {
+        $acceptedCount = $this->acceptedApplications()->count();
+
+        return max(0, $this->vacancies - $acceptedCount);
+    }
+
+
 
 }

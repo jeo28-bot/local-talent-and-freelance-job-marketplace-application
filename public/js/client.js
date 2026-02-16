@@ -67,6 +67,7 @@ editButtons.forEach(button => {
         editModal.querySelector('#skills_required').value = button.dataset.skills;
         editModal.querySelector('#short_description').value = button.dataset.short;
         editModal.querySelector('#full_description').value = button.dataset.full;
+        editModal.querySelector('#job_vacancies').value = button.dataset.vacancies;
 
         // Store the job ID in hidden input
         let idInput = editModal.querySelector('input[name="job_id"]');

@@ -61,6 +61,12 @@
                                 </svg>
                                 <h4 class="text-[#78818D] text-lg max-sm:text-sm p_font">{{$job->job_type}}</h4>
                             </div>
+                            <div class="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-6 max-sm:size-5 text-[#78818D]">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"></path>
+                                </svg>
+                                <h4 class="text-[#78818D] text-lg max-sm:text-sm capitalize p_font">Vacancies: <span class="text-blue-500">{{ $job->remaining_vacancies  }}</span></h4>
+                            </div>
                         </div>
                         {{-- div control for salary and release --}}
                         <div class="">
@@ -108,20 +114,35 @@
                              </h4>
                         </div>
                        {{-- apply button --}}
-                        @if($job->status === 'open')
+                        @php
+                            $canApply = $job->status === 'open'
+                                && $job->remaining_vacancies > 0
+                                && ! $alreadyApplied;
+                        @endphp
+
+                        @if ($canApply)
                             <a id="quick_apply_button"
-                            class="job_posting_button lg:w-2xl w-lg max-lg:w-full cursor-pointer job_posting_button bg-[#1E2939] text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm max-sm:w-full text-center"
-                            data-already-applied="{{ $alreadyApplied ? '1' : '0' }}"
+                            class="job_posting_button lg:w-2xl w-lg max-lg:w-full bg-[#1E2939] text-white
+                                    px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg
+                                    hover:opacity-90 max-sm:text-sm max-sm:w-full text-center cursor-pointer"
+                            data-already-applied="0"
                             data-job-id="{{ $job->id }}">
-                            Quick Apply
+                                Quick Apply
                             </a>
                         @else
-                            <button disabled 
-                            class="lg:w-2xl sm:w-lg job_posting_button bg-gray-400 text-white px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg opacity-60 cursor-not-allowed max-sm:text-sm max-sm:w-full text-center">
-                            Quick Apply
+                            <button disabled
+                                class="lg:w-2xl sm:w-lg job_posting_button bg-gray-400 text-white
+                                    px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg
+                                    opacity-60 cursor-not-allowed max-sm:text-sm max-sm:w-full text-center">
+                                @if ($alreadyApplied)
+                                    Already Applied
+                                @elseif ($job->remaining_vacancies === 0)
+                                    Vacancies Filled
+                                @else
+                                    Closed
+                                @endif
                             </button>
                         @endif
-
                     </div>
                     
                 </div>

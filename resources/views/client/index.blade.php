@@ -274,18 +274,25 @@
                 </div>
 
                 <div class="input_control flex flex-col gap-3 mb-3 ">
-                    <div class="input_group flex flex-col w-full">
-                        <label for="salary_release" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary Release <span class="text-red-500">*</span></label>
-                        <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
-                            <option value="" disabled selected>Select salary release</option>
-                            <option value="weekly">weekly</option>
-                            <option value="bi-weekly">bi-weekly</option>
-                            <option value="monthly">monthly</option>
-                            <option value="per-project">per-project</option>
-                        </select>
+                    <div class="input_group flex w-full gap-3 ">
+                        <div class="flex flex-col w-full">
+                            <label for="salary_release" class="mb-1 home_p_font text-black! max-sm:text-sm">Salary Release <span class="text-red-500">*</span></label>
+                            <select name="salary_release" id="salary_release" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
+                                <option value="" disabled selected>Select salary release</option>
+                                <option value="weekly">weekly</option>
+                                <option value="bi-weekly">bi-weekly</option>
+                                <option value="monthly">monthly</option>
+                                <option value="per-project">per-project</option>
+                            </select>
+                        </div>
 
-                        
+                        <div class="flex flex-col w-full">
+                            <label for="job_vacancies" class="mb-1 home_p_font text-black! max-sm:text-sm">Vacancies <span class="text-red-500">*</span></label>
+                            <input type="number" name="job_vacancies" id="job_vacancies" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm capitalize p_font" required>
+                        </div>
+
                     </div>
+                    
                     <div class="input_group flex flex-col w-full">
                         <label for="skills_required" class="mb-1 home_p_font text-black! max-sm:text-sm">Skills required <span class="text-red-500">*</span> <br><span class="home_p_font text-xs">Separate skills using comma (,)</span></label>
                         <input type="text" id="skills_required" name="skills_required" placeholder="e.g. VA, HR, Data Entry" class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required>
