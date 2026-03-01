@@ -142,7 +142,7 @@
                                 <td class="px-4 py-2 p_font max-lg:text-sm">
                                     <div class="flex gap-1">
                                             <button
-                                            class="view_applicant_button bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70"
+                                            class="open-view-applied bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70"
                                             data-username="{{ $application->user ? e($application->user->name) : e($application->full_name) }}"
                                             data-fullname="{{ e($application->full_name) }}"
                                             data-email="{{ e($application->email ?? 'N/A') }}"
@@ -156,41 +156,31 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                 </svg>
                                             </button>
-                                            <form action="{{ route('applications.destroy', $application->id) }}" method="POST"      class="delete-applicant-form"
-                                                >
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="open-delete-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70 
-                                                {{ $application->status == 'accepted' 
-                                                    ? 'text-orange-600 opacity-70 cursor-not-allowed!' 
-                                                    : 'text-red-400' 
-                                                }} " 
-                                                {{ $application->status == 'accepted' ? 'disabled' : '' }}  >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-                                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21
-                                                            c.342.052.682.107 1.022.166m-1.022-.165L18.16 
-                                                            19.673a2.25 2.25 0 0 1-2.244 2.077H8.084
-                                                            a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79
-                                                            m14.456 0a48.108 48.108 0 0 0-3.478-.397
-                                                            m-12 .562c.34-.059.68-.114 1.022-.165
-                                                            m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 
-                                                            0v-.916c0-1.18-.91-2.164-2.09-2.201
-                                                            a51.964 51.964 0 0 0-3.32 0c-1.18.037
-                                                            -2.09 1.022-2.09 2.201v.916m7.5 
-                                                            0a48.667 48.667 0 0 0-7.5 0" />
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                            <button type="button" 
+                                                class="open-delete-job-applied-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70" 
+                                                data-id="{{ $application->id }}">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+                                                    stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21
+                                                        c.342.052.682.107 1.022.166m-1.022-.165L18.16 
+                                                        19.673a2.25 2.25 0 0 1-2.244 2.077H8.084
+                                                        a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79
+                                                        m14.456 0a48.108 48.108 0 0 0-3.478-.397
+                                                        m-12 .562c.34-.059.68-.114 1.022-.165
+                                                        m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 
+                                                        0v-.916c0-1.18-.91-2.164-2.09-2.201
+                                                        a51.964 51.964 0 0 0-3.32 0c-1.18.037
+                                                        -2.09 1.022-2.09 2.201v.916m7.5 
+                                                        0a48.667 48.667 0 0 0-7.5 0" />
+                                                </svg>
+                                            </button>
 
                                     </div>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
-
-
                 </table>
                 </div>
 
@@ -198,8 +188,6 @@
             @endforeach
             </div>
             {{-- end one by one table for each job post T.T --}}
-
-           
             @if($applications->isNotEmpty())
             <div id="table_view" class="overflow-x-auto shadow-lg rounded-lg mb-5">
                 <table class="w-full min-w-[700px] shadow-lg rounded-lg overflow-hidden">
@@ -291,7 +279,6 @@
                                 <td class="px-5">
                                     <button type="button" 
                                         class="open-delete-job-applied-modal bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70" 
-                                        
                                         data-id="{{ $application->id }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
                                             stroke-width="1.5" stroke="currentColor" class="size-5 text-red-500">
