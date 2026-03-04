@@ -140,7 +140,13 @@
                                     <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline">
                                             @csrf
                                             <input type="hidden" name="status" value="accepted">
-                                            <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full max-[1280px]:mb-1">Accept</button>
+                                            <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full max-[1280px]:mb-1
+                                            {{ $application->status === 'cancelled' 
+                                            ? 'opacity-70 cursor-not-allowed! ' 
+                                            : 'cursor-pointer hover:opacity-70' }}" 
+                                            {{ $application->status === 'cancelled' ? 'disabled' : '' }}>
+                                                Accept
+                                            </button>
                                         </form>
 
                                         <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline rejectForm">
@@ -148,22 +154,30 @@
                                             <input type="hidden" name="status" value="rejected">
 
                                             <button type="button"
-                                                class="openRejectModal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full">
+                                                class="openRejectModal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full
+                                                {{ $application->status === 'cancelled' 
+                                                ? 'opacity-70 cursor-not-allowed! ' 
+                                                : 'cursor-pointer hover:opacity-70' }}" 
+                                                {{ $application->status === 'cancelled' ? 'disabled' : '' }}>
                                                 Reject
                                             </button>
                                         </form>
                                     </td>
                                     <td class="px-4 py-2 p_font max-lg:text-sm">
                                         <div class="flex gap-1">
-                                                <button
-                                                class="view_applicant_button bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70"
-                                                data-username="{{ $application->user ? e($application->user->name) : e($application->full_name) }}"
-                                                data-fullname="{{ e($application->full_name) }}"
-                                                data-email="{{ e($application->email ?? 'N/A') }}"
-                                                data-phone="{{ e($application->phone_num ?? 'N/A') }}"
-                                                data-message="{{ e($application->message ?? 'No message provided') }}"
-                                                data-status="{{ $application->status }}"
-                                                >
+                                                @php
+                                                    $docs = $application->required_documents ?? [];
+                                                @endphp
+                                                    <button
+                                                    class="view_applicant_button bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70"
+                                                    data-username="{{ $application->user ? e($application->user->name) : e($application->full_name) }}"
+                                                    data-fullname="{{ e($application->full_name) }}"
+                                                    data-email="{{ e($application->email ?? 'N/A') }}"
+                                                    data-phone="{{ e($application->phone_num ?? 'N/A') }}"
+                                                    data-message="{{ e($application->message ?? 'No message provided') }}"
+                                                    data-status="{{ $application->status }}"
+                                                    data-documents='{!! json_encode($docs) !!}'
+                                                    >
 
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
@@ -272,7 +286,13 @@
                            <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline">
                                 @csrf
                                 <input type="hidden" name="status" value="accepted">
-                                <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full max-[1280px]:mb-1">Accept</button>
+                                <button type="submit" class="bg-[#1e2939] px-3 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full max-[1280px]:mb-1
+                                    {{ $application->status === 'cancelled' 
+                                    ? 'opacity-70 cursor-not-allowed! ' 
+                                    : 'cursor-pointer hover:opacity-70' }}"
+                                    {{ $application->status === 'cancelled' ? 'disabled' : '' }}>
+                                    Accept
+                                </button>
                             </form>
 
                             <form action="{{ route('applications.updateStatus', $application->id) }}" method="POST" class="inline rejectForm">
@@ -280,13 +300,20 @@
                                 <input type="hidden" name="status" value="rejected">
 
                                 <button type="button"
-                                    class="openRejectModal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full">
+                                    class="openRejectModal bg-[#1e2939] px-3 py-2 rounded button_font text-sm text-red-400 cursor-pointer hover:opacity-80 max-[1280px]:w-full
+                                    {{ $application->status === 'cancelled' 
+                                    ? 'opacity-70 cursor-not-allowed! ' 
+                                    : 'cursor-pointer hover:opacity-70' }}"
+                                    {{ $application->status === 'cancelled' ? 'disabled' : '' }}>
                                     Reject
                                 </button>
                             </form>
                         </td>
                         <td class="px-4 py-2 p_font max-lg:text-sm">
                             <div class="flex gap-1">
+                                @php
+                                    $docs = $application->required_documents ?? [];
+                                @endphp
                                     <button
                                     class="view_applicant_button bg-[#1e2939] p-2 rounded-lg cursor-pointer hover:opacity-70"
                                     data-username="{{ $application->user ? e($application->user->name) : e($application->full_name) }}"
@@ -295,8 +322,8 @@
                                     data-phone="{{ e($application->phone_num ?? 'N/A') }}"
                                     data-message="{{ e($application->message ?? 'No message provided') }}"
                                     data-status="{{ $application->status }}"
+                                    data-documents='{!! json_encode($docs) !!}'
                                     >
-
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-green-500">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -495,6 +522,16 @@
                 <div class="input_control flex flex-col mb-3 w-full">
                     <label for="message" class=" mb-1 home_p_font text-black! max-sm:text-sm">Message <span class="text-gray-400">(optional)</span></label>
                     <textarea id="applicant_message" rows="4" class="text-lg sub_title_font p-2 bg-gray-200 rounded-lg max-sm:text-sm text-gray-800" disabled></textarea>
+                </div>
+
+                <div class="input_control flex flex-col mb-3 w-full">
+                    <label class="mb-1 home_p_font text-black! max-sm:text-sm">
+                        Required Documents:
+                    </label>
+
+                    <div id="applicant_documents" class="flex flex-col gap-2 ml-2 p_font max-sm:text-sm font-normal!">
+                        <!-- Files will appear here dynamically -->
+                    </div>
                 </div>
                 
                 <div class="flex">

@@ -145,7 +145,8 @@ Route::middleware(['auth', 'user_type:employee'])->group(function () {
     Route::get('/employee/messages', [EmployeeController::class, 'messages'])->name('employee.messages');
     Route::get('/employee/notifications', [EmployeeController::class, 'notifications'])->name('employee.notifications');
     Route::get('/employee/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
-    Route::get('/employee/jobs/{slug}', [EmployeeController::class, 'showJob'])->name('employee.jobs.show');
+    Route::get('/employee/jobs/{slug_id}', [EmployeeController::class, 'showJob'])
+    ->name('employee.jobs.show');
     Route::get('/employee/public_profile', [EmployeeController::class, 'public_profile'])->name('employee.public_profile');
 
     // web.php

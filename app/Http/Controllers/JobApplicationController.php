@@ -17,6 +17,12 @@ class JobApplicationController extends Controller
 {
     public function store(Request $request, $jobId)
     {
+        // 🔥 Get the job first
+        $job = \App\Models\JobPost::findOrFail($jobId);
+        $employee = auth()->user();
+        $employerId = $job->client_id;
+
+        // ✅ Base validation
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
             'email'     => 'required|email',
@@ -24,12 +30,33 @@ class JobApplicationController extends Controller
             'message'   => 'nullable|string',
         ]);
 
-        // 🔥 Get the job first
-        $job = \App\Models\JobPost::findOrFail($jobId);
-        $employee = auth()->user(); // the one applying
-        $employerId = $job->client_id; // the client who owns the job
+        $uploadedDocuments = [];
 
-        // Create the job application
+        // ✅ Handle required documents if the job has any
+        if (!empty($job->required_documents)) {
+
+            foreach ($job->required_documents as $doc) {
+
+                // Make sure file exists
+                if (!$request->hasFile("required_documents.$doc")) {
+                    return back()
+                        ->withErrors(["required_documents.$doc" => ucfirst($doc) . " is required."])
+                        ->withInput();
+                }
+
+                $file = $request->file("required_documents.$doc");
+
+                // Generate unique filename
+                $filename = time() . '_' . $employee->id . '_' . $doc . '.' . $file->getClientOriginalExtension();
+
+                // Store in storage/app/public/job_applications
+                $path = $file->storeAs('job_applications', $filename, 'public');
+
+                $uploadedDocuments[$doc] = $path;
+            }
+        }
+
+        // ✅ Create the job application
         $application = JobApplication::create([
             'job_id'    => $jobId,
             'user_id'   => $employee->id ?? null,
@@ -38,11 +65,12 @@ class JobApplicationController extends Controller
             'phone_num' => $data['phone_num'] ?? null,
             'message'   => $data['message'] ?? null,
             'status'    => 'pending',
+            'required_documents' => $uploadedDocuments, // 🔥 save files here
         ]);
 
-        // Create a single notification with proper array in `data`
+        // ✅ Create notification
         \App\Models\Notification::create([
-            'user_id' => $employerId, // who receives it
+            'user_id' => $employerId,
             'type'    => 'job_application',
             'title'   => 'New Job Application',
             'body'    => "{$employee->name} applied for your job: {$job->job_title}",

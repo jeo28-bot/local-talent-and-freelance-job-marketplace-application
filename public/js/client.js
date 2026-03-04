@@ -79,8 +79,13 @@ editButtons.forEach(button => {
         }
         idInput.value = button.dataset.id;
 
-        // ✅ Set form action dynamically
         editModal.querySelector('form').action = `/job-posts/${button.dataset.id}`;
+        
+        // Required documents
+        const docs = button.dataset.required ? JSON.parse(button.dataset.required) : [];
+        editModal.querySelectorAll('input[name="required_documents[]"]').forEach(checkbox => {
+            checkbox.checked = docs.includes(checkbox.value);
+        });
     });
 });
 

@@ -542,23 +542,30 @@ class EmployeeController extends Controller
         return view('employee.profile', compact('blockedUsers', 'isWorking'));
     }
 
-    public function showJob($slug)
+    public function showJob($slug_id)
     {
-        // find the job by slug
-        $job = JobPost::all()->first(function ($job) use ($slug) {
-            return Str::slug($job->job_title) === $slug;
-        });
+        // Split slug and id from the URL
+        $parts = explode('-', $slug_id);
+        $id = array_pop($parts); // last part is always the ID
+        $slug = implode('-', $parts); // rest is the slug
 
-        if (!$job) {
-            abort(404);
+        $job = JobPost::findOrFail($id);
+
+        // Optional: redirect if slug doesn't match
+        if (Str::slug($job->job_title) !== $slug) {
+            return redirect()->route('employee.jobs.show', Str::slug($job->job_title) . '-' . $job->id);
         }
 
-        // ✅ check if the logged-in employee already applied
-        $alreadyApplied = JobApplication::where('job_id', $job->id)
-            ->where('user_id', Auth::id())
-            ->exists();
+        $isOwner = auth()->check() && auth()->id() === $job->client_id;
 
-        return view('employee.jobs', compact('job', 'alreadyApplied'));
+        $alreadyApplied = false;
+        if (auth()->check() && ! $isOwner) {
+            $alreadyApplied = JobApplication::where('job_id', $job->id)
+                ->where('user_id', auth()->id())
+                ->exists();
+        }
+
+        return view('employee.jobs', compact('job', 'alreadyApplied', 'isOwner'));
     }
     // save function
     public function saved(Request $request)

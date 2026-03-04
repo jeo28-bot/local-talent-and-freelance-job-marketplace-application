@@ -117,7 +117,8 @@
                         @php
                             $canApply = $job->status === 'open'
                                 && $job->remaining_vacancies > 0
-                                && ! $alreadyApplied;
+                                && ! $alreadyApplied
+                                && ! $isOwner;
                         @endphp
 
                         @if ($canApply)
@@ -134,13 +135,17 @@
                                 class="lg:w-2xl sm:w-lg job_posting_button bg-gray-400 text-white
                                     px-10 py-3 max-sm:py-3 max-sm:px-5 rounded-lg
                                     opacity-60 cursor-not-allowed max-sm:text-sm max-sm:w-full text-center">
-                                @if ($alreadyApplied)
+
+                                @if ($isOwner)
+                                    Your Job Post
+                                @elseif ($alreadyApplied)
                                     Already Applied
                                 @elseif ($job->remaining_vacancies === 0)
                                     Vacancies Filled
                                 @else
                                     Closed
                                 @endif
+
                             </button>
                         @endif
                     </div>
@@ -196,7 +201,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </div>
-             <form action="{{ route('applications.store', $job->id) }}" method="POST" class="w-full bg-white p-3 rounded-lg shadow-sm ">
+             <form action="{{ route('applications.store', $job->id) }}" method="POST" enctype="multipart/form-data" class="w-full bg-white p-3 rounded-lg shadow-sm ">
                 @csrf
                 <span hidden>
                     <div class="input_control flex flex-col mb-3">
@@ -215,8 +220,47 @@
                 <div class="input_control flex flex-col mb-3 w-full">
                     <label for="message" class=" mb-1 home_p_font text-black! max-sm:text-sm">Message<span class="text-red-400">*</span></label>
                     <textarea id="message" name="message" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
-                    
                 </div>
+
+                @if(!empty($job->required_documents))
+                <div class="input_control flex flex-col gap-1 mb-3 w-full">
+                    <label class="p_font text-black! max-sm:text-sm">
+                        Required Documents: <span class="text-red-400">*</span>
+                    </label>
+
+                    {{-- Resume --}}
+                    @if(in_array('resume', $job->required_documents))
+                    <div class="flex flex-col gap-1 ml-2">
+                        <label for="resume_file" class="p_font font-light! max-sm:text-sm">Resume <span class="text-red-400">*</span></label>
+                        <input type="file" name="required_documents[resume]" id="resume_file" 
+                            accept=".pdf,.doc,.docx" 
+                            class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm p_font">
+                    </div>
+                    @endif
+
+                    {{-- Picture --}}
+                    @if(in_array('picture', $job->required_documents))
+                    <div class="flex flex-col gap-1 ml-2">
+                        <label for="picture_file" class="p_font font-light! max-sm:text-sm">
+                            Picture <span class="text-gray-400">(2x2, 1x1, Passport Size) <span class="text-red-400">*</span></span>
+                        </label>
+                        <input type="file" name="required_documents[picture]" id="picture_file" 
+                            accept="image/*" 
+                            class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm p_font">
+                    </div>
+                    @endif
+
+                    {{-- Certificates --}}
+                    @if(in_array('certificate', $job->required_documents))
+                    <div class="flex flex-col gap-1 ml-2">
+                        <label for="certificate_file" class="p_font font-light! max-sm:text-sm">Certificates <span class="text-red-400">*</span></label>
+                        <input type="file" name="required_documents[certificate]" id="certificate_file" 
+                            accept=".pdf,.jpg,.png" 
+                            class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm p_font">
+                    </div>
+                    @endif
+                </div>
+                @endif
                 
                 <div class="flex">
                 <input type="submit" value="Submit & Apply" class="p_font cursor-pointer bg-[#1E2939] text-white px-7 py-3 max-sm:py-3 max-sm:px-5 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">

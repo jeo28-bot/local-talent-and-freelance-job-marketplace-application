@@ -18,6 +18,11 @@ class JobApplication extends Model
         'phone_num',
         'message',
         'status',
+        'required_documents',
+    ];
+
+    protected $casts = [
+        'required_documents' => 'array', // automatically handle JSON <-> array
     ];
 
     public function job()

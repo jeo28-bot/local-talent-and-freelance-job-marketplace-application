@@ -19,7 +19,12 @@ class JobPost extends Model
         'short_description',
         'full_description',
         'status',
-        'vacancies'
+        'vacancies',
+        'required_documents' // ✅ add this
+    ];
+
+    protected $casts = [
+        'required_documents' => 'array',
     ];
 
     public function client()

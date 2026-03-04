@@ -94,14 +94,13 @@
                     {{--  job posted cards --}}
                     <div class="bg-white w-full rounded-xl mx-auto shadow-lg px-10 py-6 mb-5 max-lg:px-7 max-sm:py-3 max-sm:px-5">
                             <div class="div_control mb-2 flex flex-row items-center justify-between">
-                                @php
-                                    $count = $posts->where('job_title', $post->job_title)->count();
-                                @endphp
-
-                                <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}"
+                                
+                                <a href="{{ route('employee.jobs.show', ['slug_id' => Str::slug($post->job_title) . '-' . $post->id]) }}"
                                 class="job_posting_title text-2xl max-sm:text-xl capitalize hover:opacity-70 hover:underline">
                                     {{ $post->job_title }}
-
+                                    @php
+                                        $count = $posts->where('job_title', $post->job_title)->count();
+                                    @endphp
                                     @if ($count > 1)
                                         <span class="text-sm text-gray-500">({{ $count }})</span>
                                     @endif
@@ -169,7 +168,7 @@
                                 </div>
                             </div>
                                 <h4 class="job_posting_company text-[#78818D] mb-2 max-sm:text-xs">
-                                    {{ $post->short_description }} <br> <a href="{{ route('employee.jobs.show', Str::slug($post->job_title)) }}" class="text-blue-500 hover:text-blue-300 text-sm">See more...</a>
+                                    {{ $post->short_description }} <br> <a href="{{ route('employee.jobs.show', ['slug_id' => Str::slug($post->job_title) . '-' . $post->id]) }}" class="text-blue-500 hover:text-blue-300 text-sm">See more...</a>
                                 </h4>
                             <div class="div_control flex justify-between max-sm:flex-col flex-col">
                                 <div class="div_control max-sm:w-full max-sm:mb-3">
@@ -208,13 +207,16 @@
                                 {{-- button actions --}}
                                 <div class="flex gap-3 max-sm:flex-col max-sm:w-full max-lg:gap-2 ml-auto">
                                     <!-- edit details button -->
-                                    @php
-                                        $canApply = $post->status === 'open' && $post->remaining_vacancies > 0;
+                                   @php
+                                        $isOwner = auth()->check() && auth()->id() === $post->client_id;
+                                        $canApply = $post->status === 'open' && $post->remaining_vacancies > 0 && ! $isOwner;
                                     @endphp
 
-                                    <a href="{{ $canApply ? route('employee.jobs.show', Str::slug($post->job_title)) : '#' }}"
+                                    <a href="{{ $canApply 
+                                                ? route('employee.jobs.show', ['slug_id' => Str::slug($post->job_title) . '-' . $post->id]) 
+                                                : '#' }}"
                                     class="job_posting_button px-5 py-3 rounded-lg text-white text-center max-sm:py-2 max-sm:px-3 max-sm:text-sm
-                                    {{ $canApply 
+                                        {{ $canApply 
                                             ? 'bg-[#1E2939] hover:opacity-90 cursor-pointer' 
                                             : 'bg-gray-400 opacity-60 cursor-not-allowed pointer-events-none' }}">
                                         {{ $post->remaining_vacancies > 0 ? 'Apply Now' : 'Vacancies Filled' }}

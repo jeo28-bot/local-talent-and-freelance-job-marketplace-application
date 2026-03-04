@@ -83,7 +83,8 @@
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Application ID</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm  max-sm:text-xs">Applicant Name</th>
 
-                            <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
+                            <th class
+                            ="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Job Title</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Application Date</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Status</th>
                             <th class="px-4 py-2 text-left sub_title_font font-semibold! uppercase text-sm max-sm:text-xs">Actions</th>
@@ -123,12 +124,16 @@
                                 </td>
 
                                 <td class="px-4 py-2 p_font max-lg:text-sm capitalize flex max-xl:flex-col">
+                                    @php
+                                        $docs = $application->required_documents ?? [];
+                                    @endphp 
                                     <button type="button" 
                                         class="open-view-applied bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1210px]:w-full max-[1210px]:mb-1 mb-1"
                                         data-fullname="{{ $application->full_name }}"
                                         data-email="{{ $application->email }}"
                                         data-phone="{{ $application->phone_num }}"
-                                        data-message="{{ $application->message }}">
+                                        data-message="{{ $application->message }}"
+                                        data-documents='@json($docs)'>
                                         View
                                     </button>
                                         <form method="POST" class="inline">
@@ -244,13 +249,17 @@
                                     </span>
                                 </td>
 
-                                <td class="px-4 py-2 p_font max-lg:text-sm capitalize flex max-lg:flex-col max-xl:flex-col"> 
+                                <td class="px-4 py-2 p_font max-lg:text-sm capitalize flex max-lg:flex-col max-xl:flex-col">
+                                    @php
+                                        $docs = $application->required_documents ?? [];
+                                    @endphp 
                                     <button type="button" 
                                         class="open-view-applied bg-[#1e2939] px-5 py-2 rounded mr-1 button_font text-sm text-green-400 cursor-pointer hover:opacity-80 max-[1210px]:w-full max-[1210px]:mb-1 mb-1"
                                         data-fullname="{{ $application->full_name }}"
                                         data-email="{{ $application->email }}"
                                         data-phone="{{ $application->phone_num }}"
-                                        data-message="{{ $application->message }}">
+                                        data-message="{{ $application->message }}"
+                                        data-documents='@json($docs)'>
                                         View
                                     </button>
                                     <form method="POST" class="inline">
@@ -368,6 +377,17 @@
                         <label for="modalMessage" class="mb-1 home_p_font text-black! max-sm:text-sm">Message</label>
                         <textarea id="modalMessage" class="p-2 w-full border-2 border-gray-400 rounded-lg max-sm:text-sm bg-gray-200" disabled></textarea>
                     </div>
+
+                    <div class="input_control flex flex-col mb-3 w-full">
+                        <label class="mb-1 home_p_font text-black! max-sm:text-sm">
+                            Required Documents:
+                        </label>
+                        <div id="applied_documents" class="flex flex-col gap-2 ml-2 p_font ">
+                            <!-- Documents will be inserted dynamically -->
+                        </div>
+                    </div>
+
+
                     <div class="flex">
                         <button type="button" id="close_view_applied_btn"
                             class="close_applied_modal p_font cursor-pointer bg-[#1E2939] text-white px-7 py-3 rounded-lg hover:opacity-90 max-sm:text-sm text-center ml-auto">

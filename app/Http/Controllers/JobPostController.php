@@ -21,11 +21,13 @@ class JobPostController extends Controller
             'short_description' => 'nullable|string|max:500',
             'full_description' => 'nullable|string',
             'job_vacancies' => 'required|integer|min:1',
+            'required_documents' => 'nullable|array', // ✅ add validation for docs
+            'required_documents.*' => 'string|in:resume,picture,certificate', // optional: validate values
         ]);
 
         // ✅ store in database
         JobPost::create([
-            'client_id' => Auth::id(), // logged in user
+            'client_id' => Auth::id(),
             'job_title' => $validated['job_title'],
             'job_location' => $validated['job_location'] ?? null,
             'job_type' => $validated['job_type'] ?? null,
@@ -36,6 +38,7 @@ class JobPostController extends Controller
             'full_description' => $validated['full_description'] ?? null,
             'vacancies' => $validated['job_vacancies'],
             'status' => 'open',
+            'required_documents' => $validated['required_documents'] ?? [], // ✅ store selected docs
         ]);
 
         return redirect()->route('client.postings')->with('success', 'Job post created successfully!');
@@ -123,6 +126,7 @@ class JobPostController extends Controller
             'short_description' => $request->short_description,
             'full_description' => $request->full_description,
             'vacancies' => $request->job_vacancies,
+            'required_documents' => $request->required_documents ?? [],
         ]);
 
         return redirect()->route('client.postings')->with('success', 'Job updated successfully!');

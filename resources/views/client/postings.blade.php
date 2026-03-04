@@ -209,6 +209,7 @@
                         data-short="{{ $post->short_description }}"
                         data-full="{{ $post->full_description }}"
                         data-vacancies="{{ $post->vacancies }}"
+                        data-required='@json($post->required_documents ?? [])'
                         >
                             Edit Job
                         </button>
@@ -365,6 +366,27 @@
                         <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
                     </div>
                 </div>
+
+                <div class="input_control flex flex-col gap-3 mb-3 ">
+                    <div class="input_group flex-col w-full ">
+                        <label for="required_documents" class="mb-1 home_p_font text-black! max-sm:text-sm">Required Documents:</label>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" name="required_documents[]" id="resume" value="resume">
+                            <label for="resume" class="ml-2 p_font font-light! max-sm:text-sm">Resume</label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" name="required_documents[]" id="picture" value="picture">
+                            <label for="picture" class="ml-2 p_font font-light! max-sm:text-sm">Picture <span class="text-gray-400">(2x2, 1x1, Passport Size)</span></label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" name="required_documents[]" id="certificate" value="certificate">
+                            <label for="certificate" class="ml-2 p_font font-light! max-sm:text-sm">Certificates</label>
+                        </div>
+                    </div>
+                </div>
                 
                 
                 <div class="flex">
@@ -459,6 +481,27 @@
                     <div class="input_group flex flex-col w-full">
                         <label for="full_description" class="mb-1 home_p_font text-black! max-sm:text-sm">Full Job Description <span class="text-red-500">*</span></label>
                         <textarea id="full_description" name="full_description" rows="4" placeholder="Provide detailed information about the job role, responsibilities, and requirements." class="p-2 border-2 border-gray-400 rounded-lg max-sm:text-sm" required></textarea>
+                    </div>
+                </div>
+
+                <div class="input_control flex flex-col gap-3 mb-3 ">
+                    <div class="input_group flex-col w-full ">
+                        <label for="required_documents" class="mb-1 home_p_font text-black! max-sm:text-sm">Required Documents:</label>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" name="required_documents[]" id="resume" value="resume">
+                            <label for="resume" class="ml-2 p_font font-light! max-sm:text-sm">Resume</label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" name="required_documents[]" id="picture" value="picture">
+                            <label for="picture" class="ml-2 p_font font-light! max-sm:text-sm">Picture <span class="text-gray-400">(2x2, 1x1, Passport Size)</span></label>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" name="required_documents[]" id="certificate" value="certificate">
+                            <label for="certificate" class="ml-2 p_font font-light! max-sm:text-sm">Certificates</label>
+                        </div>
                     </div>
                 </div>
                 

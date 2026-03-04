@@ -35,22 +35,52 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.classList.add("hidden");
     });
 
-    // view applied modal JS
     document.querySelectorAll('.open-view-applied').forEach(button => {
-    button.addEventListener('click', () => {
-        document.getElementById('modalFullName').value = button.dataset.fullname;
-        document.getElementById('modalEmail').value = button.dataset.email;
-        document.getElementById('modalPhoneNum').value = button.dataset.phone;
-        document.getElementById('modalMessage').value = button.dataset.message;
+        button.addEventListener('click', () => {
+            const ds = button.dataset;
 
-        document.getElementById('view_applied_modal').classList.remove('hidden');
-                });
+            // populate fields
+            document.getElementById('modalFullName').value = ds.fullname;
+            document.getElementById('modalEmail').value = ds.email;
+            document.getElementById('modalPhoneNum').value = ds.phone;
+            document.getElementById('modalMessage').value = ds.message;
+
+            // populate documents
+            const documentsContainer = document.getElementById('applied_documents');
+            documentsContainer.innerHTML = ""; // clear previous
+
+            let documents = {};
+            try {
+                documents = ds.documents ? JSON.parse(ds.documents) : {};
+            } catch (e) {
+                console.error("Failed to parse documents JSON", e);
+            }
+
+            const keys = Object.keys(documents);
+            keys.forEach(key => {
+                const value = documents[key];
+                if (value && value.trim() !== "") {
+                    const div = document.createElement("div");
+                    div.classList.add("doc_item");
+                    div.innerHTML = `<strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> 
+                        <a href="/storage/${value}" target="_blank" class="text-blue-600 underline">${value.split('/').pop()}</a>`;
+                    documentsContainer.appendChild(div);
+                }
             });
 
-            document.querySelectorAll('.close_applied_modal').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.getElementById('view_applied_modal').classList.add('hidden');
-                });
-            });
+            if (!documentsContainer.hasChildNodes()) {
+                documentsContainer.innerHTML = "<em>No documents submitted.</em>";
+            }
+
+            // show modal
+            document.getElementById('view_applied_modal').classList.remove('hidden');
+        });
+    });
+
+    document.querySelectorAll('.close_applied_modal').forEach(button => {
+        button.addEventListener('click', () => {
+            document.getElementById('view_applied_modal').classList.add('hidden');
+        });
+    });
 
 });
