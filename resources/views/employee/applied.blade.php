@@ -107,7 +107,7 @@
                 
                                 <td class="px-4 py-2 p_font max-lg:text-sm">
                                     @if ($application->job)
-                                        <a href="{{ route('employee.jobs.show', Str::slug($application->job->job_title)) }}" 
+                                        <a href="{{ route('employee.jobs.show', ['slug_id' => Str::slug($application->job->job_title) . '-' . $application->job->id]) }}" 
                                         class="hover:underline text-blue-700 hover:text-blue-400">
                                             {{ $application->job->job_title }}
                                         </a>
@@ -223,7 +223,7 @@
                                 </td>
                                 <td class="px-4 py-2 p_font max-lg:text-sm capitalize">    
                                     @if ($application->job)
-                                        <a href="{{ route('employee.jobs.show', Str::slug($application->job->job_title)) }}" 
+                                        <a href="{{ route('employee.jobs.show', ['slug_id' => Str::slug($application->job->job_title) . '-' . $application->job->id]) }}" 
                                         class="hover:underline text-blue-700 hover:text-blue-400">
                                             {{ $application->job->job_title }}
                                         </a>
